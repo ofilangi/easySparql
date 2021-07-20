@@ -152,7 +152,7 @@ case class SWDiscovery(
     // get all node
     val current = rootNode.getChild[Node](rootNode.asInstanceOf[Node]).filter( _.idRef == focusNode )
 
-    if ( current.lastOption.map( _.accept(n) ).getOrElse(false)) {
+    if ( current.lastOption.exists(_.accept(n))) {
       val newRootNode = rootNode.addChildren(focusNode,n)
       /* current node is the focusNode */
       if (forward) {
@@ -311,5 +311,10 @@ case class SWDiscovery(
   }
 
   def browse[A](visitor : (Node, Integer) => A ) : Seq[A] = NodeVisitor.map(rootNode,0,visitor)
+
+  def setDecoratingAttribute(key : String, value : Any) : SWDiscovery = {
+
+    SWDiscovery(config,rootNode,Some(focusNode))
+  }
 
 }

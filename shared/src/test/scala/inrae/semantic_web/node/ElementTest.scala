@@ -155,5 +155,11 @@ object ElementTest extends TestSuite {
       assert (p == List("h1","h2","h3","h4"))
     }
 
+    test("addDecoratingAttribute") {
+      val p = Something("h1")
+      val p2 = p.addDecoratingAttribute("some",List("other_some"))
+      assert (p == p2)
+    }
+
   }
 }

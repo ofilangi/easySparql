@@ -9,10 +9,17 @@ import java.util.UUID.randomUUID
 import scala.reflect.ClassTag
 import scala.scalajs.js.annotation.JSExportTopLevel
 
-sealed abstract class Node(val idRef : String,val children: Seq[Node] = Seq[Node]())
+sealed abstract class Node(
+                            val idRef : String,
+                            val children: Seq[Node],
+                            val decoratingAttributeMap : Map[String,Any]
+                          )
 {
   def reference(): String = idRef
-  def copy(children : Seq[Node]=children) : Node
+
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,Any]=decoratingAttributeMap) : Node
+
+  def addDecoratingAttribute(key : String, value : Any) : Node = copy(children,decoratingAttributeMap + (key -> value))
 
   def addChildren(n: Node): Node =  copy(children :+ n )
 
@@ -97,7 +104,8 @@ case class Root(
                  lBindNode : Seq[Bind] = List[Bind](),
                  lSolutionSequenceModifierNode : Seq[SolutionSequenceModifierNode] = List[SolutionSequenceModifierNode](),
                  override val children: Seq[Node] = Seq[Node](),
-               ) extends Node(idRef,children) {
+                 override val decoratingAttributeMap: Map[String,Any] = Map()
+               ) extends Node(idRef,children,decoratingAttributeMap) {
   /* prefix management */
 
   def addPrefix(short : String,long : IRI) : Root = {
@@ -108,29 +116,25 @@ case class Root(
 
   def getPrefixes() : Map[String,IRI] = prefixes
 
-  def addDefaultGraph(graph : IRI) : Root = {
+  def addDefaultGraph(graph : IRI) : Root =
     Root(idRef,prefixes,defaultGraph :+ graph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children)
-  }
 
-  def addNamedGraph(graph : IRI) : Root = {
+  def addNamedGraph(graph : IRI) : Root =
     Root(idRef,prefixes,defaultGraph,namedGraph :+ graph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children)
-  }
 
-  private def addSourceNode(s : SourcesNode) : Root = {
+  private def addSourceNode(s : SourcesNode) : Root =
     Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes :+ s,lBindNode,lSolutionSequenceModifierNode,children)
-  }
 
-  private def addDatatype(d : DatatypeNode) : Root = {
+  private def addDatatype(d : DatatypeNode) : Root =
     Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode :+ d,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children)
-  }
 
-  private def addBindNode(b : Bind) : Root = {
+
+  private def addBindNode(b : Bind) : Root =
     Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode :+ b,lSolutionSequenceModifierNode ,children)
-  }
 
-  private def addSolutionSequenceModifierNode(s : SolutionSequenceModifierNode) : Root = {
+  private def addSolutionSequenceModifierNode(s : SolutionSequenceModifierNode) : Root =
     Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode :+ s,children)
-  }
+
 
   override def getChild[SpecializedNodeType <: Node ](that : SpecializedNodeType)(implicit tag: ClassTag[SpecializedNodeType]) : Seq[SpecializedNodeType] = {
 
@@ -177,8 +181,9 @@ case class Root(
   }
 
 
-  def copy(children : Seq[Node]) : Node = {
-    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children)
+  def copy(children : Seq[Node],decoratingAttributeMap : Map[String,Any]=Map()) : Node = {
+    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode,
+      lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decoratingAttributeMap)
   }
 
   /* Accept only something on the root */
@@ -223,7 +228,11 @@ object RdfNode {
 }
 
 /* triplets */
-abstract class RdfNode(override val idRef : String,override val children: Seq[Node] = Seq[Node]()) extends Node(idRef,children) {
+abstract class RdfNode(
+                        override val idRef : String,
+                        override val children: Seq[Node],
+                        override val decoratingAttributeMap: Map[String,Any]
+                      ) extends Node(idRef,children,decoratingAttributeMap) {
   /* everything by default*/
   override def accept(n: Node): Boolean = n match {
     case _ : Something  => false
@@ -237,8 +246,12 @@ abstract class RdfNode(override val idRef : String,override val children: Seq[No
 }
 
 
-abstract class URIRdfNode(override val idRef : String,val term : SparqlDefinition,override val children: Seq[Node] = Seq[Node]())
-  extends RdfNode(idRef,children)
+abstract class URIRdfNode(
+                           override val idRef : String,
+                           val term : SparqlDefinition,
+                           override val children: Seq[Node],
+                           override val decoratingAttributeMap: Map[String,Any])
+  extends RdfNode(idRef,children,decoratingAttributeMap)
 
 
 object Something {
@@ -246,10 +259,14 @@ object Something {
 }
 
 @JSExportTopLevel(name="Something")
-case class Something(override val idRef: String,override val children: Seq[Node] = Seq[Node]()) extends RdfNode(idRef,children) {
+final case class Something(
+                      override val idRef: String,
+                      override val children: Seq[Node] = Seq[Node](),
+                      override val decoratingAttributeMap: Map[String,Any] = Map()
+                    ) extends RdfNode(idRef,children,decoratingAttributeMap) {
 
-  def copy(children : Seq[Node]) : Node = {
-    Something(idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,Any]=decoratingAttributeMap) : Node = {
+    Something(idRef,children,decoratingAttributeMap)
   }
 }
 
@@ -258,12 +275,14 @@ object SubjectOf {
 }
 
 
-case class SubjectOf(
+final case class SubjectOf(
                       override val idRef : String = randomUUID.toString,
                       override val term : SparqlDefinition,
-                      override val children: Seq[Node] = Seq[Node]()) extends URIRdfNode(idRef,term,children) {
+                      override val children: Seq[Node] = Seq[Node](),
+                      override val decoratingAttributeMap: Map[String,Any] = Map()
+                    ) extends URIRdfNode(idRef,term,children,decoratingAttributeMap) {
 
-  def copy(children : Seq[Node]) : Node = {
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,Any]=decoratingAttributeMap) : Node = {
     SubjectOf(idRef,term,children)
   }
 }
@@ -273,10 +292,11 @@ object ObjectOf {
 }
 
 @JSExportTopLevel(name="ObjectOf")
-case class ObjectOf(
+final case class ObjectOf(
                      override val idRef : String,
                      override val term : SparqlDefinition,
-                     override val children: Seq[Node] = Seq[Node]()) extends URIRdfNode(idRef,term,children) {
+                     override val children: Seq[Node] = Seq[Node]()
+                         ) extends URIRdfNode(idRef,term,children) {
 
   def copy(children : Seq[Node]) : Node = {
     ObjectOf(idRef,term,children)
