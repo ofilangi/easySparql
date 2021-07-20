@@ -27,11 +27,39 @@ describe('SWDiscovery', () => {
       const results = await SWDiscovery(localConf).something("h1").select("h1").commit().raw();
       expect(results.head.vars).toStrictEqual(["h1"]);
   })
-/*
+
+  test("selectByPage", async () => {
+    const args = 
+    await SWDiscovery(localConf)
+    .something("h1").selectByPage("h1")
+    
+
+    let numberOfPages : Number = Object.values(args)[0] as Number ;
+    let lazyPage : Array<any> = Object.values(args)[1] as Array<any> ;
+
+		console.log("number of pages:"+numberOfPages)
+		console.log(" -- deuxieme page -- ")
+
+		const results = await lazyPage[0].commit().raw()
+      
+		console.log(JSON.stringify(results,null,2));
+
+    expect(results.head.vars).toStrictEqual(["h1"]);
+  })
+
+  test("selectByPage", async () => {
+    const args =
+      await SWDiscovery(localConf)
+      .something("h1").selectByPage(["h1"])
+
+    let numberOfPages : Number = Object.values(args)[0] as Number ;
+    let lazyPage : Array<any> = Object.values(args)[1] as Array<any> ;
+  })
+
   test("select *", async () => {
     const results = await SWDiscovery(localConf).something("h1").select("*").commit().raw();
     expect(results.head.vars).toStrictEqual(["h1"]);
-})*/
+  })
 
   test("getSerializedString/setSerializedString", async () => {
     const s : string = SWDiscovery(localConf).something("h1").getSerializedString();
