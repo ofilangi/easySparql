@@ -29,10 +29,7 @@ describe('SWDiscovery', () => {
   })
 
   test("selectByPage", async () => {
-    const args = 
-    await SWDiscovery(localConf)
-    .something("h1").selectByPage("h1")
-    
+    const args = await SWDiscovery(localConf).something("h1").selectByPage("h1")
 
     let numberOfPages : Number = Object.values(args)[0] as Number ;
     let lazyPage : Array<any> = Object.values(args)[1] as Array<any> ;
