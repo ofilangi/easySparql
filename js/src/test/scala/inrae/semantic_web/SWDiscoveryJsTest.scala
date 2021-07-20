@@ -97,5 +97,10 @@ object SWDiscoveryJsTest extends TestSuite{
       startRequest.selectByPage("h1")
     }
 
+    test("selectByPage 2") {
+      startRequest.selectByPage(List("h1").toJSArray)
+    }
+
+
   }
 }
