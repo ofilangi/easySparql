@@ -9,14 +9,10 @@ import java.util.UUID.randomUUID
 import scala.reflect.ClassTag
 import scala.scalajs.js.annotation.JSExportTopLevel
 
-sealed abstract class Node(val idRef : String,val children: Seq[Node] = Seq[Node](),val decoratingAttributeMap : Map[String,Any] = Map())
+sealed abstract class Node(val idRef : String,val children: Seq[Node] = Seq[Node]())
 {
   def reference(): String = idRef
-
-  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,Any] =decoratingAttributeMap) : Node
-
-  def addDecoratingAttribute(key : String, value : Any) : Node =
-    copy(children, decoratingAttributeMap + (key -> value) )
+  def copy(children : Seq[Node]=children) : Node
 
   def addChildren(n: Node): Node =  copy(children :+ n )
 
