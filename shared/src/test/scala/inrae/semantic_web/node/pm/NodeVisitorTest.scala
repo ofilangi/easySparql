@@ -21,6 +21,42 @@ object NodeVisitorTest extends TestSuite {
       assert(listNodes.length==1)
     }
 
+    test("getAncestorsRef - basic") {
+      assert(NodeVisitor.getAncestorsRef("h1",Something("h1")) == Seq("h1"))
+    }
+
+    test("getAncestorsRef - basic 2") {
+      assert(NodeVisitor.getAncestorsRef("h2",Something("h1")) == Seq())
+    }
+
+    def checkOneBranch(n : RdfNode) = {
+      assert(NodeVisitor.getAncestorsRef("none",n) == Seq())
+      assert(NodeVisitor.getAncestorsRef("s1",n) == Seq("s1"))
+      assert(NodeVisitor.getAncestorsRef("s2",n) == Seq("s1","s2"))
+      assert(NodeVisitor.getAncestorsRef("s3",n) == Seq("s1","s2","s3"))
+    }
+
+    test("getAncestorsRef - test one branch tree") {
+      val n : RdfNode = Something("s1",List(Something("s2",List(Something("s3")))))
+      checkOneBranch(n)
+    }
+
+    def checkSecondBranch(n : RdfNode) = {
+      assert(NodeVisitor.getAncestorsRef("s1",n) == Seq("s1"))
+      assert(NodeVisitor.getAncestorsRef("d2",n) == Seq("s1","d2"))
+      assert(NodeVisitor.getAncestorsRef("d3",n) == Seq("s1","d2","d3"))
+    }
+
+    test("getAncestorsRef - test several branch tree") {
+      val n : RdfNode = Something("s1",
+        List(Something("s2",List(Something("s3"))),Something("d2",List(Something("d3")))))
+
+      checkOneBranch(n)
+      checkSecondBranch(n)
+    }
+
+
+
     test("browse") {
       assert(NodeVisitor.map(Something("test"),0,  (n,p ) => {
         assert(n.idRef == "test")

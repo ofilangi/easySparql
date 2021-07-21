@@ -126,6 +126,9 @@ case class SWDiscoveryJs(
     }
     sw.browse(visitor2).toJSArray
   }
+  
+  @JSExport
+  def decorate(key : String, value : String) : SWDiscoveryJs = SWDiscoveryJs(config,sw.decorate(key,value))
 
   @JSExport
   def select(lRef: String*): SWTransactionJs = SWTransactionJs(sw.select(lRef))

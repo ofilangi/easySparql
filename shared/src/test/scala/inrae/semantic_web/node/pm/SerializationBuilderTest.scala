@@ -1,9 +1,10 @@
 package inrae.semantic_web.node.pm
 
-import inrae.data.DataTestFactory
+import inrae.data.{ApplyAllNode, DataTestFactory}
 import inrae.semantic_web.{SWDiscovery, SWTransaction}
 import inrae.semantic_web.node.Root
 import inrae.semantic_web.rdf.{Literal, QueryVariable, URI}
+import upickle.default.{read, write}
 import utest.{TestSuite, Tests, test}
 
 
@@ -147,7 +148,7 @@ object SerializationBuilderTest extends TestSuite  {
 
     test("serialization datatype") {
       val sw =
-        SWDiscovery( DataTestFactory.getConfigVirtuoso1())
+        SWDiscovery(DataTestFactory.getConfigVirtuoso1())
           .something ("h1" )
           .isLinkTo(URI("bb"))
           .datatype(URI("some"),"v")
@@ -156,7 +157,5 @@ object SerializationBuilderTest extends TestSuite  {
       val swt : SWTransaction = sw.select()
       assert(SWTransaction().setSerializedString(swt.getSerializedString) == swt)
     }
-
-
   }
 }

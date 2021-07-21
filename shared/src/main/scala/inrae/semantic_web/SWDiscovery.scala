@@ -131,7 +131,7 @@ case class SWDiscovery(
 
   def getPrefix(short: String) : IRI = rootNode.getPrefix(short)
 
-  def getPrefixes() : Map[String,IRI] = rootNode.getPrefixes()
+  def getPrefixes() : Map[String,IRI] = rootNode.getPrefixes
 
   def graph(graph : IRI) : SWDiscovery = SWDiscovery(config,rootNode.addDefaultGraph(graph),Some(focusNode))
 
@@ -152,7 +152,7 @@ case class SWDiscovery(
     // get all node
     val current = rootNode.getChild[Node](rootNode.asInstanceOf[Node]).filter( _.idRef == focusNode )
 
-    if ( current.lastOption.map( _.accept(n) ).getOrElse(false)) {
+    if ( current.lastOption.exists(_.accept(n))) {
       val newRootNode = rootNode.addChildren(focusNode,n)
       /* current node is the focusNode */
       if (forward) {
@@ -232,12 +232,16 @@ case class SWDiscovery(
 
   def setList( terms : Seq[SparqlDefinition] ) : SWDiscovery = focusManagement(ListValues(terms),forward = false)
 
-  def remove( focus : String ) : SWDiscovery = SWDiscovery(
-    config,
-    RemoveNode.run(rootNode,focus)
-  )
+  def remove( focus : String ) : SWDiscovery =
+    SWDiscovery(config,RemoveNode.run(rootNode,focus),
+      Some(
+        NodeVisitor.getAncestorsRef(focusNode,rootNode) match {
+          case l if l.length>1 => l(l.length - 2)
+          case _ => rootNode.idRef
+        }))
 
   def getSerializedString : String = write(this)
+
   def setSerializedString(query : String) : SWDiscovery = read[SWDiscovery](query)
 
 
@@ -311,5 +315,18 @@ case class SWDiscovery(
   }
 
   def browse[A](visitor : (Node, Integer) => A ) : Seq[A] = NodeVisitor.map(rootNode,0,visitor)
+
+  def decorate(key : String, value : String) : SWDiscovery = {
+      rootNode
+        .getChild[Node](rootNode.asInstanceOf[Node])
+        .filter( _.idRef == focusNode )
+        .lastOption match {
+          case Some(n)  => {
+            val sw = remove(focusNode)
+            sw.focusManagement(n.addDecoratingAttribute(key,value))
+          }
+          case None => throw SWDiscoveryException(s"Can not reach current node -- $focusNode --]")
+        }
+  }
 
 }

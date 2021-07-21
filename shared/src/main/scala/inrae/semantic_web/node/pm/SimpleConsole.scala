@@ -43,7 +43,7 @@ case class SimpleConsole(consoleColor : Boolean = true,displayRootStyle : Boolea
                 case _                      => Console.RED
             }
     }
-
+/*
     def Labelled(n: Node ) : String = {
         n match {
             case _ : Root           => "Root"
@@ -59,7 +59,7 @@ case class SimpleConsole(consoleColor : Boolean = true,displayRootStyle : Boolea
             case v                  => v.toString
         }
     }
-
+*/
     def get( n: Node, marge : Int = 0 ) : String = {
 
         val prefix =  (marge match {
@@ -72,7 +72,7 @@ case class SimpleConsole(consoleColor : Boolean = true,displayRootStyle : Boolea
             case _ => ""
         }) + colorReset
 
-        val label : String = escape + item + barrehor + " " + colorize(n) + (Labelled(n)) + colorReset
+        val label : String = escape + item + barrehor + " " + colorize(n) + (n.toString ) + colorReset
 
         val labelledLine = prefix + (escape + barrevert) * marge + label + "\n"
         val children = n.children.length match {

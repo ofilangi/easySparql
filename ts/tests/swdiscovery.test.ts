@@ -70,13 +70,29 @@ describe('SWDiscovery', () => {
                       .something("h1")
                        .isObjectOf("http://test11")
                          .browse( ( n: any, p : Number) => {
+                            console.log(n.decorations)
                           return n.$type + " : " + p;
                          });
     expect(results).toStrictEqual([
       "inrae.semantic_web.node.Root : 0",
       "inrae.semantic_web.node.Something : 1",
-      "inrae.semantic_web.node.ObjectOf : 2"
-    ]);
-})
-    
+      "inrae.semantic_web.node.ObjectOf : 2" ]);
+    })
+
+     test("decorate", () => {
+        const results = SWDiscovery(localConf)
+                          .something("h1")
+                           .isObjectOf("http://test11")
+                           .decorate("k1","v1")
+                             .browse( ( n: any, p : Number) => {
+                                if (n.decorations) return n.decorations["k1"];
+                             });
+        expect(results).toStrictEqual([
+          undefined,
+          undefined,
+          "v1" ]);
+        })
+
+
+
 });
