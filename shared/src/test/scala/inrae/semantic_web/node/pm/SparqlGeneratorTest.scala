@@ -1,5 +1,6 @@
 package inrae.semantic_web.node.pm
 
+import inrae.data.ApplyAllNode
 import inrae.semantic_web.node._
 import inrae.semantic_web.rdf._
 import utest.{TestSuite, Tests, assert, test}
@@ -76,6 +77,12 @@ object SparqlGeneratorTest extends TestSuite {
     test("prologCountSelection") {
       assert(SparqlGenerator.prologCountSelection("myvar").toLowerCase().contains("count"))
       assert(SparqlGenerator.prologCountSelection("myvar").toLowerCase().contains("myvar"))
+    }
+
+    test("all") {
+      ApplyAllNode.listNodes.map(n => {
+        SparqlGenerator.sparqlNode(n,"varSire","varId")
+      })
     }
 
     test("sparqlNode - SubjectOf") {
@@ -271,19 +278,5 @@ object SparqlGeneratorTest extends TestSuite {
       assert(v.trim().split(" ").toList == List("STR","(","?nothingSire",")"))
     }
 
-    test("sparqlNode DatatypeNode") {
-      Try(SparqlGenerator.sparqlNode(DatatypeNode("h", SubjectOf("1234", URI("something_property")),""),
-        "nothingSire", "nothingVar")) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
-    }
-
-    test("sparqlNode SourcesNode") {
-      Try(SparqlGenerator.sparqlNode(SourcesNode("h",List("source1","source2"),""), "nothingSire", "nothingVar")) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
-    }
   }
 }

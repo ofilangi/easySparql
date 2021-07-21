@@ -101,6 +101,9 @@ object SWDiscoveryJsTest extends TestSuite{
       startRequest.selectByPage(List("h1").toJSArray)
     }
 
+    test("decorate") {
+      startRequest.decorate("key","value")
+    }
 
   }
 }

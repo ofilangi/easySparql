@@ -12,14 +12,14 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 sealed abstract class Node(
                             val idRef : String,
                             val children: Seq[Node],
-                            val decoratingAttributeMap : Map[String,Any]
+                            val decorations : Map[String,String]
                           )
 {
   def reference(): String = idRef
 
-  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,Any]=decoratingAttributeMap) : Node
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Node
 
-  def addDecoratingAttribute(key : String, value : Any) : Node = copy(children,decoratingAttributeMap + (key -> value))
+  def addDecoratingAttribute(key : String, value : String) : Node = copy(children,decorations + (key -> value))
 
   def addChildren(n: Node): Node =  copy(children :+ n )
 
@@ -44,8 +44,12 @@ sealed abstract class Node(
   override def toString : String = {
     this.getClass.getSimpleName+ "@"+idRef + " - " + { children.length match {
       case l if l>0 => " ["+children.toString()+"]"
-      case _ => "**lChildren==0**"
-    } }
+      case _ => ""
+    } } + { decorations.size match {
+      case i if i>0 => " { " + decorations.toString + "}"
+      case _ => ""
+    }
+    }
   }
 
   /* everything by default*/
@@ -67,7 +71,6 @@ sealed abstract class Node(
 }
 
 object Node {
-
   implicit val rw: RW[Node] = RW.merge(
     Root.rw,
     RdfNode.rw,
@@ -79,7 +82,9 @@ object Node {
     SourcesNode.rw,
     Bind.rw,
     ExpressionNode.rw,
-    SolutionSequenceModifierNode.rw
+    SolutionSequenceModifierNode.rw,
+    ProjectionExpression.rw,
+    AggregateNode.rw
   )
 }
 
@@ -89,7 +94,7 @@ object Root {
 
 /* Node case */
 @JSExportTopLevel(name="Root")
-case class Root(
+final case class Root(
                  override val idRef : String=randomUUID.toString,
                  prefixes : Map[String,IRI] = Map(
                    "owl" -> IRI("http://www.w3.org/2002/07/owl#"),
@@ -104,8 +109,8 @@ case class Root(
                  lBindNode : Seq[Bind] = List[Bind](),
                  lSolutionSequenceModifierNode : Seq[SolutionSequenceModifierNode] = List[SolutionSequenceModifierNode](),
                  override val children: Seq[Node] = Seq[Node](),
-                 override val decoratingAttributeMap: Map[String,Any] = Map()
-               ) extends Node(idRef,children,decoratingAttributeMap) {
+                 override val decorations: Map[String,String] = Map()
+               ) extends Node(idRef,children,decorations) {
   /* prefix management */
 
   def addPrefix(short : String,long : IRI) : Root = {
@@ -114,7 +119,7 @@ case class Root(
 
   def getPrefix(short : String) : IRI = prefixes.getOrElse(short,IRI(""))
 
-  def getPrefixes() : Map[String,IRI] = prefixes
+  def getPrefixes : Map[String,IRI] = prefixes
 
   def addDefaultGraph(graph : IRI) : Root =
     Root(idRef,prefixes,defaultGraph :+ graph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children)
@@ -181,7 +186,7 @@ case class Root(
   }
 
 
-  def copy(children : Seq[Node],decoratingAttributeMap : Map[String,Any]=Map()) : Node = {
+  def copy(children : Seq[Node],decoratingAttributeMap : Map[String,String]=Map()) : Node = {
     Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode,
       lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decoratingAttributeMap)
   }
@@ -231,8 +236,8 @@ object RdfNode {
 abstract class RdfNode(
                         override val idRef : String,
                         override val children: Seq[Node],
-                        override val decoratingAttributeMap: Map[String,Any]
-                      ) extends Node(idRef,children,decoratingAttributeMap) {
+                        override val decorations: Map[String,String]
+                      ) extends Node(idRef,children,decorations) {
   /* everything by default*/
   override def accept(n: Node): Boolean = n match {
     case _ : Something  => false
@@ -250,8 +255,8 @@ abstract class URIRdfNode(
                            override val idRef : String,
                            val term : SparqlDefinition,
                            override val children: Seq[Node],
-                           override val decoratingAttributeMap: Map[String,Any])
-  extends RdfNode(idRef,children,decoratingAttributeMap)
+                           override val decorations: Map[String,String])
+  extends RdfNode(idRef,children,decorations)
 
 
 object Something {
@@ -262,10 +267,10 @@ object Something {
 final case class Something(
                       override val idRef: String,
                       override val children: Seq[Node] = Seq[Node](),
-                      override val decoratingAttributeMap: Map[String,Any] = Map()
-                    ) extends RdfNode(idRef,children,decoratingAttributeMap) {
+                      override val decorations: Map[String,String] = Map()
+                    ) extends RdfNode(idRef,children,decorations) {
 
-  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,Any]=decoratingAttributeMap) : Node = {
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Node = {
     Something(idRef,children,decoratingAttributeMap)
   }
 }
@@ -279,11 +284,11 @@ final case class SubjectOf(
                       override val idRef : String = randomUUID.toString,
                       override val term : SparqlDefinition,
                       override val children: Seq[Node] = Seq[Node](),
-                      override val decoratingAttributeMap: Map[String,Any] = Map()
-                    ) extends URIRdfNode(idRef,term,children,decoratingAttributeMap) {
+                      override val decorations: Map[String,String] = Map()
+                    ) extends URIRdfNode(idRef,term,children,decorations) {
 
-  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,Any]=decoratingAttributeMap) : Node = {
-    SubjectOf(idRef,term,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Node = {
+    SubjectOf(idRef,term,children,decoratingAttributeMap)
   }
 }
 
@@ -295,11 +300,12 @@ object ObjectOf {
 final case class ObjectOf(
                      override val idRef : String,
                      override val term : SparqlDefinition,
-                     override val children: Seq[Node] = Seq[Node]()
-                         ) extends URIRdfNode(idRef,term,children) {
+                     override val children: Seq[Node] = Seq[Node](),
+                     override val decorations: Map[String,String] = Map()
+                         ) extends URIRdfNode(idRef,term,children,decorations) {
 
-  def copy(children : Seq[Node]) : Node = {
-    ObjectOf(idRef,term,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Node = {
+    ObjectOf(idRef,term,children,decoratingAttributeMap)
   }
 }
 
@@ -309,12 +315,15 @@ object LinkTo {
 }
 
 @JSExportTopLevel(name="LinkTo")
-case class LinkTo(
+final case class LinkTo(
                    override val idRef : String,
                    override val term : SparqlDefinition,
-                   override val children: Seq[Node] = Seq[Node]()) extends URIRdfNode(idRef,term,children) {
-  def copy(children : Seq[Node]) : Node = {
-    LinkTo(idRef,term,children)
+                   override val children: Seq[Node] = Seq[Node](),
+                   override val decorations: Map[String,String] = Map()
+                       ) extends URIRdfNode(idRef,term,children,decorations)
+{
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Node = {
+    LinkTo(idRef,term,children,decoratingAttributeMap)
   }
 }
 
@@ -323,13 +332,15 @@ object LinkFrom {
 }
 
 @JSExportTopLevel(name="LinkFrom")
-case class LinkFrom(
+final case class LinkFrom(
                      override val idRef : String,
                      override val term : SparqlDefinition,
-                     override val children: Seq[Node] = Seq[Node]()) extends URIRdfNode(idRef,term,children) {
+                     override val children: Seq[Node] = Seq[Node](),
+                     override val decorations: Map[String,String] = Map()
+                         ) extends URIRdfNode(idRef,term,children,decorations) {
 
-  def copy(children : Seq[Node]) : Node = {
-    LinkFrom(idRef,term,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Node = {
+    LinkFrom(idRef,term,children,decoratingAttributeMap)
   }
 }
 
@@ -337,10 +348,12 @@ object Value {
   implicit val rw: RW[Value] = macroRW
 }
 
-case class Value(
-                  var term : SparqlDefinition,
+final case class Value(
+                  term : SparqlDefinition,
                   override val idRef : String=randomUUID.toString,
-                  override val children: Seq[Node] = Seq[Node]()) extends Node(idRef,children) {
+                  override val children: Seq[Node] = Seq[Node](),
+                  override val decorations: Map[String,String] = Map()
+                      ) extends Node(idRef,children,decorations) {
 
   override def toString : String = "VALUE("+term.toString+")"
 
@@ -350,14 +363,20 @@ case class Value(
     case _              => false
   }
 
-  def copy(children : Seq[Node]) : Node = Value(term,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Node =
+    Value(term,idRef,children,decoratingAttributeMap)
 }
 
 object ListValues {
   implicit val rw: RW[ListValues] = macroRW
 }
 
-case class ListValues(var terms : Seq[SparqlDefinition],override val idRef : String=randomUUID.toString,override val children: Seq[Node] = Seq[Node]()) extends Node(idRef,children) {
+final case class ListValues(
+                             terms : Seq[SparqlDefinition],
+                             override val idRef : String=randomUUID.toString,
+                             override val children: Seq[Node] = Seq[Node](),
+                             override val decorations: Map[String,String] = Map()
+                           ) extends Node(idRef,children,decorations) {
 
   override def toString : String = "VALUES("+terms.toString+")"
 
@@ -367,7 +386,8 @@ case class ListValues(var terms : Seq[SparqlDefinition],override val idRef : Str
     case _              => false
   }
 
-  def copy(children : Seq[Node]) : ListValues = ListValues(terms,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : ListValues =
+    ListValues(terms,idRef,children,decoratingAttributeMap)
 
 }
 
@@ -380,7 +400,11 @@ object LogicNode {
   )
 }
 
-sealed abstract class LogicNode(val sire : Node,idRef : String=randomUUID.toString,override val children: Seq[Node] = Seq[Node]()) extends Node(idRef,children) {
+sealed abstract class LogicNode(
+                                 val sire : Node,idRef : String=randomUUID.toString,
+                                 override val children: Seq[Node],
+                                 override val decorations: Map[String,String]
+                               ) extends Node(idRef,children,decorations) {
   implicit val rw: RW[LogicNode] = RW.merge(
     UnionBlock.rw,
     NotBlock.rw)
@@ -390,16 +414,28 @@ object UnionBlock {
   implicit val rw: RW[UnionBlock] = macroRW
 }
 
-case class UnionBlock(s : Node,override val idRef : String=randomUUID.toString,override val children: Seq[Node] = Seq[Node]()) extends LogicNode(s,idRef,children) {
-  def copy(children : Seq[Node]) : Node = UnionBlock(s,idRef,children)
+final case class UnionBlock(
+                             override val idRef : String=randomUUID.toString,
+                             s : Node,
+                             override val children: Seq[Node] = Seq[Node](),
+                             override val decorations: Map[String,String] = Map()
+                           ) extends LogicNode(s,idRef,children,decorations) {
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Node =
+    UnionBlock(idRef,s,children,decoratingAttributeMap)
 }
 
 object NotBlock {
   implicit val rw: RW[NotBlock] = macroRW
 }
 
-case class NotBlock(s : Node,override val idRef : String,override val children: Seq[Node] = Seq[Node]()) extends LogicNode(s,idRef,children) {
-  def copy(children : Seq[Node]) : NotBlock = NotBlock(s,idRef,children)
+final case class NotBlock(
+                           override val idRef : String,
+                           s : Node,
+                           override val children: Seq[Node] = Seq[Node](),
+                           override val decorations: Map[String,String] = Map()
+                         ) extends LogicNode(s,idRef,children,decorations) {
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : NotBlock =
+    NotBlock(idRef,s,children,decoratingAttributeMap)
 }
 
 
@@ -423,9 +459,12 @@ object FilterNode {
 }
 
 /* filter */
-sealed abstract class FilterNode(val negation: Boolean,
-                          idRef : String,
-                          override val children: Seq[Node] = Seq[Node]()) extends Node(idRef,children) {
+sealed abstract class FilterNode(
+                                  val negation: Boolean,
+                                  override val idRef : String,
+                                  override val children: Seq[Node],
+                                  override val decorations: Map[String,String]
+                                ) extends Node(idRef,children,decorations) {
   override def accept(n: Node): Boolean = n match {
     case _ : FilterNode => true
     case _ => false
@@ -436,122 +475,149 @@ object isBlank {
   implicit val rw: RW[isBlank] = macroRW
 }
 
-case class isBlank(
+final case class isBlank(
                    override val negation: Boolean,
                    override val idRef : String,
-                   override val children: Seq[Node] = Seq[Node]()) extends FilterNode(negation,idRef,children) {
+                   override val children: Seq[Node] = Seq[Node](),
+                   override val decorations: Map[String,String] = Map()
+                  ) extends FilterNode(negation,idRef,children,decorations) {
   override def toString : String = negation.toString + " isBlank"
 
-  def copy(children : Seq[Node]) : isBlank = isBlank(negation,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : isBlank =
+    isBlank(negation,idRef,children)
 }
 
 object isLiteral {
   implicit val rw: RW[isLiteral] = macroRW
 }
 
-case class isLiteral(
+final case class isLiteral(
                       override val negation: Boolean,
                       override val idRef : String,
-                      override val children: Seq[Node] = Seq[Node]()) extends FilterNode(negation,idRef,children) {
+                      override val children: Seq[Node] = Seq[Node](),
+                      override val decorations: Map[String,String] = Map()
+                    ) extends FilterNode(negation,idRef,children,decorations) {
   override def toString : String = negation.toString + " isLiteral"
 
-  def copy(children : Seq[Node]) : Node = isLiteral(negation,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Node =
+    isLiteral(negation,idRef,children,decoratingAttributeMap)
 }
 
 object isURI {
   implicit val rw: RW[isURI] = macroRW
 }
 
-case class isURI(
+final case class isURI(
                   override val negation: Boolean,
                   override val idRef : String,
-                  override val children: Seq[Node] = Seq[Node]()) extends FilterNode(negation,idRef,children) {
+                  override val children: Seq[Node] = Seq[Node](),
+                  override val decorations: Map[String,String] = Map()
+                      ) extends FilterNode(negation,idRef,children,decorations) {
   override def toString : String = negation.toString + " isURI"
 
-  def copy(children : Seq[Node]) : isURI = isURI(negation,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : isURI =
+    isURI(negation,idRef,children)
 }
 
 object Regex {
   implicit val rw: RW[Regex] = macroRW
 }
 
-
-case class Regex(
+final case class Regex(
                   pattern : SparqlDefinition,
                   flags : SparqlDefinition,
                   override val negation: Boolean,
-                  override val idRef : String) extends FilterNode(negation,idRef) {
-  override def copy(children: Seq[Node]): Node = Regex(pattern,flags,negation,idRef)
+                  override val idRef : String,
+                  override val children: Seq[Node] = Seq[Node](),
+                  override val decorations: Map[String,String] = Map()
+                      ) extends FilterNode(negation,idRef,children,decorations) {
+  override def copy(children: Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations): Node
+  = Regex(pattern,flags,negation,idRef,children,decoratingAttributeMap)
 }
 
 object Contains {
   implicit val rw: RW[Contains] = macroRW
 }
 
-case class Contains(
+final case class Contains(
                      value :SparqlDefinition,
                      override val negation: Boolean,
                      override val idRef : String,
-                     override val children: Seq[Node] = Seq[Node]())  extends FilterNode(negation,idRef,children) {
+                     override val children: Seq[Node] = Seq[Node](),
+                     override val decorations: Map[String,String] = Map()
+                         )  extends FilterNode(negation,idRef,children,decorations) {
   override def toString : String =  negation.toString + " Contains ("+value+")"
 
-  def copy(children : Seq[Node]) : Contains = Contains(value,negation,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Contains =
+    Contains(value,negation,idRef,children,decoratingAttributeMap)
 }
 
 object StrStarts {
   implicit val rw: RW[StrStarts] = macroRW
 }
 
-case class StrStarts(
+final case class StrStarts(
                       value :SparqlDefinition,
                       override val negation: Boolean,
                       override val idRef : String,
-                      override val children: Seq[Node] = Seq[Node]())  extends FilterNode(negation,idRef,children) {
+                      override val children: Seq[Node] = Seq[Node](),
+                      override val decorations: Map[String,String] = Map()
+                          )  extends FilterNode(negation,idRef,children,decorations) {
   override def toString : String =  negation.toString + " StrStarts ("+value+")"
 
-  def copy(children : Seq[Node]) : StrStarts = StrStarts(value,negation,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : StrStarts =
+    StrStarts(value,negation,idRef,children,decoratingAttributeMap)
 }
 
 object StrEnds {
   implicit val rw: RW[StrEnds] = macroRW
 }
 
-case class StrEnds(
+final case class StrEnds(
                     value :SparqlDefinition,
                     override val negation: Boolean,
                     override val idRef : String,
-                    override val children: Seq[Node] = Seq[Node]())  extends FilterNode(negation,idRef,children) {
+                    override val children: Seq[Node] = Seq[Node](),
+                    override val decorations: Map[String,String] = Map()
+                        )  extends FilterNode(negation,idRef,children,decorations) {
   override def toString : String =  negation.toString + " StrEnds ("+value+")"
 
-  def copy(children : Seq[Node]) : StrEnds = StrEnds(value,negation,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : StrEnds =
+    StrEnds(value,negation,idRef,children,decoratingAttributeMap)
 }
 
 object Equal {
   implicit val rw: RW[Equal] = macroRW
 }
 
-case class Equal(
+final case class Equal(
                   value :SparqlDefinition,
                   override val negation: Boolean,
                   override val idRef : String,
-                  override val children: Seq[Node] = Seq[Node]())  extends FilterNode(negation,idRef,children) {
+                  override val children: Seq[Node] = Seq[Node](),
+                    override val decorations: Map[String,String] = Map()
+                        )  extends FilterNode(negation,idRef,children,decorations) {
   override def toString : String = negation.toString + " == "+value
 
-  def copy(children : Seq[Node]) : Equal = Equal(value,negation,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Equal =
+    Equal(value,negation,idRef,children,decoratingAttributeMap)
 }
 
 object NotEqual {
   implicit val rw: RW[NotEqual] = macroRW
 }
 
-case class NotEqual(
+final case class NotEqual(
                      value :SparqlDefinition,
                      override val negation: Boolean,
                      override val idRef : String,
-                     override val children: Seq[Node] = Seq[Node]())  extends FilterNode(negation,idRef,children) {
+                     override val children: Seq[Node] = Seq[Node](),
+                    override val decorations: Map[String,String] = Map()
+                        )  extends FilterNode(negation,idRef,children,decorations) {
   override def toString : String = negation.toString + " == "+value
 
-  def copy(children : Seq[Node]) : NotEqual = NotEqual(value,negation,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : NotEqual =
+    NotEqual(value,negation,idRef,children,decoratingAttributeMap)
 }
 
 object Inf {
@@ -559,42 +625,51 @@ object Inf {
 }
 
 
-case class Inf(
+final case class Inf(
                 value :SparqlDefinition,
                 override val negation: Boolean,
                 override val idRef : String,
-                override val children: Seq[Node] = Seq[Node]())  extends FilterNode(negation,idRef,children) {
+                override val children: Seq[Node] = Seq[Node](),
+                    override val decorations: Map[String,String] = Map()
+                        )  extends FilterNode(negation,idRef,children,decorations) {
   override def toString : String = negation.toString + " < "+value
 
-  def copy(children : Seq[Node]) : NotEqual = NotEqual(value,negation,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Inf =
+    Inf(value,negation,idRef,children,decoratingAttributeMap)
 }
 
 object InfEqual {
   implicit val rw: RW[InfEqual] = macroRW
 }
 
-case class InfEqual(
+final case class InfEqual(
                      value :SparqlDefinition,
                      override val negation: Boolean,
                      override val idRef : String,
-                     override val children: Seq[Node] = Seq[Node]())  extends FilterNode(negation,idRef,children) {
+                     override val children: Seq[Node] = Seq[Node](),
+                    override val decorations: Map[String,String] = Map()
+                        )  extends FilterNode(negation,idRef,children,decorations) {
   override def toString : String = negation.toString + " <= "+value
 
-  def copy(children : Seq[Node]) : InfEqual = InfEqual(value,negation,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : InfEqual =
+    InfEqual(value,negation,idRef,children,decoratingAttributeMap)
 }
 
 object Sup {
   implicit val rw: RW[Sup] = macroRW
 }
 
-case class Sup(
+final case class Sup(
                 value :SparqlDefinition,
                 override val negation: Boolean,
                 override val idRef : String,
-                override val children: Seq[Node] = Seq[Node]())  extends FilterNode(negation,idRef,children) {
+                override val children: Seq[Node] = Seq[Node](),
+                    override val decorations: Map[String,String] = Map()
+                        )  extends FilterNode(negation,idRef,children,decorations) {
   override def toString : String = negation.toString + " > "+value
 
-  def copy(children : Seq[Node]) : Sup = Sup(value,negation,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : Sup =
+    Sup(value,negation,idRef,children,decoratingAttributeMap)
   def duplicateWithoutChildren(): Sup = Sup(value,negation,idRef,Seq())
 }
 
@@ -602,14 +677,18 @@ object SupEqual {
   implicit val rw: RW[SupEqual] = macroRW
 }
 
-case class SupEqual(
+final case class SupEqual(
                      value :SparqlDefinition,
                      override val negation: Boolean,
                      override val idRef : String,
-                     override val children: Seq[Node] = Seq[Node]())  extends FilterNode(negation,idRef,children) {
+                     override val children: Seq[Node] = Seq[Node](),
+                    override val decorations: Map[String,String] = Map()
+                        )  extends FilterNode(negation,idRef,children,decorations) {
   override def toString : String = negation.toString + " >= "+value
 
-  def copy(children : Seq[Node]) : SupEqual = SupEqual(value,negation,idRef,children)
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : SupEqual =
+    SupEqual(value,negation,idRef,children,decoratingAttributeMap)
+
   def duplicateWithoutChildren(): SupEqual = SupEqual(value,negation,idRef,Seq())
 }
 
@@ -618,8 +697,16 @@ object DatatypeNode {
 }
 
 /* Datatype Node */
-case class DatatypeNode(refNode : String, property : SubjectOf,override val idRef : String,override val children: Seq[Node] = Seq[Node]()) extends Node(idRef,children) {
-  def copy(children : Seq[Node]) : DatatypeNode = DatatypeNode(refNode,property,idRef,children)
+final case class DatatypeNode(
+                               refNode : String,
+                               property : SubjectOf,
+                               override val idRef : String,
+                               override val children: Seq[Node] = Seq[Node](),
+                                override val decorations: Map[String,String] = Map()
+                        ) extends Node(idRef,children,decorations) {
+  def copy(children : Seq[Node]=children,decoratingAttributeMap : Map[String,String]=decorations) : DatatypeNode
+  = DatatypeNode(refNode,property,idRef,children,decoratingAttributeMap)
+
   def duplicateWithoutChildren(): DatatypeNode = DatatypeNode(refNode,property,idRef,Seq())
 }
 
@@ -628,8 +715,18 @@ object SourcesNode {
 }
 
 /* SourcesNode */
-case class SourcesNode(refNode : String, sources : Seq[String],override val idRef : String,override val children: Seq[Node] = Seq[Node]()) extends Node(idRef,children) {
-  def copy(children : Seq[Node]) : SourcesNode = SourcesNode(refNode,sources,idRef,children)
+final case class SourcesNode(
+                              refNode : String,
+                              sources : Seq[String],
+                              override val idRef : String,
+                              override val children: Seq[Node] = Seq[Node](),
+                              override val decorations: Map[String,String] = Map()
+                        ) extends Node(idRef,children,decorations) {
+  def copy(
+            children : Seq[Node]=children,
+            decoratingAttributeMap : Map[String,String]=decorations
+          ) : SourcesNode = SourcesNode(refNode,sources,idRef,children,decoratingAttributeMap)
+
   def duplicateWithoutChildren(): SourcesNode = SourcesNode(refNode,sources,idRef,Seq())
 }
 
@@ -649,7 +746,9 @@ object SolutionSequenceModifierNode {
 
 sealed abstract class SolutionSequenceModifierNode(
                                                     idRef : String,
-                                                    override val children: Seq[Node]) extends Node(idRef,children) {
+                                                    override val children: Seq[Node],
+                                                    override val decorations: Map[String,String]
+                                                  ) extends Node(idRef,children,decorations) {
   override def accept(n: Node): Boolean = false
 }
 
@@ -661,20 +760,34 @@ object OrderByAsc {
   implicit val rw: RW[OrderByAsc] = macroRW
 }
 
-case class OrderByAsc(list : Seq[QueryVariable],
-                      override val idRef : String,
-                      override val children: Seq[Node]=Seq[Node]()) extends SolutionSequenceModifierNode(idRef,children) {
-  override def copy(children: Seq[Node]): Node = OrderByAsc(list,idRef,children)
+final case class OrderByAsc(
+                             list : Seq[QueryVariable],
+                             override val idRef : String,
+                             override val children: Seq[Node]=Seq[Node](),
+                             override val decorations: Map[String,String] = Map()
+                           ) extends SolutionSequenceModifierNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = OrderByAsc(list,idRef,children,decoratingAttributeMap)
 }
 
 object OrderByDesc {
   implicit val rw: RW[OrderByDesc] = macroRW
 }
 
-case class OrderByDesc(list : Seq[QueryVariable],
-                       override val idRef : String,
-                       override val children: Seq[Node] = Seq[Node]()) extends SolutionSequenceModifierNode(idRef,children) {
-  override def copy(children: Seq[Node]): Node = OrderByDesc(list,idRef,children)
+final case class OrderByDesc(
+                        list : Seq[QueryVariable],
+                        override val idRef : String,
+                        override val children: Seq[Node] = Seq[Node](),
+                        override val decorations: Map[String,String] = Map()
+                        ) extends SolutionSequenceModifierNode(idRef,children,decorations) {
+
+
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = OrderByDesc(list,idRef,children)
 }
 
 
@@ -686,16 +799,22 @@ object Projection {
   implicit val rw: RW[Projection] = macroRW
 }
 
-case class Projection(variables : Seq[QueryVariable],
-                      override val idRef : String,
-                      override val children: Seq[Node]=Seq()) extends SolutionSequenceModifierNode(idRef,children) {
+final case class Projection(
+                             variables : Seq[QueryVariable],
+                             override val idRef : String,
+                             override val children: Seq[Node]=Seq(),
+                             override val decorations: Map[String,String] = Map()
+                           ) extends SolutionSequenceModifierNode(idRef,children,decorations) {
 
   override def accept(n: Node): Boolean = n match {
     case _ : ProjectionExpression => true
     case _ => false
   }
 
-  override def copy(children: Seq[Node]): Node = Projection(variables,idRef,children)
+  override def copy(
+                     children: Seq[Node]=children,
+                      decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Projection(variables,idRef,children,decoratingAttributeMap)
 }
 
 /**
@@ -706,9 +825,15 @@ object Distinct {
   implicit val rw: RW[Distinct] = macroRW
 }
 
-case class Distinct(override val idRef : String,
-                    override val children: Seq[Node] = Seq[Node]()) extends SolutionSequenceModifierNode(idRef,children) {
-  override def copy(children: Seq[Node]): Node = Distinct(idRef,children)
+final case class Distinct(
+                           override val idRef : String,
+                           override val children: Seq[Node] = Seq[Node](),
+                           override val decorations: Map[String,String] = Map()
+                        ) extends SolutionSequenceModifierNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Distinct(idRef,children,decoratingAttributeMap)
 }
 
 /**
@@ -719,9 +844,15 @@ object Reduced {
   implicit val rw: RW[Reduced] = macroRW
 }
 
-case class Reduced(override val idRef : String,
-                   override val children: Seq[Node] = Seq[Node]()) extends SolutionSequenceModifierNode(idRef,children) {
-  override def copy(children: Seq[Node]): Node = Reduced(idRef,children)
+final case class Reduced(
+                          override val idRef : String,
+                          override val children: Seq[Node] = Seq[Node](),
+                          override val decorations: Map[String,String] = Map()
+                        ) extends SolutionSequenceModifierNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Reduced(idRef,children,decoratingAttributeMap)
 }
 
 /**
@@ -732,10 +863,16 @@ object Offset {
   implicit val rw: RW[Offset] = macroRW
 }
 
-case class Offset(value : Int,
-                  override val idRef : String,
-                  override val children: Seq[Node] = Seq[Node]()) extends SolutionSequenceModifierNode(idRef,children) {
-  override def copy(children: Seq[Node]): Node = Offset(value,idRef,children)
+final case class Offset(
+                         value : Int,
+                         override val idRef : String,
+                         override val children: Seq[Node] = Seq[Node](),
+                         override val decorations: Map[String,String] = Map()
+                        ) extends SolutionSequenceModifierNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Offset(value,idRef,children,decoratingAttributeMap)
 }
 
 /**
@@ -747,10 +884,16 @@ object Limit {
 }
 
 
-case class Limit(value : Int,
-                 override val idRef : String,
-                 override val children: Seq[Node]=Seq[Node]()) extends SolutionSequenceModifierNode(idRef,children) {
-  override def copy(children: Seq[Node]): Node = Limit(value,idRef,children)
+final case class Limit(
+                        value : Int,
+                        override val idRef : String,
+                        override val children: Seq[Node]=Seq[Node](),
+                        override val decorations: Map[String,String] = Map()
+                      ) extends SolutionSequenceModifierNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Limit(value,idRef,children,decoratingAttributeMap)
 }
 //--------------------------------------------------------------------------------------------------------------------------
 
@@ -764,10 +907,16 @@ object Bind {
   implicit val rw: RW[Bind] = macroRW
 }
 
-case class Bind(expression : ExpressionNode,
-                override val idRef : String,
-                override val children: Seq[Node] = Seq[Node]()) extends Node(idRef,children) {
-  override def copy(children: Seq[Node]): Node = Bind(expression,idRef,children)
+final case class Bind(
+                       expression : ExpressionNode,
+                       override val idRef : String,
+                       override val children: Seq[Node] = Seq[Node](),
+                       override val decorations: Map[String,String] = Map()
+                     ) extends Node(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Bind(expression,idRef,children,decoratingAttributeMap)
 
   override def accept(n: Node): Boolean = n match {
     case _ : Something  => false
@@ -782,33 +931,46 @@ case class Bind(expression : ExpressionNode,
 object ExpressionNode {
   implicit val rw: RW[ExpressionNode] =
     RW.merge(
-      FunctionStringNode.rw,
-      FunctionNumericNode.rw,
-      FunctionUriNode.rw,
-      BuiltInCallNode.rw
+/*      ConditionalOrExpression.rw,
+      ConditionalAndExpression.rw,
+      ValueLogical.rw,
+      relationExpression.rw,
+      NumericExpression.rw,
+      AdditiveExpression.rw,
+      MultiplicativeExpression.rw,
+      UnaryExpression.rw,*/
+      PrimaryExpression.rw
     )
 }
 
 
 sealed abstract class ExpressionNode(
-                             override val idRef : String
-                           ) extends Node(idRef,Seq[Node]())
+                             override val idRef : String,
+                             override val children: Seq[Node],
+                             override val decorations: Map[String,String]
+                           ) extends Node(idRef,children,decorations)
 
-
+/*
 sealed abstract class ConditionalOrExpression(
-                                               listAndExpression : Seq[ConditionalAndExpression],
-                                               override val idRef : String
-                                             ) extends ExpressionNode(idRef)
+                                               val listAndExpression : Seq[ConditionalAndExpression],
+                                               override val idRef : String,
+                                               override val children: Seq[Node],
+                                               override val decoratingAttributeMap: Map[String,String]
+                                             ) extends ExpressionNode(idRef,children,decoratingAttributeMap)
 
 sealed abstract class ConditionalAndExpression(
-                                               listValueLogical : Seq[ValueLogical],
-                                               override val idRef : String
-                                             ) extends ExpressionNode(idRef)
+                                               val listValueLogical : Seq[ValueLogical],
+                                               override val idRef : String,
+                                               override val children: Seq[Node],
+                                               override val decoratingAttributeMap: Map[String,String]
+                                             ) extends ExpressionNode(idRef,children,decoratingAttributeMap)
 
 sealed abstract class ValueLogical(
-                                                relationExpression : relationExpression,
-                                                override val idRef : String
-                                  ) extends ExpressionNode(idRef)
+                                                val relationExpression : relationExpression,
+                                                override val idRef : String,
+                                                override val children: Seq[Node],
+                                                override val decoratingAttributeMap: Map[String,String]
+                                  ) extends ExpressionNode(idRef,children,decoratingAttributeMap)
 
 sealed trait OpNumericExpression
 
@@ -818,46 +980,57 @@ class InfNumericExpression extends OpNumericExpression // <
 class SupNumericExpression extends OpNumericExpression // >
 class InfEqualNumericExpression extends OpNumericExpression // <=
 class SupEqualNumericExpression extends OpNumericExpression // >=
-/* note : NOT and IN not implemented */
+// note : NOT and IN not implemented
 
 sealed abstract class relationExpression(
-                                          ne : NumericExpression,
-                                          listNextOpExp : Seq[(OpNumericExpression,NumericExpression)],
-                                          override val idRef : String
-                                        ) extends ExpressionNode(idRef)
+                                          val ne : NumericExpression,
+                                          val listNextOpExp : Seq[(OpNumericExpression,NumericExpression)],
+                                          override val idRef : String,
+                                          override val children: Seq[Node],
+                                          override val decoratingAttributeMap: Map[String,String]
+                                        ) extends ExpressionNode(idRef,children,decoratingAttributeMap)
 
 sealed abstract class NumericExpression(
-                                          exp : AdditiveExpression,
-                                          override val idRef : String
-                                        ) extends ExpressionNode(idRef)
+                                          val exp : AdditiveExpression,
+                                          override val idRef : String,
+                                          override val children: Seq[Node],
+                                          override val decoratingAttributeMap: Map[String,String]
+                                        ) extends ExpressionNode(idRef,children,decoratingAttributeMap)
 
 sealed trait OpMultiplicativeExpression
 
-class AddMultiplicativeExpression( v : MultiplicativeExpression) extends OpMultiplicativeExpression // '+' MultiplicativeExpression
+class AddMultiplicativeExpression(
+                                   val v : MultiplicativeExpression) extends OpMultiplicativeExpression // '+' MultiplicativeExpression
 
-class MinusMultiplicativeExpression( v : MultiplicativeExpression) extends OpMultiplicativeExpression //  '-' MultiplicativeExpression
+class MinusMultiplicativeExpression( val v : MultiplicativeExpression) extends OpMultiplicativeExpression //  '-' MultiplicativeExpression
 
 // ( NumericLiteralPositive | NumericLiteralNegative )  '*' UnaryExpression
 //l numeric
-class MulMultiplicativeExpression[T]( l : Literal[T],
-                            v : MultiplicativeExpression,
-                            u: UnaryExpression) extends OpMultiplicativeExpression
+class MulMultiplicativeExpression[T](
+                                      val l : Literal[T],
+                                      val v : MultiplicativeExpression,
+                                      val u: UnaryExpression) extends OpMultiplicativeExpression
 // ( NumericLiteralPositive | NumericLiteralNegative )  '*' UnaryExpression
-class DivMultiplicativeExpression[T]( l : Literal[T],
-                            v : MultiplicativeExpression,
-                            u: UnaryExpression) extends OpMultiplicativeExpression
+class DivMultiplicativeExpression[T](
+                                      val l : Literal[T],
+                                      val v : MultiplicativeExpression,
+                                      val u: UnaryExpression) extends OpMultiplicativeExpression
 
 
 sealed abstract class AdditiveExpression(
-                                          exp : MultiplicativeExpression,
-                                          listNextOpExp : Seq[(OpMultiplicativeExpression,NumericExpression)],
-                                          override val idRef : String
-                                        ) extends ExpressionNode(idRef)
+                                          val exp : MultiplicativeExpression,
+                                          val listNextOpExp : Seq[(OpMultiplicativeExpression,NumericExpression)],
+                                          override val idRef : String,
+                                          override val children: Seq[Node],
+                                          override val decoratingAttributeMap: Map[String,String]
+                                        ) extends ExpressionNode(idRef,children,decoratingAttributeMap)
 
 sealed abstract class MultiplicativeExpression (
-                                                 exp : MultiplicativeExpression,
-                                                 override val idRef : String
-                                               )extends ExpressionNode(idRef)
+                                                 val exp : MultiplicativeExpression,
+                                                 override val idRef : String,
+                                                 override val children: Seq[Node],
+                                                 override val decoratingAttributeMap: Map[String,String]
+                                               )extends ExpressionNode(idRef,children,decoratingAttributeMap)
 
 sealed trait OpUnaryExpression
 class NotUnaryExpression extends OpUnaryExpression // =
@@ -865,17 +1038,47 @@ class AddUnaryExpression extends OpUnaryExpression // !=
 class MinusUnaryExpression extends OpUnaryExpression // <
 
 sealed abstract class UnaryExpression(
-                                        op : Option[OpUnaryExpression],
-                                        p : PrimaryExpression,
-                                        override val idRef : String
-                                      ) extends ExpressionNode(idRef)
+                                        val op : Option[OpUnaryExpression],
+                                        val p : PrimaryExpression,
+                                        override val idRef : String,
+                                        override val children: Seq[Node],
+                                        override val decoratingAttributeMap: Map[String,String]
+                                      ) extends ExpressionNode(idRef,children,decoratingAttributeMap)
+*/
+
+object PrimaryExpression {
+  implicit val rw: RW[PrimaryExpression] =
+    RW.merge(
+      SparqlDefinitionExpression.rw,
+      FunctionStringNode.rw,
+      FunctionNumericNode.rw,
+      FunctionUriNode.rw,
+      BuiltInCallNode.rw
+    )
+}
 
 
-sealed abstract class PrimaryExpression(override val idRef : String) extends ExpressionNode(idRef)
+sealed abstract class PrimaryExpression(
+                                         override val idRef : String,
+                                         override val children: Seq[Node],
+                                         override val decorations: Map[String,String]
+                                       ) extends ExpressionNode(idRef,children,decorations)
 
 
-case class SparqlDefinitionExpression(sd : SparqlDefinition,override val idRef : String ) extends PrimaryExpression(idRef) {
-  override def copy(children: Seq[Node]): Node = SparqlDefinitionExpression(sd,idRef)
+object SparqlDefinitionExpression {
+  implicit val rw: RW[SparqlDefinitionExpression] = macroRW
+}
+
+final case class SparqlDefinitionExpression(
+                                             sd : SparqlDefinition,
+                                             override val idRef : String,
+                                             override val children: Seq[Node]=Seq[Node](),
+                                             override val decorations: Map[String,String]= Map()
+                                           ) extends PrimaryExpression(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = SparqlDefinitionExpression(sd,idRef,children,decoratingAttributeMap)
 }
 
 object FunctionStringNode {
@@ -885,17 +1088,27 @@ object FunctionStringNode {
   )
 }
 
-sealed abstract class FunctionStringNode(override val idRef : String) extends PrimaryExpression(idRef)
+sealed abstract class FunctionStringNode(
+                                          override val idRef : String,
+                                          override val children: Seq[Node],
+                                          override val decorations: Map[String,String]
+                                        ) extends PrimaryExpression(idRef,children,decorations)
 
 object SubStr {
   implicit val rw: RW[SubStr] = macroRW
 }
 
-case class SubStr(
+final case class SubStr(
                   start : SparqlDefinition,
                   length : SparqlDefinition,
-                  override val idRef : String) extends FunctionStringNode(idRef) {
-  override def copy(children: Seq[Node]): Node = SubStr(start,length,idRef)
+                  override val idRef : String,
+                  override val children: Seq[Node]=Seq[Node](),
+                  override val decorations: Map[String,String]=Map()
+                       ) extends FunctionStringNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = SubStr(start,length,idRef,children,decoratingAttributeMap)
 }
 
 object Replace {
@@ -903,12 +1116,18 @@ object Replace {
 }
 
 
-case class Replace(
+final case class Replace(
                     pattern : SparqlDefinition,
                     replacement : SparqlDefinition,
                     flags : SparqlDefinition,
-                  override val idRef : String) extends FunctionStringNode(idRef) {
-  override def copy(children: Seq[Node]): Node = Replace(pattern,replacement,flags,idRef)
+                    override val idRef : String,
+                    override val children: Seq[Node]=Seq[Node](),
+                    override val decorations: Map[String,String]=Map()
+                        ) extends FunctionStringNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Replace(pattern,replacement,flags,idRef,children,decoratingAttributeMap)
 }
 
 object FunctionNumericNode {
@@ -921,17 +1140,26 @@ object FunctionNumericNode {
   )
 }
 
-sealed abstract class FunctionNumericNode(override val idRef : String) extends PrimaryExpression(idRef)
-
+sealed abstract class FunctionNumericNode(
+                                           override val idRef : String,
+                                           override val children: Seq[Node],
+                                           override val decorations: Map[String,String]
+                                         ) extends PrimaryExpression(idRef,children,decorations)
 
 object Abs {
   implicit val rw: RW[Abs] = macroRW
 }
 
 
-case class Abs(
-                override val idRef : String) extends FunctionNumericNode(idRef) {
-  override def copy(children: Seq[Node]): Node = Abs(idRef)
+final case class Abs(
+                      override val idRef : String,
+                      override val children: Seq[Node]=Seq[Node](),
+                      override val decorations: Map[String,String]= Map()
+                    ) extends FunctionNumericNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Abs(idRef,children,decoratingAttributeMap)
 }
 
 object Round {
@@ -939,39 +1167,68 @@ object Round {
 }
 
 
-case class Round(
-                override val idRef : String) extends FunctionNumericNode(idRef) {
-  override def copy(children: Seq[Node]): Node = Round(idRef)
+final case class Round(
+                        override val idRef : String,
+                        override val children: Seq[Node]=Seq[Node](),
+                        override val decorations: Map[String,String]= Map()
+                      ) extends FunctionNumericNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Round(idRef,children,decoratingAttributeMap)
 }
 
 object Ceil {
   implicit val rw: RW[Ceil] = macroRW
 }
 
-case class Ceil(
-                  override val idRef : String) extends FunctionNumericNode(idRef) {
-  override def copy(children: Seq[Node]): Node = Ceil(idRef)
+final case class Ceil(
+                       override val idRef : String,
+                       override val children: Seq[Node]=Seq[Node](),
+                       override val decorations: Map[String,String]= Map()
+                     ) extends FunctionNumericNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Ceil(idRef,children,decoratingAttributeMap)
 }
 
 object Floor {
   implicit val rw: RW[Floor] = macroRW
 }
 
-case class Floor(
-                 override val idRef : String) extends FunctionNumericNode(idRef) {
-  override def copy(children: Seq[Node]): Node = Floor(idRef)
+final case class Floor(
+                  override val idRef : String,
+                  override val children: Seq[Node]=Seq[Node](),
+                  override val decorations: Map[String,String]= Map()
+                ) extends FunctionNumericNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Floor(idRef,children,decoratingAttributeMap)
 }
 
 object Rand {
   implicit val rw: RW[Rand] = macroRW
 }
 
-case class Rand(override val idRef : String) extends FunctionNumericNode(idRef) {
-  override def copy(children: Seq[Node]): Node = Rand(idRef)
+final case class Rand(
+                 override val idRef : String,
+                 override val children: Seq[Node]=Seq[Node](),
+                 override val decorations: Map[String,String]= Map()
+               ) extends FunctionNumericNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Rand(idRef,children,decoratingAttributeMap)
 }
 /* ---------------------------------------------------------------------------------------------------  */
 
-sealed abstract class FunctionUriNode(override val idRef : String) extends PrimaryExpression(idRef)
+sealed abstract class FunctionUriNode(
+                                       override val idRef : String,
+                                       override val children: Seq[Node],
+                                       override val decorations: Map[String,String]
+                                     ) extends PrimaryExpression(idRef,children,decorations)
 
 object FunctionUriNode {
   implicit val rw: RW[FunctionUriNode] =  RW.merge(
@@ -983,8 +1240,15 @@ object Datatype {
   implicit val rw: RW[Datatype] = macroRW
 }
 
-case class Datatype(override val idRef : String) extends FunctionUriNode(idRef) {
-  override def copy(children: Seq[Node]): Node = Datatype(idRef)
+final case class Datatype(
+                           override val idRef : String,
+                           override val children: Seq[Node]=Seq[Node](),
+                           override val decorations: Map[String,String]= Map()
+                         ) extends FunctionUriNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Datatype(idRef,children,decoratingAttributeMap)
 }
 
 /* ---------------------------------------------------------------------------------------------------  */
@@ -1001,18 +1265,29 @@ object ProjectionExpression {
   implicit val rw: RW[ProjectionExpression] = macroRW
 }
 
-case class ProjectionExpression(`var` : QueryVariable,
-                                expression : AggregateNode,
-                                override val idRef : String,
-                                override val children: Seq[Node] = Seq[Node]()) extends Node(idRef,children) {
-  override def copy(children: Seq[Node]): Node = ProjectionExpression(`var`,expression,idRef,children)
+final case class ProjectionExpression(
+                                 `var` : QueryVariable,
+                                 expression : AggregateNode,
+                                 override val idRef : String,
+                                 override val children: Seq[Node] = Seq[Node](),
+                                 override val decorations: Map[String,String] = Map()
+                        ) extends Node(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = ProjectionExpression(`var`,expression,idRef,children,decoratingAttributeMap)
+
   override def accept(n: Node): Boolean = false
 }
 
 /*
  * ------------------------------------  Aggregate
  */
-sealed abstract class AggregateNode(idRef : String) extends Node(idRef,Seq()) {
+sealed abstract class AggregateNode(
+                                     override val idRef : String,
+                                     override val children: Seq[Node],
+                                     override val decorations: Map[String,String]
+                                   ) extends Node(idRef,children,decorations) {
   override def accept(n: Node): Boolean = false
 }
 
@@ -1020,25 +1295,40 @@ object Count {
   implicit val rw: RW[Count] = macroRW
 }
 
-case class Count(
+final case class Count(
                  varToCount : QueryVariable,
                  distinct : Boolean = false,
                  override val idRef : String,
-                 ) extends AggregateNode(idRef) {
-  override def copy(children: Seq[Node]): Node = Count(varToCount,distinct,idRef)
+                 override val children: Seq[Node] = Seq[Node](),
+                 override val decorations: Map[String,String] = Map()
+                 ) extends AggregateNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Count(varToCount,distinct,idRef,children,decoratingAttributeMap)
 }
 
 object CountAll {
   implicit val rw: RW[CountAll] = macroRW
 }
 
-case class CountAll(distinct : Boolean = false,override val idRef : String) extends AggregateNode(idRef) {
-  override def copy(children: Seq[Node]): Node = CountAll(distinct,idRef)
+final case class CountAll(
+                           distinct : Boolean = false,
+                           override val idRef : String,
+                           override val children: Seq[Node] = Seq[Node](),
+                           override val decorations: Map[String,String] = Map()
+                         ) extends AggregateNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = CountAll(distinct,idRef,children,decoratingAttributeMap)
 }
 
 object BuiltInCallNode {
   implicit val rw: RW[BuiltInCallNode] = RW.merge(
-    Str.rw
+    Str.rw,
+    Lang.rw,
+    LangMatches.rw
   )
 }
 
@@ -1046,7 +1336,11 @@ object BuiltInCallNode {
  * ------------------------------------  BuiltInCallNode
  */
 
-sealed abstract class BuiltInCallNode(idRef : String) extends PrimaryExpression(idRef){
+sealed abstract class BuiltInCallNode(
+                                       override val idRef : String,
+                                       override val children: Seq[Node],
+                                       override val decorations: Map[String,String]
+                                     ) extends PrimaryExpression(idRef,children,decorations){
   override def accept(n: Node): Boolean = false
 }
 
@@ -1054,18 +1348,46 @@ object Str {
   implicit val rw: RW[Str] = macroRW
 }
 
-case class Str(term: SparqlDefinition,
-               override val idRef : String) extends BuiltInCallNode(idRef) {
-  override def copy(children: Seq[Node]): Node = Str(term,idRef)
+final case class Str(
+                      term: SparqlDefinition,
+                      override val idRef : String,
+                      override val children: Seq[Node] = Seq[Node](),
+                      override val decorations: Map[String,String] = Map()
+                    ) extends BuiltInCallNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Str(term,idRef,children,decoratingAttributeMap)
 }
 
-case class Lang(term: SparqlDefinition,
-               override val idRef : String,
-               override val children: Seq[Node] = Seq[Node]()) extends BuiltInCallNode(idRef) {
-  override def copy(children: Seq[Node]): Node = Lang(term,idRef,children)
+object Lang {
+  implicit val rw: RW[Lang] = macroRW
 }
 
-case class LangMatches(term: SparqlDefinition,
-               override val idRef : String) extends BuiltInCallNode(idRef) {
-  override def copy(children: Seq[Node]): Node = LangMatches(term,idRef)
+final case class Lang(
+                       term: SparqlDefinition,
+                       override val idRef : String,
+                       override val children: Seq[Node] = Seq[Node](),
+                       override val decorations: Map[String,String] = Map()
+                        ) extends BuiltInCallNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = Lang(term,idRef,children,decoratingAttributeMap)
+}
+
+object LangMatches {
+  implicit val rw: RW[LangMatches] = macroRW
+}
+
+final case class LangMatches(
+                              term: SparqlDefinition,
+                              override val idRef : String,
+                              override val children: Seq[Node] = Seq[Node](),
+                              override val decorations: Map[String,String] = Map()
+                            ) extends BuiltInCallNode(idRef,children,decorations) {
+  override def copy(
+                     children: Seq[Node]=children,
+                     decoratingAttributeMap : Map[String,String]=decorations
+                   ): Node = LangMatches(term,idRef,children,decoratingAttributeMap)
 }

@@ -227,6 +227,35 @@ object SWDiscoveryTest extends TestSuite {
           .getPrefixes().contains("some") )
     }
 
+    test("setDecoratingAttribute basic") {
 
+      assert(startRequest
+        .decorate("someKey","someValue")
+        .browse(
+          (n : Node,deep: Integer)=> {
+            n.decorations
+          }
+        ).filter( _.size>0) == List(Map("someKey"->"someValue")))
+
+    }
+
+    test("setDecoratingAttribute") {
+     val m =
+        startRequest
+          .decorate("someKey","someValue")
+          .isObjectOf(URI("http://s2"),"s2")
+          .decorate("someKey2","someValue2")
+          .isObjectOf(URI("http://s3"),"s3")
+          .decorate("someKey3","someValue3")
+          .browse(
+            (n : Node,deep: Integer)=> {
+              n.idRef -> n.decorations
+            }
+          ).toMap
+
+      assert( m("h1") == Map("someKey"->"someValue") )
+      assert( m("s2") == Map("someKey2"->"someValue2") )
+      assert( m("s3") == Map("someKey3"->"someValue3") )
+     }
   }
 }

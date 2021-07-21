@@ -78,7 +78,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
         trace(" datatypes:" + lSubUris.toString)
         /* request using api */
         SWDiscovery(sw.config)
-          .prefixes(root.getPrefixes())
+          .prefixes(root.getPrefixes)
           .something("val_uri")
           .setList(lSubUris.flatMap(
             _ match {

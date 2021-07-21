@@ -124,6 +124,8 @@ object SparqlGenerator  {
       case _ : Datatype              => "DATATYPE ( " + "?"+ varIdSire  + " )"
       case _ : Str    if varIdSire.length>0  => "STR ( " + "?"+ varIdSire  + " )"
       case n : Str                    => "STR ( " + "?"+ n.term.sparql  + " )"
+      case n : Lang                   => "LANG ( " + "?"+ n.term.sparql  + " )"
+      case n : LangMatches            => "LANGMATCHES ( " + "LANG(?"+ n.term.sparql+"),"+ n.term  + " )"
 
       case node : FilterNode         => "\tFILTER ( " + {
         if (node.negation) {
@@ -154,7 +156,14 @@ object SparqlGenerator  {
       case s : Something if s.children.length==0  => println(varIdSire); "{ " + "{ " + "?"+ variableName + " [] []" +
                                                             " } UNION { [] " + "?"+ variableName + " [] " + "} UNION { "+
                                                              "[] [] ?"+ variableName  + " }" + " }"
-      case _                                      => throw new Error("Not implemented yet :"+n.getClass.getName)
+      case u : UnionBlock    if u.children.length>0 => "{ " +
+        u.children.map( block => {  sparqlNode(block,u.s.idRef,variableName) + " }" }).mkString(" } UNION { ") +" }"
+      case _ : UnionBlock                           => ""
+      case _ : NotBlock                             => "???????????????"
+      case _ : DatatypeNode                         => ""
+      case _ : SourcesNode                          => ""
+      case _ :   SparqlDefinitionExpression         => "???????????????"
+      case _                                        => throw new Error("Not implemented yet :"+n.getClass.getName)
     }
   }
 
