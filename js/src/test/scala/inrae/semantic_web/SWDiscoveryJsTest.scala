@@ -105,5 +105,10 @@ object SWDiscoveryJsTest extends TestSuite{
       startRequest.decorate("key","value")
     }
 
+    test("setConfig") {
+      assert(startRequest.setConfig(DataTestFactory.getConfigVirtuoso2()).getConfig().conf.sources.head.id ==
+        DataTestFactory.getConfigVirtuoso2().conf.sources.head.id)
+    }
+
   }
 }

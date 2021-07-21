@@ -13,9 +13,17 @@ describe('SWDiscovery', () => {
              "logLevel" : "info",
              "sizeBatchProcessing" : 10,
              "pageSize" : 10
-  }}` 
+  }}`
+
+  const json2 : string  =  `{
+           "sources" : [{
+                "id"  : "local_endpoint2",
+                "url" : "http://somethingelse:8890/sparql"
+             }]}`
            
   const localConf = SWDiscoveryConfiguration.setConfigString(json)
+
+  const localConf2 = SWDiscoveryConfiguration.setConfigString(json2)
 
   beforeEach(() => {});
 
@@ -70,7 +78,6 @@ describe('SWDiscovery', () => {
                       .something("h1")
                        .isObjectOf("http://test11")
                          .browse( ( n: any, p : Number) => {
-                            console.log(n.decorations)
                           return n.$type + " : " + p;
                          });
     expect(results).toStrictEqual([
@@ -93,6 +100,19 @@ describe('SWDiscovery', () => {
           "v1" ]);
         })
 
+       test("setConfig/getConfig", () => {
+            let conf = SWDiscovery(localConf)
+                                   .something("h1")
+                                    .setConfig(localConf2)
+                                     .isObjectOf("http://test11")
+                                       .getConfig()
+             console.log("**************************************")
+            for(let k in conf) {
+                console.log(k)
+            }
+
+
+       })
 
 
 });

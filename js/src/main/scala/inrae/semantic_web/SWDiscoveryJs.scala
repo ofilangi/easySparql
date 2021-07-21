@@ -48,6 +48,12 @@ case class SWDiscoveryJs(
   def finder :SWDiscoveryHelperJs = SWDiscoveryHelperJs(sw)
 
   @JSExport
+  def setConfig(newConfig : StatementConfiguration) : SWDiscoveryJs = SWDiscoveryJs(newConfig,sw.setConfig(newConfig))
+
+  @JSExport
+  def getConfig() : StatementConfiguration = sw.getConfig
+
+  @JSExport
   def focus(ref : String) : SWDiscoveryJs = SWDiscoveryJs(config,sw.focus(ref))
 
   @JSExport
