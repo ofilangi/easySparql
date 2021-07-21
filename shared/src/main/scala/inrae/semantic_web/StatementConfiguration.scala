@@ -23,9 +23,11 @@ final case class StatementConfigurationException(private val message: String = "
  * Configuration definition.
  *
  */
+@JSExportTopLevel(name="ConfigurationObject")
 object ConfigurationObject {
 
   /* sources configuration */
+  @JSExportTopLevel(name="StatementConfigurationJson")
   case class StatementConfigurationJson(
                                          sources : Seq[Source],
                                          settings : GeneralSetting = new GeneralSetting(),
@@ -34,6 +36,7 @@ object ConfigurationObject {
       "\n\n"  + settings.toString
 
   }
+  @JSExportTopLevel(name="Source")
   case class Source(
                      id:String, /* identify the source endpoint */
                      url: String       = "", /* url access */
@@ -103,6 +106,7 @@ object ConfigurationObject {
    * @param proxy
    * @param urlProxy
    */
+  @JSExportTopLevel(name="GeneralSetting")
   case class GeneralSetting(
                       cache : Boolean = true,
                       logLevel : String = "warn"          , // trace, debug, info, warn, error, all, off

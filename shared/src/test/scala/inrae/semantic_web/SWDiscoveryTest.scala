@@ -289,5 +289,21 @@ object SWDiscoveryTest extends TestSuite {
       assert( m("s2") == Map("someKey2"->"someValue2") )
       assert( m("s3") == Map("someKey3"->"someValue3") )
      }
+
+    test("setConfig/getConfig") {
+      assert(startRequest.getConfig.conf.sources.head.id == DataTestFactory.getConfigVirtuoso1().conf.sources.head.id)
+
+      assert(startRequest.setConfig(DataTestFactory.getConfigVirtuoso2()).getConfig.conf.sources.head.id ==
+        DataTestFactory.getConfigVirtuoso2().conf.sources.head.id)
+    }
+
+    test("setConfig/getConfig during query build") {
+      assert(
+        startRequest
+        .setConfig(DataTestFactory.getConfigVirtuoso2())
+         .isObjectOf("http://test11")
+          .getConfig.conf.sources.head.id == DataTestFactory.getConfigVirtuoso2().conf.sources.head.id )
+    }
+
   }
 }

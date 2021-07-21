@@ -100,6 +100,12 @@ case class SWDiscovery(
 
   def finder : SWDiscoveryHelper = SWDiscoveryHelper(this)
 
+  /* configuration */
+  def setConfig(newConfig : StatementConfiguration) : SWDiscovery =
+    SWDiscovery(newConfig,rootNode,Some(focusNode))
+
+  def getConfig : StatementConfiguration = config
+
   /* get current focus */
   def focus() : String = focusNode
 

@@ -61,7 +61,7 @@ object DataTestFactory  {
       s"""
         {
          "sources" : [{
-           "id"       : "local",
+           "id"       : "configVirtuoso1",
            "url"      : "${DataTestFactory.urlEndpoint}"
          }],
          "settings" : {
@@ -77,7 +77,7 @@ object DataTestFactory  {
       s"""
         {
          "sources" : [{
-           "id"       : "local",
+           "id"       : "configVirtuoso2",
            "url"      : "${DataTestFactory.urlEndpoint}"
          }],
          "settings" : {
