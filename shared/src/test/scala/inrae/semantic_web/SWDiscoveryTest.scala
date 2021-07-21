@@ -1,7 +1,7 @@
 package inrae.semantic_web
 
 import inrae.data.DataTestFactory
-import inrae.semantic_web.node.Node
+import inrae.semantic_web.node.{Node, Root}
 import inrae.semantic_web.rdf._
 import utest._
 
@@ -180,10 +180,42 @@ object SWDiscoveryTest extends TestSuite {
       }
     }
 
-    test("focus root") {
+    test("remove Something h1") {
       val sw = startRequest.remove("h1")
       assert(sw.rootNode.idRef == sw.focus())
       assert(sw.something("h").focus() == "h")
+    }
+
+    test("Remove nothing") {
+
+      val sw =  SWDiscovery(config)
+                  .remove("h1")
+      assert(sw.rootNode.idRef == sw.focus())
+
+    }
+
+    test("Remove root") {
+      val sw =  SWDiscovery(config)
+      sw.remove(sw.rootNode.idRef)
+      assert(sw.rootNode.idRef == sw.focus())
+    }
+
+    test("Remove branch") {
+      SWDiscovery(config)
+          .something("h1")
+          .isObjectOf(URI("http://h1"),"h2")
+          .isObjectOf(URI("http://h11"),"h22")
+          .root
+          .something("d1")
+          .isObjectOf(URI("http://d1"),"d2")
+          .isObjectOf(URI("http://d11"),"d22")
+            .remove("h1")
+          .browse( (n: Node,d:Integer) => {
+            n match {
+              case _ : Root => assert(true)
+              case _ => assert(n.idRef.startsWith("d"))
+            }
+          } )
     }
 
     test("browse") {
