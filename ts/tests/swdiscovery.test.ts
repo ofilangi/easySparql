@@ -86,11 +86,11 @@ describe('SWDiscovery', () => {
       "inrae.semantic_web.node.ObjectOf : 2" ]);
     })
 
-     test("decorate", () => {
+     test("setDecoration/getDecoration", () => {
         const results = SWDiscovery(localConf)
                           .something("h1")
                            .isObjectOf("http://test11")
-                           .decorate("k1","v1")
+                           .setDecoration("k1","v1")
                              .browse( ( n: any, p : Number) => {
                                 if (n.decorations) return n.decorations["k1"];
                              });
@@ -98,6 +98,11 @@ describe('SWDiscovery', () => {
           undefined,
           undefined,
           "v1" ]);
+          expect(SWDiscovery(localConf)
+                          .something("h1")
+                            .isObjectOf("http://test11")
+                             .setDecoration("k1","v1")
+                             .getDecoration("k1")).toStrictEqual("v1")
         })
 
        test("setConfig/getConfig", () => {
