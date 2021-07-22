@@ -134,7 +134,10 @@ case class SWDiscoveryJs(
   }
   
   @JSExport
-  def decorate(key : String, value : String) : SWDiscoveryJs = SWDiscoveryJs(config,sw.decorate(key,value))
+  def setDecoration(key : String, value : String) : SWDiscoveryJs = SWDiscoveryJs(config,sw.setDecoration(key,value))
+
+  @JSExport
+  def getDecoration(key : String) : String = sw.getDecoration(key)
 
   @JSExport
   def select(lRef: String*): SWTransactionJs = SWTransactionJs(sw.select(lRef))

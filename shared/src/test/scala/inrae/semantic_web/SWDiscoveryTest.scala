@@ -262,7 +262,7 @@ object SWDiscoveryTest extends TestSuite {
     test("setDecoratingAttribute basic") {
 
       assert(startRequest
-        .decorate("someKey","someValue")
+        .setDecoration("someKey","someValue")
         .browse(
           (n : Node,deep: Integer)=> {
             n.decorations
@@ -274,11 +274,11 @@ object SWDiscoveryTest extends TestSuite {
     test("setDecoratingAttribute") {
      val m =
         startRequest
-          .decorate("someKey","someValue")
+          .setDecoration("someKey","someValue")
           .isObjectOf(URI("http://s2"),"s2")
-          .decorate("someKey2","someValue2")
+          .setDecoration("someKey2","someValue2")
           .isObjectOf(URI("http://s3"),"s3")
-          .decorate("someKey3","someValue3")
+          .setDecoration("someKey3","someValue3")
           .browse(
             (n : Node,deep: Integer)=> {
               n.idRef -> n.decorations
@@ -289,6 +289,33 @@ object SWDiscoveryTest extends TestSuite {
       assert( m("s2") == Map("someKey2"->"someValue2") )
       assert( m("s3") == Map("someKey3"->"someValue3") )
      }
+
+    test("setDecoratingAttribute/getDecoration") {
+      (startRequest
+        .setDecoration("someKey","someValue")
+        .getDecoration("someKey") == "someValue")
+    }
+
+    test("setDecoratingAttribute/getDecoration 2") {
+      (startRequest
+        .getDecoration("someKey") == "")
+    }
+
+    test("setDecoratingAttribute/getDecoration 3") {
+      (startRequest
+        .setDecoration("someKey","someValue")
+        .isObjectOf("http://some")
+        .getDecoration("someKey") == "")
+    }
+
+    test("setDecoratingAttribute/getDecoration 4") {
+      (startRequest
+        .isObjectOf("http://some","something")
+        .setDecoration("someKey","someValue")
+        .isObjectOf("http://some")
+        .focus("something")
+        .getDecoration("someKey") == "someValue")
+    }
 
     test("setConfig/getConfig") {
       assert(startRequest.getConfig.conf.sources.head.id == DataTestFactory.getConfigVirtuoso1().conf.sources.head.id)
