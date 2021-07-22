@@ -153,9 +153,10 @@ object SparqlGenerator  {
       } + " )\n"
       case root : Root                            => { "" }
       case s : Something if s.children.length>0   => ""
-      case s : Something if s.children.length==0  => println(varIdSire); "{ " + "{ " + "?"+ variableName + " [] []" +
-                                                            " } UNION { [] " + "?"+ variableName + " [] " + "} UNION { "+
-                                                             "[] [] ?"+ variableName  + " }" + " }"
+      case s : Something if s.children.length==0  => "{ " +
+                                            "{ " + "?"+ variableName + " " + "?property_"+variableName+" "+ "?object_"+variableName +
+                                           " } UNION { [] " + "?"+ variableName + " [] " + "} UNION { "+
+                                                             " "+ "?subject_"+variableName + " "+ "?property_"+variableName+ " ?"+ variableName  + " }" + " }"
       case u : UnionBlock    if u.children.length>0 => "{ " +
         u.children.map( block => {  sparqlNode(block,u.s.idRef,variableName) + " }" }).mkString(" } UNION { ") +" }"
       case _ : UnionBlock                           => ""

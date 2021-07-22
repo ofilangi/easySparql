@@ -10,8 +10,9 @@ object Fix126UrlFileUnusedVariable extends TestSuite {
         {
          "sources" : [{
            "id"       : "file_turtle",
-           "url"      : "http://localhost:8080/animals.ttl"
-         }],
+           "file"     : "http://localhost:8080/animals.ttl",
+           "mimetype" : "text/turtle"
+         }]
          }
         """.stripMargin)
 
