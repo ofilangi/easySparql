@@ -322,7 +322,7 @@ case class SWDiscovery(
 
   def browse[A](visitor : (Node, Integer) => A ) : Seq[A] = NodeVisitor.map(rootNode,0,visitor)
 
-  def decorate(key : String, value : String) : SWDiscovery = {
+  def setDecoration(key : String, value : String) : SWDiscovery = {
       rootNode
         .getChild[Node](rootNode.asInstanceOf[Node])
         .filter( _.idRef == focusNode )
@@ -333,6 +333,18 @@ case class SWDiscovery(
           }
           case None => throw SWDiscoveryException(s"Can not reach current node -- $focusNode --]")
         }
+  }
+
+  def getDecoration(key : String) : String = {
+    rootNode
+      .getChild[Node](rootNode.asInstanceOf[Node])
+      .filter( _.idRef == focusNode )
+      .lastOption match {
+      case Some(n)  => {
+        n.decorations.getOrElse(key,"")
+      }
+      case None => ""
+    }
   }
 
 }
