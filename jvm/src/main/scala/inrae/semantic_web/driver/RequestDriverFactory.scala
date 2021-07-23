@@ -21,7 +21,6 @@ object RequestDriverFactory  {
   repository.init()
 
   def close() = {
-    println("CLOSE !!!!!!")
     lCon.map(_.close())
     repository.shutDown()
   }
@@ -56,10 +55,21 @@ object RequestDriverFactory  {
                 case Failure(e) => throw SWDiscoveryException(e.getMessage)
               }
 
+            } else if ( source.file != "" && (source.file.startsWith("http://")||source.file.startsWith("https://")) ) {
+              println(source.file)
+              Try(con.add(new URL(source.file), source.file, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
+                case Success(_) =>
+                case Failure(e) => {
+                  throw SWDiscoveryException(e.getMessage)
+                }
+              }
+
             } else if ( source.file != "" ) {
               Try(con.add(new File(source.file), source.file, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
                 case Success(_) =>
-                case Failure(e) => throw SWDiscoveryException(e.getMessage)
+                case Failure(e) => {
+                  throw SWDiscoveryException(e.getMessage)
+                }
               }
 
             } else if ( source.content != "" ) {

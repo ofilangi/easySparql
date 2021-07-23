@@ -79,7 +79,6 @@ object SWDiscoveryTest extends TestSuite {
           })
       }).flatten
     }
-
     test("datatype 1") {
       insertData.map(_ => {
         startRequest
@@ -90,6 +89,7 @@ object SWDiscoveryTest extends TestSuite {
           .raw
           .map(
             response => {
+              println(response)
               assert(response("results")("datatypes")("d")("http://aa3")(0)("value").toString().length > 0)
             }
           )

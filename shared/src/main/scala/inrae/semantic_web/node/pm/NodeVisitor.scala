@@ -24,6 +24,39 @@ object NodeVisitor  {
     })
   }
 
+  /**
+   * Give all variables using in the query
+   * @param n
+   * @return
+   */
+  def getAllAncestorsRef( n : Node ) : Seq[String] = n match {
+    case node : Root => {
+      Seq(node.reference())++:
+        node.children.flatMap(getAllAncestorsRef(_)) ++:
+        node.lBindNode.flatMap(getAllAncestorsRef(_))
+    }
+    case node : RdfNode  => Seq(node.reference()) ++: node.children.flatMap(getAllAncestorsRef(_))
+    case node : Bind => Seq(node.reference()) ++: node.children.flatMap(getAllAncestorsRef(_))
+    case node : FilterNode => Seq(node.reference()) ++: node.children.flatMap(getAllAncestorsRef(_))
+    case _ => Seq()
+  }
+
+  /**
+   * Apply a Visitor on the Node and the children element recursively
+   * @param n
+   * @param deep
+   * @param visitor
+   * @tparam A
+   * @return
+   */
+
+  def map[A](  n : Root, deep : Integer , visitor : (Node,Integer) => A )  : Seq[A] =
+    Seq(visitor(n,deep)) ++:
+      n.children.flatMap( nc => NodeVisitor.map(nc, deep+1, visitor) ) ++:
+      n.lBindNode.flatMap( nc => NodeVisitor.map(nc, deep+1, visitor) ) ++:
+      n.lDatatypeNode.flatMap( nc => NodeVisitor.map(nc, deep+1, visitor) ) ++:
+      n.lSolutionSequenceModifierNode.flatMap( nc => NodeVisitor.map(nc, deep+1, visitor) ) ++:
+      n.lSourcesNodes.flatMap( nc => NodeVisitor.map(nc, deep+1, visitor) )
 
   def map[A](  n : Node, deep : Integer , visitor : (Node,Integer) => A )  : Seq[A] =
     Seq(visitor(n,deep)) ++: n.children.flatMap( nc => NodeVisitor.map(nc, deep+1, visitor) )

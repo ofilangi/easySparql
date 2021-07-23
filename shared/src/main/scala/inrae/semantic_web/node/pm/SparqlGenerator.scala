@@ -22,7 +22,6 @@ object SparqlGenerator  {
   def fromNamed(graphs : Seq[IRI]): String = graphs.map( g => "FROM NAMED "+g.sparql).mkString("\n")
 
   def solutionSequenceModifierStart(root : Root) : String = {
-
     "SELECT " + {
       root.lSolutionSequenceModifierNode.filter {
         case _ : Distinct => true
@@ -35,9 +34,23 @@ object SparqlGenerator  {
       }.lastOption.map(sparqlNode(_,"","")).getOrElse("")
     } + {
       root.lSolutionSequenceModifierNode.filter {
-        case _ : Projection => true
+        case _: Projection => true
         case _ => false
-      }.lastOption.map( proj => {
+      }.lastOption
+        .map {
+          case proj: Projection => {
+            /* get All variables and check if variables asking by the user is present */
+            val allVariables = pm.NodeVisitor.getAllAncestorsRef(root)
+            val variables =
+              proj
+                .variables
+                .filter(queryVariable => allVariables.contains(queryVariable.name) || queryVariable.name == "*")
+
+            Projection(variables, proj.idRef, proj.children, proj.decorations)
+          }
+          case solutionSequenceModifierNode => solutionSequenceModifierNode
+        }
+        .map( proj => {
         (sparqlNode(proj,"","")
           + proj.children.map( child => body( child, "")).mkString(""))
       }

@@ -1,0 +1,16 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ns0: <http://www.some-ficticious-zoo.com/rdf#> .
+
+ns0:lion ns0:name "Lion" ;
+         ns0:species "Panthera leo" ;
+         ns0:class "Mammal" .
+ns0:tarantula
+    ns0:name "Tarantula" ;
+    ns0:species "Avicularia avicularia" ;
+    ns0:class "Arachnid" .
+
+ns0:hippopotamus
+    ns0:name "Hippopotamus" ;
+    ns0:species "Hippopotamus amphibius" ;
+    ns0:class "Mammal" .
+
