@@ -26,7 +26,7 @@ object Fix126UrlFileUnusedVariable extends TestSuite {
         SWDiscovery(config)
           .prefix("ns0","http://www.some-ficticious-zoo.com/rdf#")
           .something("animal")
-          .isSubjectOf(URI("ns0:name"),"name")
+          .datatype(URI("ns0:name"),"name")
           .select(Seq("animal","name"))
           .console
           .commit()
