@@ -124,8 +124,9 @@ object SWDiscoveryFilterTest extends TestSuite {
           .commit()
           .raw
           .map(result => {
-            assert(result("results")("bindings").arr.length == 0)
+            assert(false)
           })
+          .recover(e => assert(true))
       }).flatten
     }
     test("SW Filter not contains 2") {
@@ -140,8 +141,9 @@ object SWDiscoveryFilterTest extends TestSuite {
           .commit()
           .raw
           .map(result => {
-            assert(result("results")("bindings").arr.length == 0)
+            assert(false)
           })
+          .recover(e => assert(true))
       }).flatten
     }
 

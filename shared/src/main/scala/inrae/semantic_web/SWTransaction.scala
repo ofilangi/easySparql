@@ -195,7 +195,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
   }
 
   def projection( lRef: Seq[String] )  : SWTransaction = {
-    /* check if a projection and concat the variables selected list or create a new one */
+
     sw.rootNode.getChild(Projection(Seq(),"")).lastOption match {
       case Some(p) => {
         val listVariable : Seq[QueryVariable] = p.variables ++  lRef.map(QueryVariable(_))
@@ -203,7 +203,9 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
           Projection(listVariable,p.idRef,p.children))
           .focus(p.idRef).transaction
       }
-      case None => sw.root.focusManagement(Projection(lRef.map(QueryVariable(_)),sw.getUniqueRef())).transaction
+      case None => {
+        sw.root.focusManagement(Projection(lRef.map(QueryVariable(_)),sw.getUniqueRef())).transaction
+      }
     }
 
   }

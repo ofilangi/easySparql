@@ -22,7 +22,6 @@ object SparqlGenerator  {
   def fromNamed(graphs : Seq[IRI]): String = graphs.map( g => "FROM NAMED "+g.sparql).mkString("\n")
 
   def solutionSequenceModifierStart(root : Root) : String = {
-
     "SELECT " + {
       root.lSolutionSequenceModifierNode.filter {
         case _ : Distinct => true
@@ -35,9 +34,23 @@ object SparqlGenerator  {
       }.lastOption.map(sparqlNode(_,"","")).getOrElse("")
     } + {
       root.lSolutionSequenceModifierNode.filter {
-        case _ : Projection => true
+        case _: Projection => true
         case _ => false
-      }.lastOption.map( proj => {
+      }.lastOption
+        .map {
+          case proj: Projection => {
+            /* get All variables and check if variables asking by the user is present */
+            val allVariables = pm.NodeVisitor.getAllAncestorsRef(root)
+            val variables =
+              proj
+                .variables
+                .filter(queryVariable => allVariables.contains(queryVariable.name) || queryVariable.name == "*")
+
+            Projection(variables, proj.idRef, proj.children, proj.decorations)
+          }
+          case solutionSequenceModifierNode => solutionSequenceModifierNode
+        }
+        .map( proj => {
         (sparqlNode(proj,"","")
           + proj.children.map( child => body( child, "")).mkString(""))
       }
@@ -153,9 +166,10 @@ object SparqlGenerator  {
       } + " )\n"
       case root : Root                            => { "" }
       case s : Something if s.children.length>0   => ""
-      case s : Something if s.children.length==0  => println(varIdSire); "{ " + "{ " + "?"+ variableName + " [] []" +
-                                                            " } UNION { [] " + "?"+ variableName + " [] " + "} UNION { "+
-                                                             "[] [] ?"+ variableName  + " }" + " }"
+      case s : Something if s.children.length==0  => "{ " +
+                                            "{ " + "?"+ variableName + " " + "?property_"+variableName+" "+ "?object_"+variableName +
+                                           " } UNION { [] " + "?"+ variableName + " [] " + "} UNION { "+
+                                                             " "+ "?subject_"+variableName + " "+ "?property_"+variableName+ " ?"+ variableName  + " }" + " }"
       case u : UnionBlock    if u.children.length>0 => "{ " +
         u.children.map( block => {  sparqlNode(block,u.s.idRef,variableName) + " }" }).mkString(" } UNION { ") +" }"
       case _ : UnionBlock                           => ""
