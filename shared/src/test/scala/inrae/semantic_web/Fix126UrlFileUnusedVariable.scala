@@ -7,7 +7,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object Fix126UrlFileUnusedVariable extends TestSuite {
   val config: StatementConfiguration = StatementConfiguration.setConfigString(
-    s"""
+    """
         {
          "sources" : [{
            "id"       : "file_turtle",

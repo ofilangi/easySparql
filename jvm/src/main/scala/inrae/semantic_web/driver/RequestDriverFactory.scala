@@ -14,14 +14,14 @@ import scala.util.{Failure, Success, Try}
 
 object RequestDriverFactory  {
 
-  lazy val dataDir = Files.createTempDirectory("rdf4j-discovery").toFile
+  lazy val dataDir: File = Files.createTempDirectory("rdf4j-discovery").toFile
   lazy val repository = new SailRepository(new NativeStore(dataDir))
   var lCon : Seq[RepositoryConnection] = Seq()
 
   repository.init()
 
-  def close() = {
-    lCon.map(_.close())
+  def close() : Unit = {
+    lCon.foreach(_.close())
     repository.shutDown()
   }
 
@@ -44,54 +44,44 @@ object RequestDriverFactory  {
           source.auth)
 
         (r,r.con)
-      case "text/turtle" | "text/n3" | "text/rdf-xml" | "application/rdf+xml" =>{
+      case "text/turtle" | "text/n3" | "text/rdf-xml" | "application/rdf+xml" =>
 
-        lazy val con = repository.getConnection()
-
-        if (source.url != "") {
-              /* name file is the graph name  */
-              Try(con.add(new URL(source.url), source.url, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
-                case Success(_) =>
-                case Failure(e) => throw SWDiscoveryException(e.getMessage)
-              }
-
-            } else if ( source.file != "" && (source.file.startsWith("http://")||source.file.startsWith("https://")) ) {
-              println(source.file)
-              Try(con.add(new URL(source.file), source.file, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
-                case Success(_) =>
-                case Failure(e) => {
-                  throw SWDiscoveryException(e.getMessage)
-                }
-              }
-
-            } else if ( source.file != "" ) {
-              Try(con.add(new File(source.file), source.file, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
-                case Success(_) =>
-                case Failure(e) => {
-                  throw SWDiscoveryException(e.getMessage)
-                }
-              }
-
-            } else if ( source.content != "" ) {
-
-              val targetStream = new java.io.ByteArrayInputStream(source.content.getBytes(java.nio.charset.StandardCharsets.UTF_8.name))
-              Try(con.add(targetStream, s"http://${source.id}/graph", RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
-                case Success(_) =>
-                case Failure(e) => throw SWDiscoveryException(e.getMessage)
-              }
-
-            } else {
-              throw SWDiscoveryException("Bad definition of source configuration :"+source.toString)
+        lazy val con = repository.getConnection
+        source match {
+          case _ if source.url != "" =>
+            /* name file is the graph name  */
+            Try(con.add(new URL(source.url), source.url, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
+              case Success(_) =>
+              case Failure(e) => throw SWDiscoveryException(e.getMessage)
             }
+          case _ if source.file != "" && (source.file.startsWith("http://")||source.file.startsWith("https://"))  =>
+            Try(con.add(new URL(source.file), source.file, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
+              case Success(_) =>
+              case Failure(e) =>
+                throw SWDiscoveryException(e.getMessage)
+            }
+          case _   if source.file != ""  =>
+            Try(con.add(new File(source.file), source.file, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
+              case Success(_) =>
+              case Failure(e) =>
+                throw SWDiscoveryException(e.getMessage)
+            }
+          case _ if source.content != "" =>
+            val targetStream = new java.io.ByteArrayInputStream(source.content.getBytes(java.nio.charset.StandardCharsets.UTF_8.name))
+            Try(con.add(targetStream, s"http://${source.id}/graph", RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
+              case Success(_) =>
+              case Failure(e) => throw SWDiscoveryException(e.getMessage)
+            }
+          case _ => throw SWDiscoveryException("Bad definition of source configuration :"+source.toString)
+          }
 
         (Rdf4jLocalRequestDriver(con),con)
-        }
-        case _ =>
+      case _ =>
           throw SWDiscoveryException("Bad definition of source configuration :"+source.toString)
       }
   }
 
-  def mimetypeToRdfFormat( mimetype : String ) = mimetype match {
+  def mimetypeToRdfFormat( mimetype : String ): RDFFormat = mimetype match {
     case "text/turtle" => RDFFormat.TURTLE
     case "text/n3" => RDFFormat.N3
     case "text/rdf-xml" => RDFFormat.RDFXML
