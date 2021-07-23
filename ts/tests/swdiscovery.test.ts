@@ -63,7 +63,7 @@ describe('SWDiscovery', () => {
 
   test("select *", async () => {
     const results = await SWDiscovery(localConf).something("h1").select("*").commit().raw();
-    expect(results.head.vars).toStrictEqual(["h1"]);
+    expect(results.head.vars).toContain("h1");
   })
 
   test("getSerializedString/setSerializedString", async () => {
