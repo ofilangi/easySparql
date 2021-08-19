@@ -8,7 +8,7 @@ lazy val airframeLogVersion = "21.6.0"
 lazy val scalaJsDOMVersion = "1.1.0"
 lazy val scalaStubVersion = "1.0.0"
 lazy val scalatagVersion = "0.9.4"
-lazy val rdf4jVersion = "3.7.1"
+lazy val rdf4jVersion = "3.7.2"
 lazy val slf4j_version = "1.7.31"
 
 /* p2m2 libs */
