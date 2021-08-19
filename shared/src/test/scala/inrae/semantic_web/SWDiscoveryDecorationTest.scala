@@ -2,6 +2,7 @@ package inrae.semantic_web
 
 import inrae.data.DataTestFactory
 import inrae.semantic_web.node.{Node, Root}
+import inrae.semantic_web.rdf.URI
 import utest._
 
 import scala.language.postfixOps
@@ -20,7 +21,7 @@ object SWDiscoveryDecorationTest extends TestSuite {
       .something("h1")
 
   def tests = Tests {
-    /*
+
     test("setDecoratingAttribute Root") {
       assert(
         startRequest
@@ -33,7 +34,7 @@ object SWDiscoveryDecorationTest extends TestSuite {
           ).filter( _.size>0) == List(Map("someKey"->"someValue")))
 
     }
-*/
+
     test("setDecoratingAttribute Root with children") {
       val m =
         startRequest
@@ -58,7 +59,7 @@ object SWDiscoveryDecorationTest extends TestSuite {
       assert( m("h1") == Map("someKey2"->"someValue2") )
 
     }
-/*
+
     test("setDecoratingAttribute basic") {
 
       assert(startRequest
@@ -116,6 +117,5 @@ object SWDiscoveryDecorationTest extends TestSuite {
         .focus("something")
         .getDecoration("someKey") == "someValue")
     }
-    */
   }
 }
