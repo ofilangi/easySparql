@@ -116,7 +116,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
     if ( lDatatype.filter( datatypeNode => lSelectedVariable.map(_.name).contains(datatypeNode.refNode) ).length != lDatatype.length )
       {
         notify(DiscoveryRequestEvent(DiscoveryStateRequestEvent.ERROR_REQUEST_DEFINITION))
-        throw SWDiscoveryException("Select variable with his datatype ["+lDatatype.map( d=>d.idRef + "->"+d.refNode).mkString(" ,")+"]")
+        throw SWDiscoveryException("The user have to select node of interest before setup a desired datatype ["+lDatatype.map( d=>d.idRef + "->"+d.refNode).mkString(" ,")+"]")
       }
 
 
