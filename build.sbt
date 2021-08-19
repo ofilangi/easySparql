@@ -8,20 +8,24 @@ lazy val airframeLogVersion = "21.6.0"
 lazy val scalaJsDOMVersion = "1.1.0"
 lazy val scalaStubVersion = "1.0.0"
 lazy val scalatagVersion = "0.9.4"
-lazy val rdf4jVersion = "3.7.1"
+lazy val rdf4jVersion = "3.7.2"
 lazy val slf4j_version = "1.7.31"
 
 /* p2m2 libs */
 lazy val comunica_actor_init_sparql_rdfjs_version = "1.21.1"
 lazy val data_model_rdfjs_version = "1.0.0"
-lazy val n3js_facade_version = "1.10.0"
-lazy val rdfxml_streaming_parser_version = "1.4.0"
+lazy val n3js_facade_version = "1.11.1"
+lazy val rdfxml_streaming_parser_version = "1.5.0"
 
 /* npm libs */
 lazy val npm_axios_version = "0.21.1"
 lazy val npm_qs_version = "6.10.1"
 lazy val npm_showdown_version = "1.9.1"
 lazy val npm_comunica_version_datasource = "1.21.1"
+
+lazy val types_jest = "27.0.1"
+lazy val jest = "27.0.6"
+lazy val tsjest = "27.0.5"
 
 releaseIgnoreUntrackedFiles := true
 
@@ -149,6 +153,7 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
       "org.scala-js" %% "scalajs-stubs" % scalaStubVersion % "provided",
       "org.slf4j" % "slf4j-api" % slf4j_version,
       "org.slf4j" % "slf4j-simple" % slf4j_version,
+      "org.eclipse.rdf4j" % "rdf4j-sail" % rdf4jVersion,
       "org.eclipse.rdf4j" % "rdf4j-storage" % rdf4jVersion,
       "org.eclipse.rdf4j" % "rdf4j-tools-federation" % rdf4jVersion
     ))
@@ -190,9 +195,9 @@ s"""{
     "test": "jest --detectOpenHandles"
     },
   "devDependencies": {
-    "@types/jest": "^26.0.23",
-    "jest": "^27.0.6",
-    "ts-jest": "^27.0.3"
+    "@types/jest": "^$types_jest ",
+    "jest": "^$jest ",
+    "ts-jest": "^$tsjest"
   },
   "jest": {
     "transform": {

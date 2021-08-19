@@ -327,7 +327,10 @@ case class SWDiscovery(
         .getChild[Node](rootNode.asInstanceOf[Node])
         .filter( _.idRef == focusNode )
         .lastOption match {
-          case Some(n)  => {
+          case Some(n) if n.isInstanceOf[Root]  => {
+            SWDiscovery(config,rootNode.addDecoratingAttribute(key,value).asInstanceOf[Root],Some(rootNode.reference()))
+          }
+          case Some(n) => {
             val sw = remove(focusNode)
             sw.focusManagement(n.addDecoratingAttribute(key,value))
           }
