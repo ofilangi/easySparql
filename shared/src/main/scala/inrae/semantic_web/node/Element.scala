@@ -21,7 +21,7 @@ sealed abstract class Node(
 
   def addDecoratingAttribute(key : String, value : String) : Node = copy(children,decorations + (key -> value))
 
-  def addChildren(n: Node): Node =  copy(children :+ n )
+  def addChildren(n: Node): Node =  copy(children :+ n)
 
   def addChildren(focusId : String, n: Node): Node =  {
     focusId match {
@@ -157,7 +157,6 @@ final case class Root(
   }
 
   override def addChildren(n: Node): Root = {
-
     n match {
       case s : SourcesNode => addSourceNode(s)
       case d : DatatypeNode => addDatatype(d)
@@ -168,10 +167,9 @@ final case class Root(
   }
 
   override def addChildren(focusId : String, n: Node): Root = {
-    if ( focusId == idRef)
+    if ( focusId == idRef) {
       addChildren(n)
-    else {
-
+    } else {
       Root(
         idRef,
         prefixes,
@@ -181,12 +179,14 @@ final case class Root(
         lSourcesNodes.map(_.addChildren(focusId,n).asInstanceOf[SourcesNode]),
         lBindNode.map(_.addChildren(focusId,n).asInstanceOf[Bind]),
         lSolutionSequenceModifierNode.map(_.addChildren(focusId,n).asInstanceOf[SolutionSequenceModifierNode]),
-        children.map(_.addChildren(focusId,n)))
+        children.map(_.addChildren(focusId,n)),
+        decorations
+      )
     }
   }
 
 
-  def copy(children : Seq[Node],decoratingAttributeMap : Map[String,String]=Map()) : Node = {
+  def copy(children : Seq[Node],decoratingAttributeMap : Map[String,String]=decorations) : Node = {
     Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode,
       lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decoratingAttributeMap)
   }

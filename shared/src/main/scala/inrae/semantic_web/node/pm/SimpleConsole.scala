@@ -116,7 +116,6 @@ case class SimpleConsole(consoleColor : Boolean = true,displayRootStyle : Boolea
             case _ => ""
         }
 
-
         labelledLine + children + sourcesNode + datatypeNode + solutionSequenceModifierNode + expressionNode
     }
 }
