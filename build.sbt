@@ -153,6 +153,7 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
       "org.scala-js" %% "scalajs-stubs" % scalaStubVersion % "provided",
       "org.slf4j" % "slf4j-api" % slf4j_version,
       "org.slf4j" % "slf4j-simple" % slf4j_version,
+      "org.eclipse.rdf4j" % "rdf4j-sail" % rdf4jVersion,
       "org.eclipse.rdf4j" % "rdf4j-storage" % rdf4jVersion,
       "org.eclipse.rdf4j" % "rdf4j-tools-federation" % rdf4jVersion
     ))
