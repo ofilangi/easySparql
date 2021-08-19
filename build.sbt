@@ -29,7 +29,8 @@ lazy val tsjest = "27.0.5"
 
 releaseIgnoreUntrackedFiles := true
 
-val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", "local-SNAPSHOT" )
+val static_version_build = "0.3.0-alpha.4"
+val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build )
 val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
 
 
