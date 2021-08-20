@@ -117,5 +117,14 @@ object SWDiscoveryDecorationTest extends TestSuite {
         .focus("something")
         .getDecoration("someKey") == "someValue")
     }
+
+    test("setDecoratingAttribute/getDecoration using datatype") {
+      assert(SWDiscovery(config)
+        .setDecoration("someKeyRoot","someValueRoot")
+        .something("start")
+        .datatype("http://something","d")
+        .root
+        .getDecoration("someKeyRoot") == "someValueRoot")
+    }
   }
 }
