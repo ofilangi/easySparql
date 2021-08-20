@@ -111,10 +111,15 @@ case class SWDiscovery(
 
   /* set the current focus on the select node */
   def focus(ref : String) : SWDiscovery = {
-    trace("focus")
-    pm.NodeVisitor.getNodeWithRef(ref, rootNode).lastOption match {
-      case Some(node) => SWDiscovery(config,rootNode,Some(node.reference()))
-      case None => throw SWDiscoveryException(s"$ref does not exist.")
+    if ( ref == focusNode ) {
+      SWDiscovery(config,rootNode,fn)
+    } else if (ref == rootNode.idRef) {
+      root
+    } else {
+      pm.NodeVisitor.getNodeWithRef(ref, rootNode).lastOption match {
+        case Some(node) => SWDiscovery(config,rootNode,Some(node.reference()))
+        case None => throw SWDiscoveryException(s"$ref does not exist.")
+      }
     }
   }
 
