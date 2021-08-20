@@ -114,7 +114,7 @@ final case class Root(
   /* prefix management */
 
   def addPrefix(short : String,long : IRI) : Root = {
-    Root(idRef,prefixes + (short -> long ),defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children)
+    Root(idRef,prefixes + (short -> long ),defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
   }
 
   def getPrefix(short : String) : IRI = prefixes.getOrElse(short,IRI(""))
@@ -122,23 +122,23 @@ final case class Root(
   def getPrefixes : Map[String,IRI] = prefixes
 
   def addDefaultGraph(graph : IRI) : Root =
-    Root(idRef,prefixes,defaultGraph :+ graph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children)
+    Root(idRef,prefixes,defaultGraph :+ graph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
   def addNamedGraph(graph : IRI) : Root =
-    Root(idRef,prefixes,defaultGraph,namedGraph :+ graph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children)
+    Root(idRef,prefixes,defaultGraph,namedGraph :+ graph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
   private def addSourceNode(s : SourcesNode) : Root =
-    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes :+ s,lBindNode,lSolutionSequenceModifierNode,children)
+    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes :+ s,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
   private def addDatatype(d : DatatypeNode) : Root =
-    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode :+ d,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children)
+    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode :+ d,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
 
   private def addBindNode(b : Bind) : Root =
-    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode :+ b,lSolutionSequenceModifierNode ,children)
+    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode :+ b,lSolutionSequenceModifierNode ,children,decorations)
 
   private def addSolutionSequenceModifierNode(s : SolutionSequenceModifierNode) : Root =
-    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode :+ s,children)
+    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode :+ s,children,decorations)
 
 
   override def getChild[SpecializedNodeType <: Node ](that : SpecializedNodeType)(implicit tag: ClassTag[SpecializedNodeType]) : Seq[SpecializedNodeType] = {
