@@ -140,6 +140,21 @@ object SWDiscoveryTest extends TestSuite {
       }).flatten
     }
 
+    test("focus on the root using focus method") {
+      val disco = SWDiscovery(config)
+      val f = disco.focus()
+
+      Try(disco.focus(f)) match {
+        case Success(_) => assert(true)
+        case Failure(_) => assert(false)
+      }
+
+      Try(disco.something("h1").focus(f)) match {
+        case Success(_) => assert(true)
+        case Failure(_) => assert(false)
+      }
+
+    }
 
     test("bad focus") {
       Try(startRequest
