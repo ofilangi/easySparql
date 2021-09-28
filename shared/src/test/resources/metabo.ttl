@@ -13,7 +13,6 @@ foodb:FDB000004 a peak1:Compound ;
   peak2:cas_number "350602-26-5" ; 
   rdfs:comment "Constituent of the leaves of Nymphaea alba [CCD]. Cyanidin 3-(6''-acetyl-galactoside) is found in lowbush blueberry and highbush blueberry." ; 
   peak2:subclass peak3:subclass_0 ; 
-  null null ; 
   peak2:InChI "InChI=1S/C23H22O12/c1-9(24)32-8-18-19(29)20(30)21(31)23(35-18)34-17-7-12-14(27)5-11(25)6-16(12)33-22(17)10-2-3-13(26)15(28)4-10/h2-7,18-21,23,29-31H,8H2,1H3,(H3-,25,26,27,28)/p+1/t18-,19+,20+,21-,23-/m1/s1" ; 
   peak2:iupac_name "3-{[(2S,3R,4S,5R,6R)-6-[(acetyloxy)methyl]-3,4,5-trihydroxyoxan-2-yl]oxy}-2-(3,4-dihydroxyphenyl)-5,7-dihydroxy-1lambda4-chromen-1-ylium" ; 
   peak2:superclass peak3:superclass_0 ; 
@@ -42,8 +41,7 @@ foodb:FDB000013 a peak1:Compound ;
   peak2:can_smiles "[H][C@]1(COC(=O)CCC(O)=O)O[C@@]([H])(OC2=CC3=C(O)C=C(O)C=C3[O+]=C2C2=CC=C(O)C(O)=C2)[C@]([H])(O)[C@@]([H])(O)[C@]1([H])O" ; 
   rdfs:comment "Constituent of Phragmites australis [CCD]. Cyanidin 3-(6''-succinyl-glucoside) is found in strawberry." ; 
   peak2:annotation_quality peak3:annot_quality_0 ; 
-  peak2:cas_number "216692-08-9" ; 
-  null null .
+  peak2:cas_number "216692-08-9".
 
 foodb:FDB000014 a peak1:Compound ;
    peak2:db_source "FOODB"  ;
@@ -58,7 +56,6 @@ foodb:FDB000014 a peak1:Compound ;
   peak2:subclass peak3:subclass_1 ; 
   peak2:can_smiles "[H][C@]1(COC(=O)CCC(O)=O)O[C@@]([H])(OC2=CC3=C(O)C=C(O)C=C3[O+]=C2C2=CC=C(O)C=C2)[C@]([H])(O)[C@@]([H])(O)[C@]1([H])O" ; 
   peak2:exact_mass "533.129515886"^^xsd:double ; 
-  null null ; 
   peak2:mass_plush "534.1367918860001"^^xsd:double ; 
   peak2:kingdom peak3:kingdom_1 ; 
   rdfs:comment "Pelargonidin 3-(6''-succinyl-glucoside) is a member of the class of compounds known as anthocyanidin-3-o-glycosides. Anthocyanidin-3-o-glycosides are phenolic compounds containing one anthocyanidin moiety which is O-glycosidically linked to a carbohydrate moiety at the C3-position. Pelargonidin 3-(6''-succinyl-glucoside) is practically insoluble (in water) and a weakly acidic compound (based on its pKa). Pelargonidin 3-(6''-succinyl-glucoside) can be found in cloudberry, red raspberry, strawberry, and wheat, which makes pelargonidin 3-(6''-succinyl-glucoside) a potential biomarker for the consumption of these food products. " ; 

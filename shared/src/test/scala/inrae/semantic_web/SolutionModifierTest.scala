@@ -6,7 +6,7 @@ import utest.{TestSuite, Tests, test}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object SolutionModifierTest extends TestSuite {
-  val insert_data = DataTestFactory.insert_virtuoso1(
+  val insertData = DataTestFactory.insertVirtuoso1(
     """
       <http://p1>    <http://xmlns.com/foaf/0.1/name> "Alice" .
       <http://p1>    <http://xmlns.com/foaf/0.1/mbox>  <mailto:alice@example.com> .
@@ -29,7 +29,7 @@ object SolutionModifierTest extends TestSuite {
 
   def tests = Tests {
     test("no modifier") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         basereq.commit()
           .raw.map(r => {
           assert(r("results")("bindings").arr.length == 3)
@@ -38,7 +38,7 @@ object SolutionModifierTest extends TestSuite {
     }
 
     test("limit") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         basereq
           .limit(1)
           .commit()
@@ -49,7 +49,7 @@ object SolutionModifierTest extends TestSuite {
     }
 
     test("offset") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         basereq
           .limit(2)
           .offset(1)
@@ -61,7 +61,7 @@ object SolutionModifierTest extends TestSuite {
     }
 
     test("distinct") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         basereq
           .distinct
           .commit()
@@ -72,7 +72,7 @@ object SolutionModifierTest extends TestSuite {
     }
 
     test("reduced") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         basereq
           .reduced
           .commit()

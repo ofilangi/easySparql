@@ -1,5 +1,5 @@
 package inrae.semantic_web
-import inrae.semantic_web.internal.{Root, pm}
+import inrae.semantic_web.node.{Root, pm}
 import wvlet.log.Logger.rootLogger._
 
 object SparqlQueryBuilder {

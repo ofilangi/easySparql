@@ -198,7 +198,7 @@ implicit val rw: RW[QueryVariable] = macroRW
 case class QueryVariable (var name : String) extends SparqlDefinition {
   name = SparqlDefinition.cleanString(name)
   override def toString : String = {
-    "?"+name
+    if (name != "*") "?"+name else name
   }
   def sparql : String = toString
 

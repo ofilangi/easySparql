@@ -9,7 +9,7 @@ import scala.concurrent.Future
 object HttpRequestDriverTest extends TestSuite {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  val insert_data : Future[Any] = DataTestFactory.insert_virtuoso1(
+  val insertData : Future[Any] = DataTestFactory.insertVirtuoso1(
     """
       <aaRosHttpDriverTest> <bb> <cc> .
       """.stripMargin, this.getClass.getSimpleName)
@@ -23,8 +23,8 @@ object HttpRequestDriverTest extends TestSuite {
   def tests: Tests = Tests {
 
     test("AxiosRequestDriver get") {
-      insert_data.map(_ => {
-        AxiosRequestDriver(idName = "test", method = "get", url = DataTestFactory.url_endpoint, login = "", password = "", token = "", auth = "")
+      insertData.map(_ => {
+        AxiosRequestDriver(idName = "test", method = "get", url = DataTestFactory.urlEndpoint, login = "", password = "", token = "", auth = "")
           .request(query)
           .map(qr => {
             assert(qr.json("results")("bindings").arr(0)("b")("value").value == "bb")
@@ -34,8 +34,8 @@ object HttpRequestDriverTest extends TestSuite {
     }
 
     test("AxiosRequestDriver get bad request") {
-      insert_data.map(_ => {
-        AxiosRequestDriver(idName = "test", method = "get", url = DataTestFactory.url_endpoint, login = "", password = "", token = "", auth = "")
+      insertData.map(_ => {
+        AxiosRequestDriver(idName = "test", method = "get", url = DataTestFactory.urlEndpoint, login = "", password = "", token = "", auth = "")
           .request("bad request")
           .map(_ => assert(false))
           .recover(_ => assert(true))
@@ -43,7 +43,7 @@ object HttpRequestDriverTest extends TestSuite {
     }
 /*
     test("AxiosRequestDriver get malformed endpoint") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         AxiosRequestDriver(idName = "test", method = "get", url = "bidon", login = "", password = "", token = "", auth = "")
           .request(query)
           .map(qr => assert(false))
@@ -52,7 +52,7 @@ object HttpRequestDriverTest extends TestSuite {
     }
 
     test("AxiosRequestDriver get endpoint does not exist") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         AxiosRequestDriver(idName = "test", method = "get", url = "http://bidon.com", login = "", password = "", token = "", auth = "")
           .request(query)
           .map(qr => assert(false))
@@ -61,8 +61,8 @@ object HttpRequestDriverTest extends TestSuite {
     }
 */
     test("AxiosRequestDriver post") {
-      insert_data.map(_ => {
-        AxiosRequestDriver(idName = "test", method = "post", url = DataTestFactory.url_endpoint, login = "", password = "", token = "", auth = "")
+      insertData.map(_ => {
+        AxiosRequestDriver(idName = "test", method = "post", url = DataTestFactory.urlEndpoint, login = "", password = "", token = "", auth = "")
           .request(query)
           .map(qr => {
             assert(qr.json("results")("bindings").arr(0)("b")("value").value == "bb")
@@ -72,8 +72,8 @@ object HttpRequestDriverTest extends TestSuite {
     }
 
     test("AxiosRequestDriver post bad request") {
-      insert_data.map(_ => {
-        AxiosRequestDriver(idName = "test", method = "post", url = DataTestFactory.url_endpoint, login = "", password = "", token = "", auth = "")
+      insertData.map(_ => {
+        AxiosRequestDriver(idName = "test", method = "post", url = DataTestFactory.urlEndpoint, login = "", password = "", token = "", auth = "")
           .request("bad request")
           .map(_ => assert(false))
           .recover(_ => assert(true))
@@ -81,7 +81,7 @@ object HttpRequestDriverTest extends TestSuite {
     }
     /*
     test("AxiosRequestDriver post malformed endpoint") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         AxiosRequestDriver(idName = "test", method = "post", url = "bidon", login = "", password = "", token = "", auth = "")
           .request(query)
           .map(qr => assert(false))
@@ -90,7 +90,7 @@ object HttpRequestDriverTest extends TestSuite {
     }
 
     test("AxiosRequestDriver post endpoint does not exist") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         AxiosRequestDriver(idName = "test", method = "post", url = "http://bidon.com", login = "", password = "", token = "", auth = "")
           .post(query)
           .map(qr => assert(false))
@@ -153,5 +153,5 @@ object HttpRequestDriverTest extends TestSuite {
   }
 
 
-  TestRunner.runAsync(tests).map { _ => DataTestFactory.delete_virtuoso1(this.getClass.getSimpleName) }
+  TestRunner.runAsync(tests).map { _ => DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName) }
 }

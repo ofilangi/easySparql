@@ -15,21 +15,21 @@ case class SWDiscoveryHelperJs(sw : SWDiscovery) {
   def count(): Promise[Int] = { sw.finder.count.toJSPromise }
 
   @JSExport
-  def findClasses(regex : String = "",uri:URI = URI(""), page : Int = 0 ): Promise[js.Array[URI]] =
+  def classes(regex : String = "",uri:URI = URI(""), page : Int = 0 ): Promise[js.Array[URI]] =
   { sw.finder.classes(regex,uri,page).map(array => array.toJSArray).toJSPromise }
 
   @JSExport
-  def findObjectProperties(regex : String = "",motherClassProperties: URI = URI(""), page : Int = 0 ) : Promise[js.Array[URI]] = {
+  def objectProperties(regex : String = "",motherClassProperties: URI = URI(""), page : Int = 0 ) : Promise[js.Array[URI]] = {
     sw.finder.objectProperties(regex,motherClassProperties,page).map(array => array.toJSArray).toJSPromise
   }
 
   @JSExport
-  def findDatatypeProperties(regex : String = "",motherClassProperties: URI = URI("") , page : Int = 0) : Promise[js.Array[URI]] = {
+  def datatypeProperties(regex : String = "",motherClassProperties: URI = URI("") , page : Int = 0) : Promise[js.Array[URI]] = {
     sw.finder.datatypeProperties(regex,motherClassProperties,page).map(array => array.toJSArray).toJSPromise
   }
 
   @JSExport
-  def findSubjectProperties(regex : String = "",motherClassProperties: URI = URI("") , page : Int = 0) : Promise[js.Array[URI]] = {
+  def subjectProperties(regex : String = "",motherClassProperties: URI = URI("") , page : Int = 0) : Promise[js.Array[URI]] = {
     sw.finder.subjectProperties(regex,motherClassProperties,page).map(array => array.toJSArray).toJSPromise
   }
 

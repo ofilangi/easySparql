@@ -26,7 +26,7 @@ object SWDiscoverySelectIterable extends TestSuite {
 
       """.stripMargin
 
-  val insert_data = DataTestFactory.insert_virtuoso1(data, this.getClass.getSimpleName)
+  val insertData = DataTestFactory.insertVirtuoso1(data, this.getClass.getSimpleName)
 
   val nbValues = data.split(" ").filter( _ == "<http://aa>").length
 
@@ -40,7 +40,7 @@ object SWDiscoverySelectIterable extends TestSuite {
         {
          "sources" : [{
            "id"       : "local",
-           "url"      : "${DataTestFactory.url_endpoint}"
+           "url"      : "${DataTestFactory.urlEndpoint}"
          }],
          "settings" : {
             "logLevel" : "info",
@@ -53,7 +53,7 @@ object SWDiscoverySelectIterable extends TestSuite {
   def tests = Tests {
 
     test("something") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()
@@ -64,7 +64,7 @@ object SWDiscoverySelectIterable extends TestSuite {
             val nb = args._1
             val results = args._2
             assert(nb == nblock)
-              val listR = Future.sequence((0 to nblock-1).map( iblock => {
+              Future.sequence((0 to nblock-1).map( iblock => {
                 results(iblock).commit().raw.map({
                   r => {
                     assert(r("results")("bindings").arr.length<=pageSize)

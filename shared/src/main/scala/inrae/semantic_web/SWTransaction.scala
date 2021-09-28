@@ -1,7 +1,7 @@
 package inrae.semantic_web
 
 import inrae.semantic_web.event._
-import inrae.semantic_web.internal._
+import inrae.semantic_web.node._
 import inrae.semantic_web.rdf.{QueryVariable, SparqlDefinition, URI}
 import inrae.semantic_web.sparql.QueryResult
 import inrae.semantic_web.strategy._
@@ -33,14 +33,16 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
 
   private var _progressionCallBack = Seq[Double => Unit]()
 
-  def progression(  callBack  : Double => Unit  ): Unit = {
+  def progression(  callBack  : Double => Unit  ): SWTransaction = {
     _progressionCallBack = _progressionCallBack :+ callBack
+    this
   }
 
   private var _requestEventCallBack = Seq[String => Unit]()
 
-  def requestEvent(callBack  : String => Unit  ): Unit = {
+  def requestEvent(callBack  : String => Unit  ): SWTransaction = {
     _requestEventCallBack = _requestEventCallBack :+ callBack
+    this
   }
 
   def notify(event: DiscoveryRequestEvent): Unit = {
@@ -64,7 +66,8 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
   }
 
 
-  def process_datatypes(qr : QueryResult,
+  def process_datatypes(root: Root,
+                        qr : QueryResult,
                         datatypeNode : DatatypeNode,
                         lUris : Seq[SparqlDefinition]) = {
     debug(" -- process_datatypes --")
@@ -75,6 +78,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
         trace(" datatypes:" + lSubUris.toString)
         /* request using api */
         SWDiscovery(sw.config)
+          .prefixes(root.getPrefixes)
           .something("val_uri")
           .setList(lSubUris.flatMap(
             _ match {
@@ -112,7 +116,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
     if ( lDatatype.filter( datatypeNode => lSelectedVariable.map(_.name).contains(datatypeNode.refNode) ).length != lDatatype.length )
       {
         notify(DiscoveryRequestEvent(DiscoveryStateRequestEvent.ERROR_REQUEST_DEFINITION))
-        throw SWDiscoveryException("Select variable with his datatype ["+lDatatype.map( d=>d.idRef + "->"+d.refNode).mkString(" ,")+"]")
+        throw SWDiscoveryException("The user have to select node of interest before setup a desired datatype ["+lDatatype.map( d=>d.idRef + "->"+d.refNode).mkString(" ,")+"]")
       }
 
 
@@ -145,7 +149,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
                         List()
                       }
                     }
-                  Future.sequence(process_datatypes(qr, datatypeNode, lUris))
+                  Future.sequence(process_datatypes(sw.rootNode,qr, datatypeNode, lUris))
                 }
                 case None => {
                   Future {}
@@ -191,7 +195,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
   }
 
   def projection( lRef: Seq[String] )  : SWTransaction = {
-    /* check if a projection and concat the variables selected list or create a new one */
+
     sw.rootNode.getChild(Projection(Seq(),"")).lastOption match {
       case Some(p) => {
         val listVariable : Seq[QueryVariable] = p.variables ++  lRef.map(QueryVariable(_))
@@ -199,7 +203,9 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
           Projection(listVariable,p.idRef,p.children))
           .focus(p.idRef).transaction
       }
-      case None => sw.root.focusManagement(Projection(lRef.map(QueryVariable(_)),sw.getUniqueRef())).transaction
+      case None => {
+        sw.root.focusManagement(Projection(lRef.map(QueryVariable(_)),sw.getUniqueRef())).transaction
+      }
     }
 
   }

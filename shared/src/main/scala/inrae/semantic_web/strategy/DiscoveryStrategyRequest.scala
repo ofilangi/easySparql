@@ -4,7 +4,7 @@ import inrae.semantic_web.ConfigurationObject.Source
 import inrae.semantic_web.driver._
 import inrae.semantic_web.event.{DiscoveryRequestEvent, DiscoveryStateRequestEvent, Publisher, Subscriber}
 import inrae.semantic_web.{SWTransaction, SparqlQueryBuilder}
-import inrae.semantic_web.internal.{Root, pm}
+import inrae.semantic_web.node.{Root, pm}
 import inrae.semantic_web.sparql.QueryResult
 import wvlet.log.Logger.rootLogger.trace
 

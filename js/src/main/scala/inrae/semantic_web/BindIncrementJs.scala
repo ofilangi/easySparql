@@ -28,4 +28,10 @@ case class BindIncrementJs(swf: SWDiscoveryJs,`var` : String) {
   @JSExport
   def rand() :  SWDiscoveryJs = SWDiscoveryJs(swf.config,swf.sw.bind(`var`).rand())
 
+  @JSExport
+  def datatype() :  SWDiscoveryJs = SWDiscoveryJs(swf.config,swf.sw.bind(`var`).datatype())
+
+  @JSExport
+  def str() :  SWDiscoveryJs = SWDiscoveryJs(swf.config,swf.sw.bind(`var`).str())
+
 }

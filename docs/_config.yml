@@ -1,0 +1,4 @@
+title: Discovery
+description: ease the development of decision support tools exploiting RDF databases
+plugins:
+  - jekyll-target-blank

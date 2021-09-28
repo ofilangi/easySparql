@@ -8,7 +8,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success, Try}
 
 object OrderByTest extends TestSuite {
-  val insert_data = DataTestFactory.insert_virtuoso1(
+  val insertData = DataTestFactory.insertVirtuoso1(
     """
       <http://aa> <http://bb> 2 .
       <http://aa> <http://bb> 3 .
@@ -21,7 +21,7 @@ object OrderByTest extends TestSuite {
 
   def tests = Tests {
     test("order by") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()
@@ -53,7 +53,7 @@ object OrderByTest extends TestSuite {
     }
 
     test("order by with list") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something("h")
@@ -70,7 +70,7 @@ object OrderByTest extends TestSuite {
     }
 
     test("order by desc") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()
@@ -87,7 +87,7 @@ object OrderByTest extends TestSuite {
     }
 
     test("order by desc with list") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something("h")
@@ -104,7 +104,7 @@ object OrderByTest extends TestSuite {
     }
 
     test("mix order by asc/desc with list") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something("h")

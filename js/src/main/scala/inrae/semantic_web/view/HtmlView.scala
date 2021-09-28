@@ -1,7 +1,7 @@
 package inrae.semantic_web.view
 
 import facade.npm.Showdown
-import inrae.semantic_web.internal.pm.{SelectNode, SimpleConsole}
+import inrae.semantic_web.node.pm.{NodeVisitor, SimpleConsole}
 import inrae.semantic_web.{SWDiscovery, SWDiscoveryVersionAtBuildTime}
 import org.scalajs.dom.document
 
@@ -68,7 +68,7 @@ case class HtmlView(sw: SWDiscovery,regex : String = "") {
 
 ### New step on focus
 
- - **target node**      : ${SelectNode.getNodeWithRef(sw.focusNode,sw.rootNode).mkString(",")}
+ - **target node**      : ${NodeVisitor.getNodeWithRef(sw.focusNode,sw.rootNode).mkString(",")}
  - **regex**            : $regex
  - **Number of values** : **$count**
 
@@ -100,77 +100,8 @@ ${sw.config}
 ```
 ${SimpleConsole(consoleColor=false,displayRootStyle=false).get(sw.rootNode)}
 ```
-
-### Help
-
-#### Common
-
-```
-- helper : this page
-- focus(`var`) : set the focus
-- root() : go back to root
-- prefix(`short`,`long`) : set prefix
-- graph(`iri`), namedGraph(`iri`) : set graph or graph named
-```
-
-#### Browsing the semantic graph
-
-```
-- something(`var`) : start a query about something
-- isA(`uri`)  : set the focus type/class
-- isSubjectOf(`uri`,`var`) : focus is a subject of a triplet which `uri` is the property
-- isObjectOf(`uri`,`var`) : focus is the object of a triplet which `uri` is the property
-
-- datatype(`uri`,`var`) : focus is a subject of a triplet which `uri` is a datatype property (OWL)
-```
-
-#### Setting values
-
-```
-- set(`sparqlDef`)
-- setList(`sparqlDef1`,`sparqlDef2`,..)
-```
-
-#### Filtering
-
-```
-- filter.not.{fun}
-- filter.isLiteral
-- filter.isUri
-- filter.isBlank
-- filter.regex( pattern:`literal|var`, flags : `literal|var` )
-- filter.contains( `literal|var` )
-- filter.strStarts( `literal|var` )
-- filter.strEnds( `literal|var` )
-- filter.equal( `literal|var` )
-- filter.notEqual( `literal|var` )
-- filter.inf( `literal|var` )
-- filter.infEqual( `literal|var` )
-- filter.sup( `literal|var` )
-- filter.supEqual( `literal|var` )
-```
-
-#### Binding a new variable
-
-```
-- .bind(`var`).subStr(startingLoc : SparqlDefinition,length : SparqlDefinition )
-- .bind(`var`).replace(pattern : SparqlDefinition, replacement : SparqlDefinition, flags : SparqlDefinition="")
-- .bind(`var`).abs()
-- .bind(`var`).ceil()
-- .bind(`var`).floor()
-- .bind(`var`).rand()
-```
-
-#### Getting results
-
-```
-- select(`ref1,ref2,ref3,..`)
-- select(`[ref1,ref2,ref3,..]`,`limit`,`offset`) : getResults as a promise (json format)
-- selectByPage(`ref1,ref2,ref3,..`) : getResults as a promise (count,Array[Promise])
-```
-
-
- - [declare an issue ?] (https://github.com/p2m2/Discovery/issues/new)
+- [Help](https://p2m2.github.io/discovery/user_docs.html)
+- [declare an issue ?] (https://github.com/p2m2/discovery/issues/new)
 
 """
 

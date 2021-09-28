@@ -1,14 +1,14 @@
 package inrae.semantic_web
 
-import inrae.semantic_web.internal.Node
+import inrae.semantic_web.node.Node
 import inrae.semantic_web.rdf.{IRI, SparqlDefinition, URI}
 import inrae.semantic_web.view.HtmlView
 
 import scala.scalajs._
+import scala.scalajs.js.{Dynamic, JSON}
 import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
-
-
+import upickle.default.write
 
 @JSExportTopLevel(name="SWDiscovery")
 case class SWDiscoveryJs(
@@ -45,19 +45,22 @@ case class SWDiscoveryJs(
   def bind(`var` : String) : BindIncrementJs = BindIncrementJs(this,`var`)
 
   @JSExport
-  def usage() : SWDiscoveryJs = SWDiscoveryJs(config,SWDiscovery(config).usage)
+  def finder :SWDiscoveryHelperJs = SWDiscoveryHelperJs(sw)
 
   @JSExport
-  def finder :SWDiscoveryHelperJs = SWDiscoveryHelperJs(sw)
+  def setConfig(newConfig : StatementConfiguration) : SWDiscoveryJs = SWDiscoveryJs(newConfig,sw.setConfig(newConfig))
+
+  @JSExport
+  def getConfig() : StatementConfiguration = sw.getConfig
 
   @JSExport
   def focus(ref : String) : SWDiscoveryJs = SWDiscoveryJs(config,sw.focus(ref))
 
   @JSExport
-  def focusManagement(n : Node) : SWDiscoveryJs = SWDiscoveryJs(config,sw.focusManagement(n))
+  def prefix(short : String, long : Any ) : SWDiscoveryJs = SWDiscoveryJs(config,sw.prefix(short,toIRI(long)))
 
   @JSExport
-  def prefix(short : String, long : Any ) : SWDiscoveryJs = SWDiscoveryJs(config,sw.prefix(short,toIRI(long)))
+  def getPrefix(short : String) : Any = sw.getPrefix(short)
 
   @JSExport
   def graph(graph : Any) : SWDiscoveryJs = SWDiscoveryJs(config,sw.graph(toIRI(graph)))
@@ -102,27 +105,49 @@ case class SWDiscoveryJs(
   def datatype( uri : Any, ref : String ) : SWDiscoveryJs = SWDiscoveryJs(config,sw.datatype(toURI(uri),ref))
 
   @JSExport
+  def remove( focus : String ) : SWDiscoveryJs = SWDiscoveryJs(config,sw.remove(focus))
+
+  @JSExport
   def console() : SWDiscoveryJs = SWDiscoveryJs(config,sw.console)
 
   @JSExport
   def sparql() : String = sw.sparql
 
   @JSExport
-  def getSerializedString: String = sw.getSerializedString
+  def sparql_get() : String = sw.sparql_get
+
+  @JSExport
+  def sparql_curl() : String = sw.sparql_curl
+
+  @JSExport
+  def getSerializedString(): String = sw.getSerializedString
 
   @JSExport
   def setSerializedString(query : String): SWDiscoveryJs = SWDiscoveryJs(config,sw.setSerializedString(query))
 
   @JSExport
+  def browse[A](visitor : js.Function2[Dynamic, Integer,A] ) : js.Array[A] = {
+    val visitor2 : (Node, Integer) => A = (n, p) => {
+      visitor(JSON.parse(write(n)),p)
+    }
+    sw.browse(visitor2).toJSArray
+  }
+  
+  @JSExport
+  def setDecoration(key : String, value : String) : SWDiscoveryJs = SWDiscoveryJs(config,sw.setDecoration(key,value))
+
+  @JSExport
+  def getDecoration(key : String) : String = sw.getDecoration(key)
+
+  @JSExport
   def select(lRef: String*): SWTransactionJs = SWTransactionJs(sw.select(lRef))
 
   @JSExport
-  def select(lRef: Seq[String], limit : Int = 0, offset : Int = 0): SWTransactionJs =
-    SWTransactionJs(sw.select(lRef,limit,offset))
-
+  def select(lRef: js.Array[String], limit : Int = 0, offset : Int = 0): SWTransactionJs =
+    SWTransactionJs(sw.select(lRef.toSeq,limit,offset))
 
   @JSExport
-  def selectByPage(lRef: String*)  : js.Promise[(Int,js.Array[SWTransactionJs])] = {
+  def selectByPage(lRef: js.Array[String])  : js.Promise[(Int,js.Array[SWTransactionJs])] = {
     sw.finder.count.map(
       nSolutions => {
         val nit : Int = nSolutions / config.conf.settings.pageSize
@@ -133,4 +158,7 @@ case class SWDiscoveryJs(
         }).toJSArray)
       }).toJSPromise
   }
+
+  @JSExport
+  def selectByPage(lRef: String*)  : js.Promise[(Int,js.Array[SWTransactionJs])] = selectByPage(lRef.toJSArray)
 }

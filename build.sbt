@@ -2,32 +2,35 @@ import sbt.Keys.scalacOptions
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 /* scala libs */
-lazy val utestVersion = "0.7.7"
-lazy val upickleVersion  = "1.2.2"
-lazy val airframeLogVersion = "20.11.0"
-lazy val scalaParserCombinatorVersion = "1.1.2"
-lazy val RosHttpVersion = "3.0.0"
+lazy val utestVersion = "0.7.10"
+lazy val upickleVersion  = "1.4.0"
+lazy val airframeLogVersion = "21.6.0"
 lazy val scalaJsDOMVersion = "1.1.0"
 lazy val scalaStubVersion = "1.0.0"
-lazy val scalatagVersion = "0.9.2"
-lazy val rdf4jVersion = "3.6.0-M2"
-lazy val slf4j_version = "1.7.9"
+lazy val scalatagVersion = "0.9.4"
+lazy val rdf4jVersion = "3.7.2"
+lazy val slf4j_version = "1.7.31"
 
 /* p2m2 libs */
-lazy val comunica_actor_init_sparql_rdfjs_version = "1.0.0"
+lazy val comunica_actor_init_sparql_rdfjs_version = "1.21.1"
 lazy val data_model_rdfjs_version = "1.0.0"
-lazy val n3js_facade_version = "1.0.1"
-lazy val rdfxml_streaming_parser_version = "1.0.0"
+lazy val n3js_facade_version = "1.11.1"
+lazy val rdfxml_streaming_parser_version = "1.5.0"
 
 /* npm libs */
 lazy val npm_axios_version = "0.21.1"
-lazy val npm_qs_version = "6.9.6"
+lazy val npm_qs_version = "6.10.1"
 lazy val npm_showdown_version = "1.9.1"
-lazy val npm_comunica_version = "1.19.2"
+lazy val npm_comunica_version_datasource = "1.21.1"
+
+lazy val types_jest = "27.0.1"
+lazy val jest = "27.0.6"
+lazy val tsjest = "27.0.5"
 
 releaseIgnoreUntrackedFiles := true
 
-val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", "local-SNAPSHOT" )
+val static_version_build = "0.3.0-alpha.6"
+val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build )
 val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
 
 
@@ -51,11 +54,11 @@ ThisBuild / organization := "com.github.p2m2"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / organizationHomepage := Some(url("https://www6.inrae.fr/p2m2"))
 ThisBuild / licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
-ThisBuild / homepage := Some(url("https://github.com/p2m2/Discovery"))
-ThisBuild / description := "Ease Sparql request on the network MetaboHUB/Semantics Databases."
+ThisBuild / homepage := Some(url("https://github.com/p2m2/discovery"))
+ThisBuild / description := "Ease Sparql request to reach semantic database."
 ThisBuild / scmInfo := Some(
     ScmInfo(
-      url("https://github.com/p2m2/Discovery"),
+      url("https://github.com/p2m2/discovery"),
       "scm:git@github.com:p2m2/Discovery.git"
     )
   )
@@ -101,21 +104,20 @@ lazy val root = (project in file("."))
 
 lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
   .settings(
-    resolvers += Resolver.bintrayRepo("hmil", "maven"),
     libraryDependencies ++= Seq(
+      "com.softwaremill.sttp.client3" %% "core" % "3.3.4" % Test,
       "com.lihaoyi" %%% "utest" % utestVersion % Test,
-      "fr.hmil" %%% "roshttp" % RosHttpVersion % Test ,
       "com.lihaoyi" %%% "upickle" % upickleVersion,
       "org.wvlet.airframe" %%% "airframe-log" % airframeLogVersion,
-      "org.scala-lang.modules" %%% "scala-parser-combinators" % scalaParserCombinatorVersion
+      "io.lemonlabs" %%% "scala-uri" % "3.5.0"
     ),
     testFrameworks += new TestFramework("utest.runner.Framework"),
     scalacOptions ++= Seq("-deprecation", "-feature"),
     classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.AllLibraryJars,
-    coverageMinimum := 70,
+    coverageMinimumStmtTotal := 70,
     coverageFailOnMinimum := false,
     coverageHighlighting := true,
-    parallelExecution in Test := false
+    Test / parallelExecution := false
   )
   .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
   .jsSettings(
@@ -126,19 +128,20 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
       "com.github.p2m2" %%% "rdfxml-streaming-parser" % rdfxml_streaming_parser_version,
     ),
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
-    npmDependencies in Compile ++= Seq(
+    Compile / npmDependencies  ++= Seq(
       "axios" -> npm_axios_version,
       "qs" -> npm_qs_version,
       "showdown" -> npm_showdown_version,
-      "@comunica/utils-datasource" -> npm_comunica_version
+      "@comunica/utils-datasource" -> npm_comunica_version_datasource,
+      "@types/sax" -> "1.2.1"
     ),
 
-    scalaJSLinkerConfig in (Compile, fastOptJS ) ~= {
+    Compile / fastOptJS / scalaJSLinkerConfig ~= {
       _.withOptimizer(false)
         .withPrettyPrint(true)
         .withSourceMap(true)
     },
-    scalaJSLinkerConfig in (Compile, fullOptJS) ~= {
+    Compile / fullOptJS / scalaJSLinkerConfig ~= {
       _.withSourceMap(false)
         .withModuleKind(ModuleKind.CommonJSModule)
     },
@@ -151,6 +154,7 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
       "org.scala-js" %% "scalajs-stubs" % scalaStubVersion % "provided",
       "org.slf4j" % "slf4j-api" % slf4j_version,
       "org.slf4j" % "slf4j-simple" % slf4j_version,
+      "org.eclipse.rdf4j" % "rdf4j-sail" % rdf4jVersion,
       "org.eclipse.rdf4j" % "rdf4j-storage" % rdf4jVersion,
       "org.eclipse.rdf4j" % "rdf4j-tools-federation" % rdf4jVersion
     ))
@@ -178,8 +182,7 @@ npmPackageJson := {
     case (x,idx) if ( (idx > indexStartDependencies) && (idx < indexEndDependencies) ) => x
   }
 
-
-  val file =  reflect.io.File("./package.json").writeAll(
+  reflect.io.File("./package.json").writeAll(
     Predef.augmentString(
 s"""{
    "name": "@${(ThisBuild / organizationName).value}/${(ThisBuild / name).value}",
@@ -189,12 +192,31 @@ s"""{
    "files": [
      "js/target/scala-2.13/scalajs-bundler/main/discovery-opt.js"
    ],
+   "scripts": {
+    "test": "jest --detectOpenHandles"
+    },
+  "devDependencies": {
+    "@types/jest": "^$types_jest ",
+    "jest": "^$jest ",
+    "ts-jest": "^$tsjest"
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "ts-jest"
+    },
+    "testRegex": "(ts/__tests__/.*|\\\\.(test|spec))\\\\.(ts|tsx|js)$$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ]
+   },
    "dependencies": {
 ${dependencies.mkString("\n")}
    },
    "repository": {
      "type": "git",
-     "url": "git+https://github.com/p2m2/Discovery.git"
+     "url": "git+https://github.com/p2m2/discovery.git"
    },
    "keywords": [
      "sparql",
@@ -204,9 +226,9 @@ ${dependencies.mkString("\n")}
    "author": "Olivier Filangi",
    "license": "MIT",
    "bugs": {
-     "url": "https://github.com/p2m2/Discovery/issues"
+     "url": "https://github.com/p2m2/discovery/issues"
    },
-   "homepage": "https://github.com/p2m2/Discovery#README.md"
+   "homepage": "https://p2m2.github.io/discovery/"
  }
  """).stripMargin)
 }

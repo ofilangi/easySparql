@@ -9,7 +9,7 @@ import scala.language.postfixOps
 
 object SWDiscoveryAbortRequestTest extends TestSuite {
 
-  val insert_data = DataTestFactory.insert_virtuoso1(
+  val insertData = DataTestFactory.insertVirtuoso1(
     """
       <aaSWAbortRequestTest> <bb> <cc> .
       <aa> <datatype> "testdatatype" .
@@ -20,7 +20,7 @@ object SWDiscoveryAbortRequestTest extends TestSuite {
 
   def tests = Tests {
     test("Abort Request steps") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
       val swr =
         SWDiscovery(config).something("h1")
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))

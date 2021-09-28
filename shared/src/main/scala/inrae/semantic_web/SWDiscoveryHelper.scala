@@ -58,7 +58,7 @@ case class SWDiscoveryHelper(sw : SWDiscovery) {
             .map( json => {
               json("results")("bindings").arr.map(
                 row => SparqlBuilder.createUri(row("_esp___type"))
-              ).toSeq
+              ).toSeq.distinct
             })
         } else {
           Future { Seq[URI]() }
@@ -108,7 +108,7 @@ case class SWDiscoveryHelper(sw : SWDiscovery) {
               json("results")("bindings").arr.map(
                 row => {
                   SparqlBuilder.createUri(row("_esp___property")) }
-              ).toSeq
+              ).toSeq.distinct
             })
         } else {
           Future { Seq[URI]() }
@@ -163,7 +163,7 @@ case class SWDiscoveryHelper(sw : SWDiscovery) {
               json("results")("bindings").arr.map(
                 row => {
                   SparqlBuilder.createUri(row("_esp___property")) }
-              ).toSeq
+              ).toSeq.distinct
             })
         } else {
           Future { Seq[URI]() }

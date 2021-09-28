@@ -21,11 +21,20 @@ object RequestDriverFactoryTest extends TestSuite {
     }
 
     test("url text/turtle should instantiate Rdf4jRequestDriver") {
-      val source : Source = Source(id="test",url=DataTestFactory.url_endpoint,mimetype="text/turtle")
+      val source : Source = Source(id="test",url=DataTestFactory.urlEndpoint,mimetype="text/turtle")
       Try(RequestDriverFactory.build(source)) match {
         case Success(_ : Rdf4jLocalRequestDriver) => assert(true)
         case Success(c) => assert(false)
         case Failure(e) => assert(false)
+      }
+    }
+
+    test("bad url text/turtle should instantiate Rdf4jRequestDriver") {
+      val source : Source = Source(id="test",file="http://badurl",mimetype="text/turtle")
+      Try(RequestDriverFactory.build(source)) match {
+        case Success(_ : Rdf4jLocalRequestDriver) => assert(false)
+        case Success(c) => assert(false)
+        case Failure(e) => assert(true)
       }
     }
 /*
@@ -47,6 +56,17 @@ object RequestDriverFactoryTest extends TestSuite {
         case Success(_ : Rdf4jLocalRequestDriver) => { tempFile.delete() ; assert(true) }
         case Success(_) => { tempFile.delete() ;assert(false) }
         case Failure(_) => { tempFile.delete() ;assert(false) }
+      }
+    }
+
+    test("bad definition of path file should give an error") {
+
+      val tempFile = File.createTempFile("test-", "-rdf")
+      val source : Source = Source(id="test",file="/some/some",mimetype="text/turtle")
+      Try(RequestDriverFactory.build(source)) match {
+        case Success(_ : Rdf4jLocalRequestDriver) => assert(false)
+        case Success(_) => { tempFile.delete() ;assert(false) }
+        case Failure(_) => { tempFile.delete() ;assert(true) }
       }
     }
   }

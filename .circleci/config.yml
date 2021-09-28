@@ -17,7 +17,7 @@
 #
 version: 2.1
 orbs:
-  node: circleci/node@4.2.0
+  node: circleci/node@4.7.0
 workflows:
   compile-workflow:
     jobs:
@@ -189,8 +189,7 @@ jobs:
       - run:
           name: Test JVM env and Coverage
           command: |
-            cat /dev/null | sbt clean coverage discoveryJVM/test:test
-            sbt discoveryJVM/coverageReport
+            cat /dev/null | sbt clean coverage discoveryJVM/Test/test discoveryJVM/coverageReport
             bash <(curl -s https://codecov.io/bash)
             bash <(curl -Ls https://coverage.codacy.com/get.sh) report
 
@@ -206,14 +205,17 @@ jobs:
         - checkout
         - setup_remote_docker
         - node/install
-        - restore_cache:
-            keys:
-              - v1-dependencies-{{ checksum "build.sbt" }}
-              # fallback to using the latest cache if no exact match is found
-              - v1-dependencies-
         - run:
-            name: Test JS
+            name: Test ScalaJs/JavaScript
             command: sbt discoveryJS/test
+        - run:
+            name: Test TypeScript
+            command: |
+              sbt "discoveryJS / Compile / fastOptJS / webpack"
+              sbt npmPackageJson
+              npm i
+              npm test
+
         #- run:
         #    name: Set Npm token
         #    command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
@@ -279,7 +281,7 @@ jobs:
 
   publish_npm:
     docker:
-      - image: circleci/node:12.20
+      - image: cimg/node:16.7.0
         auth:
           username: ${DOCKER_USER}
           password: ${DOCKER_PASS}

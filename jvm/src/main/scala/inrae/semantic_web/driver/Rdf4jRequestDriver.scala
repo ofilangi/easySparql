@@ -12,6 +12,7 @@ import scala.util.{Failure, Success, Try}
 
 trait Rdf4jRequestDriver extends RequestDriver {
 
+  @throws(classOf[SWDiscoveryException])
   def requestConnexionRepository(con : RepositoryConnection, query : String): Future[QueryResult] = {
     Future {
       publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.START_HTTP_REQUEST))

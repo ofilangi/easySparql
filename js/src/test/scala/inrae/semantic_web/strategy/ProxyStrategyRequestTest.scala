@@ -8,7 +8,7 @@ import utest.{TestSuite, Tests, test}
 object ProxyStrategyRequestTest extends TestSuite {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  val insert_data = DataTestFactory.insert_virtuoso1(
+  val insertData = DataTestFactory.insertVirtuoso1(
     """
       <aaRosHttpDriverTest> <bb> <cc> .
       """.stripMargin, this.getClass.getSimpleName)

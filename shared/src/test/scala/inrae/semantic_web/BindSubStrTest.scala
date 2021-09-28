@@ -7,7 +7,7 @@ import utest.{TestSuite, Tests, test}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object BindSubStrTest extends TestSuite {
-  val insert_data = DataTestFactory.insert_virtuoso1(
+  val insertData = DataTestFactory.insertVirtuoso1(
     """
       <http://aa1> <http://bb> "abcdef" .
       <http://aa2> <http://bb> "abcdefghij" .
@@ -19,7 +19,7 @@ object BindSubStrTest extends TestSuite {
 
   def tests = Tests {
     test("bind subStr") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()
@@ -35,7 +35,7 @@ object BindSubStrTest extends TestSuite {
     }
 
     test("bind subStr and test") {
-      insert_data.map(_ => {
+      insertData.map(_ => {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()

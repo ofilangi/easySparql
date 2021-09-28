@@ -9,9 +9,9 @@ import scala.language.postfixOps
 
 object SWDiscoverySubscribeEventTest extends TestSuite {
 
-  DataTestFactory.delete_virtuoso1(this.getClass.getSimpleName)
+  DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
 
-  DataTestFactory.insert_virtuoso1(
+  DataTestFactory.insertVirtuoso1(
     """
       <http://aaSWSubscribeEventTest> <http://bb> <http://cc> .
       <http://aa> <http://datatype> "testdatatype" .

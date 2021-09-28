@@ -1,3 +1,9 @@
+/**
+ * Discovery configuration definition.
+ *
+ *
+ *
+ */
 package inrae.semantic_web
 
 import upickle.default.{macroRW, ReadWriter => RW}
@@ -7,13 +13,21 @@ import wvlet.log.Logger.rootLogger.warn
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import scala.util.{Failure, Success}
 
+
+
+
 final case class StatementConfigurationException(private val message: String = "",
                                             private val cause: Throwable = None.orNull) extends Exception(message,cause)
 
-
+/**
+ * Configuration definition.
+ *
+ */
+@JSExportTopLevel(name="ConfigurationObject")
 object ConfigurationObject {
 
   /* sources configuration */
+  @JSExportTopLevel(name="StatementConfigurationJson")
   case class StatementConfigurationJson(
                                          sources : Seq[Source],
                                          settings : GeneralSetting = new GeneralSetting(),
@@ -22,6 +36,7 @@ object ConfigurationObject {
       "\n\n"  + settings.toString
 
   }
+  @JSExportTopLevel(name="Source")
   case class Source(
                      id:String, /* identify the source endpoint */
                      url: String       = "", /* url access */
@@ -80,6 +95,18 @@ object ConfigurationObject {
 
   }
 
+  /**
+   * GeneralSetting configuration definition.
+   *
+   * @constructor create a configuration.
+   * @param cache to available cache
+   * @param logLevel level definition (trace, debug, info, warn, error, all, off)
+   * @param sizeBatchProcessing
+   * @param pageSize
+   * @param proxy
+   * @param urlProxy
+   */
+  @JSExportTopLevel(name="GeneralSetting")
   case class GeneralSetting(
                       cache : Boolean = true,
                       logLevel : String = "warn"          , // trace, debug, info, warn, error, all, off
