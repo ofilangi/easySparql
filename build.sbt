@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 /* scala libs */
 lazy val utestVersion = "0.7.10"
-lazy val upickleVersion  = "1.4.0"
+lazy val upickleVersion  = "1.4.1"
 lazy val airframeLogVersion = "21.6.0"
 lazy val scalaJsDOMVersion = "1.1.0"
 lazy val scalaStubVersion = "1.0.0"

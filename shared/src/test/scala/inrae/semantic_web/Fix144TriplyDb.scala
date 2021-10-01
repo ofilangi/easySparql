@@ -4,8 +4,6 @@ import inrae.data.DataTestFactory
 import inrae.semantic_web.rdf.URI
 import utest.{TestSuite, Tests, test}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 
 
 object Fix144TriplyDb extends TestSuite {
@@ -34,12 +32,15 @@ object Fix144TriplyDb extends TestSuite {
         SWDiscovery(config)
           .something("h1")
           .isSubjectOf(URI("a"),"type")
-          .console
+          .filter.contains("Business")
           .select(Seq("type"))
+
+      /*
+      ********* Inactive test because remote access ******
           .commit()
           .raw.map(r => {
             println(r)
-        })
+        })*/
     }
   }
 }
