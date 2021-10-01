@@ -21,7 +21,7 @@ lazy val rdfxml_streaming_parser_version = "1.5.0"
 lazy val npm_axios_version = "0.21.1"
 lazy val npm_qs_version = "6.10.1"
 lazy val npm_showdown_version = "1.9.1"
-lazy val npm_comunica_version_datasource = "1.21.1"
+lazy val npm_comunica_version_datasource = "1.22.2"
 
 lazy val types_jest = "27.0.1"
 lazy val jest = "27.0.6"
@@ -29,7 +29,7 @@ lazy val tsjest = "27.0.5"
 
 releaseIgnoreUntrackedFiles := true
 
-val static_version_build = "0.3.0-alpha.6"
+val static_version_build = "0.3.0-alpha.7"
 val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build )
 val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
 
