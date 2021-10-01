@@ -24,6 +24,7 @@ lazy val npm_showdown_version = "1.9.1"
 lazy val npm_comunica_version_datasource = "1.22.2"
 
 lazy val types_jest = "27.0.1"
+lazy val type_sax = "1.2.3"
 lazy val jest = "27.0.6"
 lazy val tsjest = "27.0.5"
 
@@ -133,7 +134,7 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
       "qs" -> npm_qs_version,
       "showdown" -> npm_showdown_version,
       "@comunica/utils-datasource" -> npm_comunica_version_datasource,
-      "@types/sax" -> "1.2.1"
+      "@types/sax" -> type_sax
     ),
 
     Compile / fastOptJS / scalaJSLinkerConfig ~= {
