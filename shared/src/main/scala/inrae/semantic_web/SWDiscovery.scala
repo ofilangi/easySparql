@@ -1,6 +1,6 @@
 package inrae.semantic_web
 import inrae.semantic_web.node._
-import inrae.semantic_web.node.pm.{NodeVisitor, RemoveNode}
+import inrae.semantic_web.node.pm.{ManageSWConsistency, NodeVisitor, RemoveNode}
 import inrae.semantic_web.rdf._
 import inrae.semantic_web.strategy.StrategyRequestBuilder
 import wvlet.log.Logger
@@ -294,7 +294,7 @@ case class SWDiscovery(
    * Discovery request
    *
    */
-  def transaction = SWTransaction(this)
+  def transaction = SWTransaction(ManageSWConsistency.manage(this))
   /**
    * Return solutions as Future corresponding with the current Node request.
    * @param lRef : selected variables

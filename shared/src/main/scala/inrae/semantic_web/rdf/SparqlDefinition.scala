@@ -123,15 +123,14 @@ case class URI (localNameUser : String,nameSpaceUser : String = "") extends Spar
 object Anonymous {
 
   implicit val rw: RW[Anonymous] = macroRW
-
   implicit def fromString(s: String): Anonymous = Anonymous(s)
 }
 
 @JSExportTopLevel(name="Anonymous")
-case class Anonymous(var value : String) extends SparqlDefinition {
+case class Anonymous(var value : String = "" ) extends SparqlDefinition {
   value = SparqlDefinition.cleanString(value)
 
-  override def toString : String = value
+  override def toString : String = "[]"
 
   def sparql : String = toString
 
@@ -197,6 +196,7 @@ implicit val rw: RW[QueryVariable] = macroRW
 @JSExportTopLevel(name="QueryVariable")
 case class QueryVariable (var name : String) extends SparqlDefinition {
   name = SparqlDefinition.cleanString(name)
+
   override def toString : String = {
     if (name != "*") "?"+name else name
   }

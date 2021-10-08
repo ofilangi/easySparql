@@ -1,5 +1,6 @@
 package inrae.semantic_web.node.pm
-import inrae.semantic_web.node.{RdfNode, Something}
+import inrae.semantic_web.node.{ListValues, RdfNode, Something, SubjectOf, Value}
+import inrae.semantic_web.rdf.QueryVariable
 import utest.{TestSuite, Tests, test}
 
 
@@ -69,6 +70,42 @@ object NodeVisitorTest extends TestSuite {
       assert(NodeVisitor.map(Something("autre",List(Something("test"))), 0, (n,p) => {
         n.idRef->p
       }) == List( "autre" -> 0 , "test" -> 1 ) )
+    }
+
+    test("ref using query variable 1 - nothing is used") {
+      assert(NodeVisitor.getNodeUsingQueryVariable("r1", Something("r1"))==Seq())
+    }
+
+    test("ref using query variable 2 - RDF Node ") {
+      assert(NodeVisitor.getNodeUsingQueryVariable("r1", SubjectOf("i",term=QueryVariable("r1")))
+        == Seq(SubjectOf("i",term=QueryVariable("r1"))))
+    }
+
+    test("ref using query variable 3 - Value ") {
+      assert(NodeVisitor.getNodeUsingQueryVariable("r1", Value(idRef= "i",term=QueryVariable("r1")))
+        == Seq(Value(idRef= "i",term=QueryVariable("r1"))) )
+    }
+
+    test("ref using query variable 4 - ListValue ") {
+      assert(NodeVisitor.getNodeUsingQueryVariable("r1", ListValues(idRef= "i",terms=Seq(QueryVariable("r1"))))
+        == Seq(ListValues(idRef= "i",terms=Seq(QueryVariable("r1")))) )
+    }
+    test("ref using query variable 5 - ListValue ") {
+      assert(NodeVisitor.getNodeUsingQueryVariable("r1", ListValues(idRef= "i",terms=Seq(QueryVariable("r2"))))
+        == Seq() )
+    }
+    test("ref using query variable 5 - ListValue ") {
+      assert(NodeVisitor.getNodeUsingQueryVariable("r1",
+        ListValues(idRef= "i",terms=Seq(QueryVariable("r1"),QueryVariable("r2"))))
+        == Seq(ListValues(idRef= "i",terms=Seq(QueryVariable("r1"),QueryVariable("r2")))) )
+    }
+
+    test("ref using query variable 5 - Compose ") {
+      assert(NodeVisitor.getNodeUsingQueryVariable("r1",
+        SubjectOf("i",term=QueryVariable("r1"),children=Seq(ListValues(idRef= "i",terms=Seq(QueryVariable("r1"))))))
+        == Seq(SubjectOf("i",term=QueryVariable("r1"),
+                children=Seq(ListValues(idRef= "i",terms=Seq(QueryVariable("r1"))))),
+        ListValues(idRef= "i",terms=Seq(QueryVariable("r1")))) )
     }
   }
 }

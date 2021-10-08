@@ -1,13 +1,28 @@
 package inrae.semantic_web.node.pm
 
 import inrae.semantic_web.node._
+import inrae.semantic_web.rdf.QueryVariable
 
 object NodeVisitor  {
 
-  def getNodeWithRef(ref : String, n: Node ) : Array[RdfNode] = n match {
-            case node : RdfNode  if (node.reference() == ref) => Array[RdfNode](node)
+  /**
+   * Find a Node with the reference id
+   * @param ref
+   * @param n
+   * @return
+   */
+  def getNodeWithRef( ref : String, n: Node ) : Array[RdfNode] = n match {
+            case node : RdfNode  if node.reference() == ref => Array[RdfNode](node)
             case _   => n.children.toArray.flatMap( child => getNodeWithRef( ref, child ))
   }
+
+
+  def getNodeUsingQueryVariable( ref : String, n : Node ): Seq[Node] = ( n match {
+    case node: URIRdfNode if node.term == QueryVariable(ref) => Seq(node)
+    case node: Value if node.term == QueryVariable(ref) => Seq(node)
+    case lNodes: ListValues if lNodes.terms.contains(QueryVariable(ref)) => Seq(lNodes)
+    case _ => Seq()
+  } ) ++ n.children.flatMap(getNodeUsingQueryVariable(ref, _))
 
   /**
    * Get All ancestors croissant order

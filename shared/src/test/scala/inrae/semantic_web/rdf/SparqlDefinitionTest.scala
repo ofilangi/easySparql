@@ -42,8 +42,8 @@ object SparqlDefinitionTest extends TestSuite {
 
     test("Anonymous") {
       val value : Anonymous = Anonymous("something")
-      assert( value.toString == "something")
-      assert( value.sparql == "something")
+      assert( value.toString == "[]")
+      assert( value.sparql == "[]")
       assert( value.naiveLabel == "Anonymous[something]")
     }
 

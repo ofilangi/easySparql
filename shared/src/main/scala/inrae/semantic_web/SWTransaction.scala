@@ -2,6 +2,7 @@ package inrae.semantic_web
 
 import inrae.semantic_web.event._
 import inrae.semantic_web.node._
+import inrae.semantic_web.node.pm.ManageSWConsistency
 import inrae.semantic_web.rdf.{QueryVariable, SparqlDefinition, URI}
 import inrae.semantic_web.sparql.QueryResult
 import inrae.semantic_web.strategy._
@@ -65,7 +66,6 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
     _prom_raw failure(SWDiscoveryException("aborted by the user."))
   }
 
-
   def process_datatypes(root: Root,
                         qr : QueryResult,
                         datatypeNode : DatatypeNode,
@@ -100,7 +100,6 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
 
   def commit() : SWTransaction = {
     notify(DiscoveryRequestEvent(DiscoveryStateRequestEvent.START))
-
     val lSelectedVariable : Seq[QueryVariable] = sw.rootNode.getChild(Projection(List(),"")).lastOption match {
       case Some(proj) => proj.variables.distinct
       case None => {
