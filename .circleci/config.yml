@@ -211,6 +211,7 @@ jobs:
         - run:
             name: Test TypeScript
             command: |
+              ## bug with Node 17 -> https://github.com/webpack/webpack/issues/14532
               export NODE_OPTIONS=--openssl-legacy-provider
               sbt "discoveryJS / Compile / fastOptJS / webpack"
               sbt npmPackageJson
