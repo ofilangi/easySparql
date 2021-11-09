@@ -98,7 +98,7 @@ executors:
   virtuoso_environment_executor:
       working_directory: ~/repo
       docker:
-        - image: circleci/openjdk:8-jdk
+        - image: circleci/openjdk:11-jdk
           auth:
             username: ${DOCKER_USER}
             password: ${DOCKER_PASS}
@@ -211,6 +211,8 @@ jobs:
         - run:
             name: Test TypeScript
             command: |
+              ## bug with Node 17 -> https://github.com/webpack/webpack/issues/14532
+              export NODE_OPTIONS=--openssl-legacy-provider
               sbt "discoveryJS / Compile / fastOptJS / webpack"
               sbt npmPackageJson
               npm i

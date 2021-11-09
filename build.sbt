@@ -3,13 +3,14 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 /* scala libs */
 lazy val utestVersion = "0.7.10"
-lazy val upickleVersion  = "1.4.1"
-lazy val airframeLogVersion = "21.6.0"
+lazy val upickleVersion  = "1.4.2"
+lazy val airframeLogVersion = "21.10.0"
 lazy val scalaJsDOMVersion = "1.1.0"
-lazy val scalaStubVersion = "1.0.0"
-lazy val scalatagVersion = "0.9.4"
-lazy val rdf4jVersion = "3.7.2"
-lazy val slf4j_version = "1.7.31"
+lazy val scalaStubVersion = "1.1.0"
+lazy val scalatagVersion = "0.10.0"
+lazy val rdf4jVersion = "3.7.3"
+lazy val slf4j_version = "1.7.32"
+lazy val scalaUriVersion = "3.6.0"
 
 /* p2m2 libs */
 lazy val comunica_actor_init_sparql_rdfjs_version = "1.21.1"
@@ -18,15 +19,15 @@ lazy val n3js_facade_version = "1.11.1"
 lazy val rdfxml_streaming_parser_version = "1.5.0"
 
 /* npm libs */
-lazy val npm_axios_version = "0.21.1"
+lazy val npm_axios_version = "0.24.0"
 lazy val npm_qs_version = "6.10.1"
 lazy val npm_showdown_version = "1.9.1"
 lazy val npm_comunica_version_datasource = "1.22.2"
 
-lazy val types_jest = "27.0.1"
+lazy val types_jest = "27.0.2"
 lazy val type_sax = "1.2.3"
-lazy val jest = "27.0.6"
-lazy val tsjest = "27.0.5"
+lazy val jest = "27.3.1"
+lazy val tsjest = "27.0.7"
 
 releaseIgnoreUntrackedFiles := true
 
@@ -50,7 +51,7 @@ ThisBuild / name := "discovery"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / name := "discovery"
 ThisBuild / version :=  version_build
-ThisBuild / scalaVersion := "2.13.5"
+ThisBuild / scalaVersion := "2.13.7"
 ThisBuild / organization := "com.github.p2m2"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / organizationHomepage := Some(url("https://www6.inrae.fr/p2m2"))
@@ -110,12 +111,12 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
       "com.lihaoyi" %%% "utest" % utestVersion % Test,
       "com.lihaoyi" %%% "upickle" % upickleVersion,
       "org.wvlet.airframe" %%% "airframe-log" % airframeLogVersion,
-      "io.lemonlabs" %%% "scala-uri" % "3.5.0"
+      "io.lemonlabs" %%% "scala-uri" % scalaUriVersion
     ),
     testFrameworks += new TestFramework("utest.runner.Framework"),
     scalacOptions ++= Seq("-deprecation", "-feature"),
     classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.AllLibraryJars,
-    coverageMinimumStmtTotal := 70,
+    coverageMinimumStmtTotal := 86,
     coverageFailOnMinimum := false,
     coverageHighlighting := true,
     Test / parallelExecution := false
@@ -147,7 +148,7 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
         .withModuleKind(ModuleKind.CommonJSModule)
     },
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "1.1.0"
+      "org.scala-js" %%% "scalajs-dom" % "1.2.0"
     )
   )
   .jvmSettings(
