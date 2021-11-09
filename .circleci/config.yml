@@ -211,6 +211,7 @@ jobs:
         - run:
             name: Test TypeScript
             command: |
+              export NODE_OPTIONS=--openssl-legacy-provider
               sbt "discoveryJS / Compile / fastOptJS / webpack"
               sbt npmPackageJson
               npm i
