@@ -24,10 +24,10 @@ lazy val npm_qs_version = "6.10.1"
 lazy val npm_showdown_version = "1.9.1"
 lazy val npm_comunica_version_datasource = "1.22.2"
 
-lazy val types_jest = "27.0.1"
+lazy val types_jest = "27.0.2"
 lazy val type_sax = "1.2.3"
-lazy val jest = "27.0.6"
-lazy val tsjest = "27.0.5"
+lazy val jest = "27.3.1"
+lazy val tsjest = "27.0.7"
 
 releaseIgnoreUntrackedFiles := true
 
@@ -116,7 +116,7 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
     testFrameworks += new TestFramework("utest.runner.Framework"),
     scalacOptions ++= Seq("-deprecation", "-feature"),
     classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.AllLibraryJars,
-    coverageMinimumStmtTotal := 70,
+    coverageMinimumStmtTotal := 86,
     coverageFailOnMinimum := false,
     coverageHighlighting := true,
     Test / parallelExecution := false
