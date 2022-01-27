@@ -133,6 +133,8 @@ case class SWDiscovery(
 
   def prefix(short : String, long : IRI ) : SWDiscovery = SWDiscovery(config,rootNode.addPrefix(short , long ),Some(focusNode))
 
+  def comment(comment : String) : SWDiscovery = SWDiscovery(config,rootNode.addComment(comment),Some(focusNode))
+
   def prefixes( lPrefixes : Map[String,IRI] ) : SWDiscovery =
     (lPrefixes map {case (key, value) => prefix(key, value)
     }).toSeq match {
@@ -354,5 +356,4 @@ case class SWDiscovery(
       case None => ""
     }
   }
-
 }
