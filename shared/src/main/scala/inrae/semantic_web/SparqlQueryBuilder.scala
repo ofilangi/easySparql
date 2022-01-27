@@ -30,7 +30,8 @@ object SparqlQueryBuilder {
   def selectQueryString(n: Root): String = {
     debug(" -- selectQueryString -- ")
 
-    (pm.SparqlGenerator.prefixes(n.prefixes) + "\n" +
+    (n.comments.map( x => "#" + x ).mkString(" \n") +
+      pm.SparqlGenerator.prefixes(n.prefixes) + "\n" +
       baseQuery(n)).replace("\n\n","\n")
   }
 

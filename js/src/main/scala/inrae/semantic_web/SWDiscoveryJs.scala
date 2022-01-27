@@ -63,6 +63,9 @@ case class SWDiscoveryJs(
   def getPrefix(short : String) : Any = sw.getPrefix(short)
 
   @JSExport
+  def comment(comment : String) : SWDiscoveryJs = SWDiscoveryJs(config,sw.comment(comment))
+
+  @JSExport
   def graph(graph : Any) : SWDiscoveryJs = SWDiscoveryJs(config,sw.graph(toIRI(graph)))
 
   @JSExport
