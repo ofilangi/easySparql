@@ -102,7 +102,7 @@ final case class Root(
                    "rdfs"-> IRI("http://www.w3.org/2000/01/rdf-schema#"),
                    "xsd" -> IRI("http://www.w3.org/2001/XMLSchema#")
                  ),
-                 comments: Seq[String]      = Seq(),
+                 directives: Seq[String]      = Seq(),
                  defaultGraph : Seq[IRI]    = List[IRI](),
                  namedGraph : Seq[IRI]      = List[IRI](),
                  lDatatypeNode : Seq[DatatypeNode] = List[DatatypeNode](),
@@ -115,33 +115,33 @@ final case class Root(
   /* prefix management */
 
   def addPrefix(short : String,long : IRI) : Root = {
-    Root(idRef,prefixes + (short -> long ),comments,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
+    Root(idRef,prefixes + (short -> long ),directives,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
   }
   def getPrefix(short : String) : IRI = prefixes.getOrElse(short,IRI(""))
 
   def getPrefixes : Map[String,IRI] = prefixes
 
-  def addComment(comment : String) : Root =
-    Root(idRef,prefixes,comments :+ comment ,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
+  def addDirective(directive : String) : Root =
+    Root(idRef,prefixes,directives :+ directive ,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
   def addDefaultGraph(graph : IRI) : Root =
-    Root(idRef,prefixes,comments,defaultGraph :+ graph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
+    Root(idRef,prefixes,directives,defaultGraph :+ graph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
   def addNamedGraph(graph : IRI) : Root =
-    Root(idRef,prefixes,comments,defaultGraph,namedGraph :+ graph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
+    Root(idRef,prefixes,directives,defaultGraph,namedGraph :+ graph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
   private def addSourceNode(s : SourcesNode) : Root =
-    Root(idRef,prefixes,comments,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes :+ s,lBindNode,lSolutionSequenceModifierNode,children,decorations)
+    Root(idRef,prefixes,directives,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes :+ s,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
   private def addDatatype(d : DatatypeNode) : Root =
-    Root(idRef,prefixes,comments,defaultGraph,namedGraph,lDatatypeNode :+ d,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
+    Root(idRef,prefixes,directives,defaultGraph,namedGraph,lDatatypeNode :+ d,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
 
   private def addBindNode(b : Bind) : Root =
-    Root(idRef,prefixes,comments,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode :+ b,lSolutionSequenceModifierNode ,children,decorations)
+    Root(idRef,prefixes,directives,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode :+ b,lSolutionSequenceModifierNode ,children,decorations)
 
   private def addSolutionSequenceModifierNode(s : SolutionSequenceModifierNode) : Root =
-    Root(idRef,prefixes,comments,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode :+ s,children,decorations)
+    Root(idRef,prefixes,directives,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode :+ s,children,decorations)
 
 
   override def getChild[SpecializedNodeType <: Node ](that : SpecializedNodeType)(implicit tag: ClassTag[SpecializedNodeType]) : Seq[SpecializedNodeType] = {
@@ -176,7 +176,7 @@ final case class Root(
       Root(
         idRef,
         prefixes,
-        comments,
+        directives,
         defaultGraph,
         namedGraph,
         lDatatypeNode.map(_.addChildren(focusId,n).asInstanceOf[DatatypeNode]) ,
@@ -191,7 +191,7 @@ final case class Root(
 
 
   def copy(children : Seq[Node],decoratingAttributeMap : Map[String,String]=decorations) : Node = {
-    Root(idRef,prefixes,comments,defaultGraph,namedGraph,lDatatypeNode,
+    Root(idRef,prefixes,directives,defaultGraph,namedGraph,lDatatypeNode,
       lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decoratingAttributeMap)
   }
 
