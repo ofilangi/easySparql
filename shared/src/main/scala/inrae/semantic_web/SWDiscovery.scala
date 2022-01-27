@@ -133,7 +133,7 @@ case class SWDiscovery(
 
   def prefix(short : String, long : IRI ) : SWDiscovery = SWDiscovery(config,rootNode.addPrefix(short , long ),Some(focusNode))
 
-  def comment(comment : String) : SWDiscovery = SWDiscovery(config,rootNode.addComment(comment),Some(focusNode))
+  def directive(directive : String) : SWDiscovery = SWDiscovery(config,rootNode.addDirective(directive),Some(focusNode))
 
   def prefixes( lPrefixes : Map[String,IRI] ) : SWDiscovery =
     (lPrefixes map {case (key, value) => prefix(key, value)

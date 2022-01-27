@@ -13,8 +13,8 @@ object SparqlQueryBuilderTest extends TestSuite {
       assert(SparqlQueryBuilder.selectQueryString(Root()).nonEmpty)
     }
 
-    test("selectQueryString Root comment") {
-      assert(SparqlQueryBuilder.selectQueryString(Root(comments = Seq("test"))).contains("#test"))
+    test("selectQueryString Root directive") {
+      assert(SparqlQueryBuilder.selectQueryString(Root(directives = Seq("test"))).contains("test"))
     }
 
   }
