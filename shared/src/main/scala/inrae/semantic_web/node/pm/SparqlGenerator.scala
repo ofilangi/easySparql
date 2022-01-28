@@ -83,7 +83,7 @@ object SparqlGenerator  {
       case _ => ""
     }
 
-    "} " + {
+    "} " +  orderByForm +"\n" + {
       root.lSolutionSequenceModifierNode.filter {
         case l : Limit if l.value>0 => true
         case _ => false
@@ -93,7 +93,7 @@ object SparqlGenerator  {
         case o : Offset if o.value > 0 => true
         case _ => false
       }.lastOption.map(sparqlNode(_,"","")).getOrElse("")
-    } +  orderByForm
+    }
   }
 
   def prologCountSelection(varCount : String) : String = {
