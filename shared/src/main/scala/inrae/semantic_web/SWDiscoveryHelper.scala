@@ -15,12 +15,12 @@ case class SWDiscoveryHelper(sw : SWDiscovery) {
     "http://www.w3.org/1999/02/22-rdf-syntax-ns"
   ).mkString("|") + ")"
 
-  def count : Future[Int] = {
+  def count(lRef : Seq[String],distinct : Boolean = false) : Future[Int] = {
     sw
       .transaction
       .projection
       .aggregate("count")
-      .countAll()
+      .count(lRef,distinct)
       .commit()
       .raw
       .map( json => {

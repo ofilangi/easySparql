@@ -116,8 +116,9 @@ object SparqlGenerator  {
       case node : ListValues         => "\tVALUES ?" +varIdSire+ " { " + node.terms.map(t => t.sparql).mkString(" ") + " } .\n"
       case node : ProjectionExpression  => "(" + sparqlNode(node.expression,node.idRef,variableName) + " AS "+ node.`var` + ") "
       case node : Bind               => "\tBIND (" + sparqlNode(node.expression,varIdSire,variableName) + " AS "+ "?" + node.idRef + ") \n"
-      case node : Count              => "COUNT ("+ { if (node.distinct) "DISTINCT" else "" } + " "+ node.varToCount.sparql +")"
-      case node : CountAll           => "COUNT ("+ { if (node.distinct) "DISTINCT" else "" } + " * )"
+      case node : Count              => "COUNT ("+ { if (node.distinct) "DISTINCT" else "" } +
+        " concat("+ node.listVarToCount.map("str("+_.sparql+")").mkString(",") +"))"
+   //   case node : CountAll           => "COUNT ("+ { if (node.distinct) "DISTINCT" else "" } + " * )"
       case _ : Distinct              => "DISTINCT "
       case _ : Reduced               => "REDUCED "
       case node : Projection if node.variables.length>0     => node.variables.mkString(" ")

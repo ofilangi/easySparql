@@ -12,7 +12,7 @@ case class SWDiscoveryHelperJs(sw : SWDiscovery) {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
   @JSExport
-  def count(): Promise[Int] = { sw.finder.count.toJSPromise }
+  def count(lRef: js.Array[String],distinct : Boolean=false): Promise[Int] = { sw.finder.count(lRef.toSeq,distinct).toJSPromise }
 
   @JSExport
   def classes(regex : String = "",uri:URI = URI(""), page : Int = 0 ): Promise[js.Array[URI]] =

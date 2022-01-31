@@ -1260,8 +1260,7 @@ final case class Datatype(
 
 object AggregateNode {
   implicit val rw: RW[AggregateNode] = RW.merge(
-    Count.rw,
-    CountAll.rw
+    Count.rw
   )
 }
 
@@ -1300,7 +1299,7 @@ object Count {
 }
 
 final case class Count(
-                 varToCount : QueryVariable,
+                 listVarToCount : Seq[QueryVariable],
                  distinct : Boolean = false,
                  override val idRef : String,
                  override val children: Seq[Node] = Seq[Node](),
@@ -1309,23 +1308,7 @@ final case class Count(
   override def copy(
                      children: Seq[Node]=children,
                      decoratingAttributeMap : Map[String,String]=decorations
-                   ): Node = Count(varToCount,distinct,idRef,children,decoratingAttributeMap)
-}
-
-object CountAll {
-  implicit val rw: RW[CountAll] = macroRW
-}
-
-final case class CountAll(
-                           distinct : Boolean = false,
-                           override val idRef : String,
-                           override val children: Seq[Node] = Seq[Node](),
-                           override val decorations: Map[String,String] = Map()
-                         ) extends AggregateNode(idRef,children,decorations) {
-  override def copy(
-                     children: Seq[Node]=children,
-                     decoratingAttributeMap : Map[String,String]=decorations
-                   ): Node = CountAll(distinct,idRef,children,decoratingAttributeMap)
+                   ): Node = Count(listVarToCount,distinct,idRef,children,decoratingAttributeMap)
 }
 
 object BuiltInCallNode {

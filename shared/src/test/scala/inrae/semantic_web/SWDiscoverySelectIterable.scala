@@ -23,7 +23,7 @@ object SWDiscoverySelectIterable extends TestSuite {
       <http://aa> <http://bb> 10 .
       <http://aa> <http://bb> 11 .
       <http://aa> <http://bb> 12 .
-
+      <http://aa> <http://bb> 13 .
       """.stripMargin
 
   val insertData = DataTestFactory.insertVirtuoso1(data, this.getClass.getSimpleName)
@@ -59,11 +59,11 @@ object SWDiscoverySelectIterable extends TestSuite {
           .something()
           .set(URI("http://aa"))
           .isSubjectOf(URI("http://bb"), "obj")
-          .selectByPage(List("obj"))
+          .selectDistinctByPage( List("obj"))
           .map(args => {
-            val nb = args._1
+            val nbSolution = args._1
             val results = args._2
-            assert(nb == nblock)
+            assert(nbSolution == nbValues)
               Future.sequence((0 to nblock-1).map( iblock => {
                 results(iblock).commit().raw.map({
                   r => {
@@ -77,6 +77,20 @@ object SWDiscoverySelectIterable extends TestSuite {
           })
       }).flatten
     }
-  }
 
+    test("selectByPage with fake") {
+      insertData.map(_ => {
+        SWDiscovery(config)
+          .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
+          .something()
+          .set(URI("http://aa"))
+          .datatype(URI("http://fake/"),"fake")
+          .isSubjectOf(URI("http://bb"), "obj")
+          .selectByPage( List("obj","fake"))
+          .map(args => {
+            println(args)
+          })
+      }).flatten
+    }
+  }
 }
