@@ -15,18 +15,21 @@ case class SWDiscoveryHelper(sw : SWDiscovery) {
     "http://www.w3.org/1999/02/22-rdf-syntax-ns"
   ).mkString("|") + ")"
 
-  def count : Future[Int] = {
+  def count(distinct : Boolean = false) : Future[Int] = {
     sw
       .transaction
       .projection
       .aggregate("count")
-      .countAll()
+      .countAll(distinct)
+      .console
       .commit()
       .raw
       .map( json => {
         SparqlBuilder.createLiteral(json("results")("bindings")(0)("count")).toInt
       })
   }
+
+  def count : Future[Int] = count()
 
   /**
    * Discovery search functionalities

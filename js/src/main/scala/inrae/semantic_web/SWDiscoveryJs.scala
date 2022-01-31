@@ -150,18 +150,24 @@ case class SWDiscoveryJs(
     SWTransactionJs(sw.select(lRef.toSeq,limit,offset))
 
   @JSExport
-  def selectByPage(lRef: js.Array[String])  : js.Promise[(Int,js.Array[SWTransactionJs])] = {
-    sw.finder.count.map(
-      nSolutions => {
-        val nit : Int = nSolutions / config.conf.settings.pageSize
-        (nit+1,(0 to nit).map( p =>{
-          val limit = config.conf.settings.pageSize
-          val offset = p*config.conf.settings.pageSize
-          select(lRef,limit,offset)
-        }).toJSArray)
-      }).toJSPromise
-  }
+  def selectByPage(lRef: js.Array[String])  : js.Promise[(Int,js.Array[SWTransactionJs])] =
+    sw.selectByPage(lRef.toSeq).map( res => {
+      val n : Int = res._1
+      val l : Seq[SWTransaction] = res._2
+      (n, l.map(swt => SWTransactionJs(swt) ).toJSArray) }).toJSPromise
 
   @JSExport
-  def selectByPage(lRef: String*)  : js.Promise[(Int,js.Array[SWTransactionJs])] = selectByPage(lRef.toJSArray)
+  def selectByPage(lRef: String*)  : js.Promise[(Int,js.Array[SWTransactionJs])] =
+    selectByPage(lRef.toJSArray)
+
+  @JSExport
+  def selectDistinctByPage(lRef: js.Array[String])  : js.Promise[(Int,js.Array[SWTransactionJs])] =
+    sw.selectDistinctByPage(lRef.toSeq).map( res => {
+    val n : Int = res._1
+    val l : Seq[SWTransaction] = res._2
+    (n, l.map(swt => SWTransactionJs(swt) ).toJSArray) }).toJSPromise
+
+  @JSExport
+  def selectDistinctByPage(lRef: String*)  : js.Promise[(Int,js.Array[SWTransactionJs])] =
+    selectDistinctByPage(lRef.toJSArray)
 }

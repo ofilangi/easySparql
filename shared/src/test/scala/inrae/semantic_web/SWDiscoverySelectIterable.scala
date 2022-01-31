@@ -23,7 +23,7 @@ object SWDiscoverySelectIterable extends TestSuite {
       <http://aa> <http://bb> 10 .
       <http://aa> <http://bb> 11 .
       <http://aa> <http://bb> 12 .
-
+      <http://aa> <http://bb> 13 .
       """.stripMargin
 
   val insertData = DataTestFactory.insertVirtuoso1(data, this.getClass.getSimpleName)
@@ -59,7 +59,7 @@ object SWDiscoverySelectIterable extends TestSuite {
           .something()
           .set(URI("http://aa"))
           .isSubjectOf(URI("http://bb"), "obj")
-          .selectByPage(List("obj"))
+          .selectDistinctByPage( List("obj"))
           .map(args => {
             val nb = args._1
             val results = args._2
