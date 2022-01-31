@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export NODE_OPTIONS=--openssl-legacy-provider
+
 # clean dist directory
 rm dist/discovery*.js
 # generate build version

@@ -2,15 +2,16 @@ import sbt.Keys.scalacOptions
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 /* scala libs */
-lazy val utestVersion = "0.7.10"
-lazy val upickleVersion  = "1.4.2"
-lazy val airframeLogVersion = "21.10.0"
-lazy val scalaJsDOMVersion = "1.1.0"
+lazy val utestVersion = "0.7.11"
+lazy val upickleVersion  = "1.5.0"
+lazy val airframeLogVersion = "21.12.1"
+lazy val sttpClient3Version = "3.4.1"
 lazy val scalaStubVersion = "1.1.0"
-lazy val scalatagVersion = "0.10.0"
-lazy val rdf4jVersion = "3.7.3"
+lazy val scalatagVersion = "0.11.1"
+lazy val rdf4jVersion = "3.7.4"
 lazy val slf4j_version = "1.7.32"
 lazy val scalaUriVersion = "3.6.0"
+lazy val scalajsDom = "1.2.0"
 
 /* p2m2 libs */
 lazy val comunica_actor_init_sparql_rdfjs_version = "1.21.1"
@@ -19,19 +20,19 @@ lazy val n3js_facade_version = "1.11.1"
 lazy val rdfxml_streaming_parser_version = "1.5.0"
 
 /* npm libs */
-lazy val npm_axios_version = "0.24.0"
-lazy val npm_qs_version = "6.10.1"
+lazy val npm_axios_version = "0.25.0"
+lazy val npm_qs_version = "6.10.3"
 lazy val npm_showdown_version = "1.9.1"
 lazy val npm_comunica_version_datasource = "1.22.2"
 
-lazy val types_jest = "27.0.2"
-lazy val type_sax = "1.2.3"
-lazy val jest = "27.3.1"
-lazy val tsjest = "27.0.7"
+lazy val types_jest = "27.4.0"
+lazy val type_sax = "1.2.4"
+lazy val jest = "27.4.7"
+lazy val tsjest = "27.1.3"
 
 releaseIgnoreUntrackedFiles := true
 
-val static_version_build = "0.3.1"
+val static_version_build = "0.3.2"
 val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build )
 val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
 
@@ -107,7 +108,7 @@ lazy val root = (project in file("."))
 lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
   .settings(
     libraryDependencies ++= Seq(
-      "com.softwaremill.sttp.client3" %% "core" % "3.3.4" % Test,
+      "com.softwaremill.sttp.client3" %% "core" % sttpClient3Version % Test,
       "com.lihaoyi" %%% "utest" % utestVersion % Test,
       "com.lihaoyi" %%% "upickle" % upickleVersion,
       "org.wvlet.airframe" %%% "airframe-log" % airframeLogVersion,
@@ -148,7 +149,7 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
         .withModuleKind(ModuleKind.CommonJSModule)
     },
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "1.2.0"
+      "org.scala-js" %%% "scalajs-dom" % scalajsDom
     )
   )
   .jvmSettings(
