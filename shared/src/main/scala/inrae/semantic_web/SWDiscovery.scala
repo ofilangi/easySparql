@@ -320,7 +320,7 @@ case class SWDiscovery(
     SWDiscoveryHelper(this).count(lRef.filter( ! lDatatypeRef.contains(_)) ).map(
       nSolutions => {
         val nit : Int = nSolutions / config.conf.settings.pageSize
-        (nit+1,(0 to nit).map( p =>{
+        (nSolutions,(0 to nit).map( p =>{
           val limit = config.conf.settings.pageSize
           val offset = p*config.conf.settings.pageSize
           select(lRef,limit,offset)
@@ -340,7 +340,7 @@ case class SWDiscovery(
     SWDiscoveryHelper(this).count(lRef.filter( ! lDatatypeRef.contains(_)),true).map(
       nSolutions => {
         val nit : Int = nSolutions / config.conf.settings.pageSize
-        (nit+1,(0 to nit).map( p =>{
+        (nSolutions,(0 to nit).map( p =>{
           val limit = config.conf.settings.pageSize
           val offset = p*config.conf.settings.pageSize
           select(lRef,limit,offset).distinct

@@ -61,9 +61,9 @@ object SWDiscoverySelectIterable extends TestSuite {
           .isSubjectOf(URI("http://bb"), "obj")
           .selectDistinctByPage( List("obj"))
           .map(args => {
-            val nb = args._1
+            val nbSolution = args._1
             val results = args._2
-            assert(nb == nblock)
+            assert(nbSolution == nbValues)
               Future.sequence((0 to nblock-1).map( iblock => {
                 results(iblock).commit().raw.map({
                   r => {
