@@ -21,7 +21,6 @@ case class SWDiscoveryHelper(sw : SWDiscovery) {
       .projection
       .aggregate("count")
       .count(lRef,distinct)
-      .console
       .commit()
       .raw
       .map( json => {
