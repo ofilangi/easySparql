@@ -8,15 +8,26 @@ case class QueryResult(results: String, mimetype : String = "json") {
 
   lazy val json =
     Try(ujson.read(results)) match {
-      case Success(json) => json
+      case Success(json) =>
+        json.objOpt match {
+          case Some(_) => json
+          // fix when get only results without header (triplydb)
+          case None => ujson.Obj(
+            "head" -> ujson.Obj(
+              "link" -> ujson.Arr(),
+              "vars" -> ujson.Arr()
+            ),
+            "results" -> ujson.Obj(
+              "bindings" -> json
+            )
+          )
+        }
       case Failure(_) => ujson.Obj(
         "head" -> ujson.Obj(
           "link" -> ujson.Arr(),
           "vars" -> ujson.Arr()
         ),
         "results" -> ujson.Obj(
-          "distinct" -> "false",
-          "ordered" -> "true",
           "bindings" -> ujson.Arr()
         )
       )

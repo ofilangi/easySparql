@@ -99,9 +99,10 @@ final case class Root(
                  prefixes : Map[String,IRI] = Map(
                    "owl" -> IRI("http://www.w3.org/2002/07/owl#"),
                    "rdf" -> IRI("http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
-                   "rdfs"->IRI("http://www.w3.org/2000/01/rdf-schema#"),
-                   "xsd"->IRI("http://www.w3.org/2001/XMLSchema#")
+                   "rdfs"-> IRI("http://www.w3.org/2000/01/rdf-schema#"),
+                   "xsd" -> IRI("http://www.w3.org/2001/XMLSchema#")
                  ),
+                 directives: Seq[String]      = Seq(),
                  defaultGraph : Seq[IRI]    = List[IRI](),
                  namedGraph : Seq[IRI]      = List[IRI](),
                  lDatatypeNode : Seq[DatatypeNode] = List[DatatypeNode](),
@@ -114,31 +115,33 @@ final case class Root(
   /* prefix management */
 
   def addPrefix(short : String,long : IRI) : Root = {
-    Root(idRef,prefixes + (short -> long ),defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
+    Root(idRef,prefixes + (short -> long ),directives,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
   }
-
   def getPrefix(short : String) : IRI = prefixes.getOrElse(short,IRI(""))
 
   def getPrefixes : Map[String,IRI] = prefixes
 
+  def addDirective(directive : String) : Root =
+    Root(idRef,prefixes,directives :+ directive ,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
+
   def addDefaultGraph(graph : IRI) : Root =
-    Root(idRef,prefixes,defaultGraph :+ graph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
+    Root(idRef,prefixes,directives,defaultGraph :+ graph,namedGraph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
   def addNamedGraph(graph : IRI) : Root =
-    Root(idRef,prefixes,defaultGraph,namedGraph :+ graph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
+    Root(idRef,prefixes,directives,defaultGraph,namedGraph :+ graph,lDatatypeNode,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
   private def addSourceNode(s : SourcesNode) : Root =
-    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes :+ s,lBindNode,lSolutionSequenceModifierNode,children,decorations)
+    Root(idRef,prefixes,directives,defaultGraph,namedGraph,lDatatypeNode,lSourcesNodes :+ s,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
   private def addDatatype(d : DatatypeNode) : Root =
-    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode :+ d,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
+    Root(idRef,prefixes,directives,defaultGraph,namedGraph,lDatatypeNode :+ d,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decorations)
 
 
   private def addBindNode(b : Bind) : Root =
-    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode :+ b,lSolutionSequenceModifierNode ,children,decorations)
+    Root(idRef,prefixes,directives,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode :+ b,lSolutionSequenceModifierNode ,children,decorations)
 
   private def addSolutionSequenceModifierNode(s : SolutionSequenceModifierNode) : Root =
-    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode :+ s,children,decorations)
+    Root(idRef,prefixes,directives,defaultGraph,namedGraph,lDatatypeNode ,lSourcesNodes,lBindNode,lSolutionSequenceModifierNode :+ s,children,decorations)
 
 
   override def getChild[SpecializedNodeType <: Node ](that : SpecializedNodeType)(implicit tag: ClassTag[SpecializedNodeType]) : Seq[SpecializedNodeType] = {
@@ -173,6 +176,7 @@ final case class Root(
       Root(
         idRef,
         prefixes,
+        directives,
         defaultGraph,
         namedGraph,
         lDatatypeNode.map(_.addChildren(focusId,n).asInstanceOf[DatatypeNode]) ,
@@ -187,7 +191,7 @@ final case class Root(
 
 
   def copy(children : Seq[Node],decoratingAttributeMap : Map[String,String]=decorations) : Node = {
-    Root(idRef,prefixes,defaultGraph,namedGraph,lDatatypeNode,
+    Root(idRef,prefixes,directives,defaultGraph,namedGraph,lDatatypeNode,
       lSourcesNodes,lBindNode,lSolutionSequenceModifierNode,children,decoratingAttributeMap)
   }
 
@@ -1256,8 +1260,7 @@ final case class Datatype(
 
 object AggregateNode {
   implicit val rw: RW[AggregateNode] = RW.merge(
-    Count.rw,
-    CountAll.rw
+    Count.rw
   )
 }
 
@@ -1296,7 +1299,7 @@ object Count {
 }
 
 final case class Count(
-                 varToCount : QueryVariable,
+                 listVarToCount : Seq[QueryVariable],
                  distinct : Boolean = false,
                  override val idRef : String,
                  override val children: Seq[Node] = Seq[Node](),
@@ -1305,23 +1308,7 @@ final case class Count(
   override def copy(
                      children: Seq[Node]=children,
                      decoratingAttributeMap : Map[String,String]=decorations
-                   ): Node = Count(varToCount,distinct,idRef,children,decoratingAttributeMap)
-}
-
-object CountAll {
-  implicit val rw: RW[CountAll] = macroRW
-}
-
-final case class CountAll(
-                           distinct : Boolean = false,
-                           override val idRef : String,
-                           override val children: Seq[Node] = Seq[Node](),
-                           override val decorations: Map[String,String] = Map()
-                         ) extends AggregateNode(idRef,children,decorations) {
-  override def copy(
-                     children: Seq[Node]=children,
-                     decoratingAttributeMap : Map[String,String]=decorations
-                   ): Node = CountAll(distinct,idRef,children,decoratingAttributeMap)
+                   ): Node = Count(listVarToCount,distinct,idRef,children,decoratingAttributeMap)
 }
 
 object BuiltInCallNode {

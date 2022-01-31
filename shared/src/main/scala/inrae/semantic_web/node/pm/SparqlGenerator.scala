@@ -17,6 +17,7 @@ object SparqlGenerator  {
     }.mkString("\n")
   }
 
+
   def from(graphs : Seq[IRI]): String = graphs.map( g => "FROM "+g.sparql).mkString("\n")
 
   def fromNamed(graphs : Seq[IRI]): String = graphs.map( g => "FROM NAMED "+g.sparql).mkString("\n")
@@ -82,7 +83,7 @@ object SparqlGenerator  {
       case _ => ""
     }
 
-    "} " + {
+    "} " +  orderByForm +"\n" + {
       root.lSolutionSequenceModifierNode.filter {
         case l : Limit if l.value>0 => true
         case _ => false
@@ -92,7 +93,7 @@ object SparqlGenerator  {
         case o : Offset if o.value > 0 => true
         case _ => false
       }.lastOption.map(sparqlNode(_,"","")).getOrElse("")
-    } +  orderByForm
+    }
   }
 
   def prologCountSelection(varCount : String) : String = {
@@ -115,8 +116,9 @@ object SparqlGenerator  {
       case node : ListValues         => "\tVALUES ?" +varIdSire+ " { " + node.terms.map(t => t.sparql).mkString(" ") + " } .\n"
       case node : ProjectionExpression  => "(" + sparqlNode(node.expression,node.idRef,variableName) + " AS "+ node.`var` + ") "
       case node : Bind               => "\tBIND (" + sparqlNode(node.expression,varIdSire,variableName) + " AS "+ "?" + node.idRef + ") \n"
-      case node : Count              => "COUNT ("+ { if (node.distinct) "DISTINCT" else "" } + " "+ node.varToCount.sparql +")"
-      case node : CountAll           => "COUNT ("+ { if (node.distinct) "DISTINCT" else "" } + " * )"
+      case node : Count              => "COUNT ("+ { if (node.distinct) "DISTINCT" else "" } +
+        " concat("+ node.listVarToCount.map("str("+_.sparql+")").mkString(",") +"))"
+   //   case node : CountAll           => "COUNT ("+ { if (node.distinct) "DISTINCT" else "" } + " * )"
       case _ : Distinct              => "DISTINCT "
       case _ : Reduced               => "REDUCED "
       case node : Projection if node.variables.length>0     => node.variables.mkString(" ")

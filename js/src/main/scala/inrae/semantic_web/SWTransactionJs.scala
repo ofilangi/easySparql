@@ -52,7 +52,7 @@ case class SWTransactionJs(transaction : SWTransaction) {
   def orderByDesc( ref: String ) : SWTransactionJs = SWTransactionJs(transaction.orderByDesc(ref))
 
   @JSExport
-  def orderByDesc( lRef: Seq[String] )  : SWTransactionJs = SWTransactionJs(transaction.orderByDesc(lRef))
+  def orderByDesc( lRef: js.Array[String] )  : SWTransactionJs = SWTransactionJs(transaction.orderByDesc(lRef.toSeq))
 
   @JSExport
   def getSerializedString(): String = transaction.getSerializedString

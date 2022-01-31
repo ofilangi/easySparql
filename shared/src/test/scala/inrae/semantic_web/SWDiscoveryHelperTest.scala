@@ -32,13 +32,38 @@ object SWDiscoveryHelperTest  extends TestSuite  {
 
   def tests = Tests {
     test("count") {
+     insertData.map(_ => {
+        SWDiscovery(config)
+          .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
+          .something("h1") //http://rdf.ebi.ac.uk/terms/chembl#BioComponent
+          .isSubjectOf(URI("http://bb2"))
+          .finder
+          .count(Seq("h1"))
+          .map(count => assert(count == 2))
+      }).flatten
+    }
+
+    test("count distinct") {
       insertData.map(_ => {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something("h1") //http://rdf.ebi.ac.uk/terms/chembl#BioComponent
           .isSubjectOf(URI("http://bb2"))
           .finder
-          .count
+          .count(Seq("h1"),true)
+          .map(count => assert(count == 1))
+      }).flatten
+    }
+
+    test("count with datatype") {
+      insertData.map(_ => {
+        SWDiscovery(config)
+          .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
+          .something("h1") //http://rdf.ebi.ac.uk/terms/chembl#BioComponent
+          .datatype(URI("http://fake/"),"dt1")
+          .isSubjectOf(URI("http://bb2"))
+          .finder
+          .count(Seq("h1","dt1"))
           .map(count => assert(count == 2))
       }).flatten
     }
@@ -209,7 +234,6 @@ object SWDiscoveryHelperTest  extends TestSuite  {
           .map(response => assert(response.length == 0))
       }).flatten
     }
-
   }
 
 }
