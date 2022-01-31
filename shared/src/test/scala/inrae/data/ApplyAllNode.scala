@@ -48,9 +48,9 @@ object ApplyAllNode {
     Floor("h1"),
     Rand("h1"),
     Datatype("h1"),
-    ProjectionExpression(QueryVariable("aq"),Count(QueryVariable("q"),true,"h1"),"h1"),
-    Count(QueryVariable("q"),false,"h1"),
-    CountAll(true,"h1"),
+    ProjectionExpression(QueryVariable("aq"),Count(Seq(QueryVariable("q")),true,"h1"),"h1"),
+    Count(Seq(QueryVariable("q")),false,"h1"),
+    //CountAll(true,"h1"),
     Str(URI("s"),"h1"),
     Lang(URI("s"),"h1"),
     LangMatches(URI("s"),"h1")

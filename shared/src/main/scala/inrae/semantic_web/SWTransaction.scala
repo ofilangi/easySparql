@@ -180,8 +180,8 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
         ProjectionExpression(QueryVariable(v),n,sw.getUniqueRef()),false).transaction
     }
 
-    def count(ref : String, distinct: Boolean=false) : SWTransaction = manage(Count(QueryVariable(ref),distinct,sw.getUniqueRef()))
-    def countAll(distinct: Boolean=false) : SWTransaction = manage(CountAll(distinct,sw.getUniqueRef()),true)
+    def count(lRef : Seq[String],distinct: Boolean=false) : SWTransaction = manage(Count(lRef.map(QueryVariable(_)),distinct,sw.getUniqueRef()))
+  //  def countAll(distinct: Boolean=false) : SWTransaction = manage(CountAll(distinct,sw.getUniqueRef()),true)
   }
 
   def aggregate(`var` : String) : ProjectionExpressionIncrement = ProjectionExpressionIncrement(`var`)

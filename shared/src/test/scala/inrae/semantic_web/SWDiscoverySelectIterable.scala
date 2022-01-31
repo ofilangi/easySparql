@@ -77,6 +77,20 @@ object SWDiscoverySelectIterable extends TestSuite {
           })
       }).flatten
     }
-  }
 
+    test("selectByPage with fake") {
+      insertData.map(_ => {
+        SWDiscovery(config)
+          .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
+          .something()
+          .set(URI("http://aa"))
+          .datatype(URI("http://fake/"),"fake")
+          .isSubjectOf(URI("http://bb"), "obj")
+          .selectByPage( List("obj","fake"))
+          .map(args => {
+            println(args)
+          })
+      }).flatten
+    }
+  }
 }

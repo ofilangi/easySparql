@@ -23,12 +23,12 @@ case class HtmlView(sw: SWDiscovery,regex : String = "") {
   var subjectOfDatatypeProperties: String = waitingForFuture
   var objectOfProperties: String = waitingForFuture
   var values: String = waitingForFuture
-
-  sw.finder.count.map(c => {
+/*
+  sw.finder.count().map(c => {
     count = c.toString
     update()
   })
-
+*/
   sw.finder.classes(regex).map(lUris => {
     classes = " - " + lUris.mkString("\n - ")
     update()

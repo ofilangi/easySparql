@@ -314,10 +314,11 @@ case class SWDiscovery(
    * @param lRef
    * @return iterable on select function
    */
-  def selectByPage(lRef: Seq[String] = List("*"))  : Future[(Int,Seq[SWTransaction])] =
-    SWDiscoveryHelper(this).count.map(
+  def selectByPage(lRef: Seq[String] = List("*"))  : Future[(Int,Seq[SWTransaction])] = {
+    // remove datatype node ref
+    val lDatatypeRef = rootNode.lDatatypeNode.map(ldn => ldn.idRef )
+    SWDiscoveryHelper(this).count(lRef.filter( ! lDatatypeRef.contains(_)) ).map(
       nSolutions => {
-        println("selectByPage: nsolutions=>"+nSolutions)
         val nit : Int = nSolutions / config.conf.settings.pageSize
         (nit+1,(0 to nit).map( p =>{
           val limit = config.conf.settings.pageSize
@@ -325,6 +326,7 @@ case class SWDiscovery(
           select(lRef,limit,offset)
         }))
       })
+  }
 
 
   /**
@@ -332,10 +334,11 @@ case class SWDiscovery(
    * @param lRef : selected variables
    * @return iterable on select function
    */
-  def selectDistinctByPage(lRef: Seq[String] = List("*"))  : Future[(Int,Seq[SWTransaction])] =
-    SWDiscoveryHelper(this).count(true).map(
+  def selectDistinctByPage(lRef: Seq[String] = List("*"))  : Future[(Int,Seq[SWTransaction])] = {
+    val lDatatypeRef = rootNode.lDatatypeNode.map(ldn => ldn.idRef )
+
+    SWDiscoveryHelper(this).count(lRef.filter( ! lDatatypeRef.contains(_)),true).map(
       nSolutions => {
-        println("selectByPage: nsolutions=>"+nSolutions)
         val nit : Int = nSolutions / config.conf.settings.pageSize
         (nit+1,(0 to nit).map( p =>{
           val limit = config.conf.settings.pageSize
@@ -343,6 +346,7 @@ case class SWDiscovery(
           select(lRef,limit,offset).distinct
         }))
       })
+  }
 
 
   def browse[A](visitor : (Node, Integer) => A ) : Seq[A] = NodeVisitor.map(rootNode,0,visitor)

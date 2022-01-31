@@ -33,7 +33,7 @@ object SWDiscoveryHelperJsTest extends TestSuite {
         startRequest
             .isSubjectOf(URI("<bb>"))
             .finder
-            .count()
+            .count(js.Array("h1"))
             .toFuture
             .map( (count : Int) => { assert( count == 2 ) })
       }).flatten
