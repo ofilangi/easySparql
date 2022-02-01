@@ -92,5 +92,39 @@ object SWDiscoverySelectIterable extends TestSuite {
           })
       }).flatten
     }
+
+    test("empty selectByPage") {
+      insertData.map(_ => {
+        SWDiscovery(config)
+          .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
+          .something()
+          .set(URI("http://aa"))
+          .isSubjectOf(URI("http://fake"), "fake")
+          .selectByPage( List("fake"))
+          .map(args => {
+
+            assert( args._1 == 0 )
+            println( args._2 )
+            assert( args._2 == List() )
+          })
+      }).flatten
+    }
+
+    test("empty selectDistinctByPage") {
+      insertData.map(_ => {
+        SWDiscovery(config)
+          .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
+          .something()
+          .set(URI("http://aa"))
+          .isSubjectOf(URI("http://fake"), "fake")
+          .selectDistinctByPage( List("fake"))
+          .map(args => {
+
+            assert( args._1 == 0 )
+            println( args._2 )
+            assert( args._2 == List() )
+          })
+      }).flatten
+    }
   }
 }
