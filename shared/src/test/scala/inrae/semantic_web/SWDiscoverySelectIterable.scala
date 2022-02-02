@@ -88,7 +88,10 @@ object SWDiscoverySelectIterable extends TestSuite {
           .isSubjectOf(URI("http://bb"), "obj")
           .selectByPage( List("obj","fake"))
           .map(args => {
-            println(args)
+            val nSolutions : Int = args._1
+            val lLaziestPages : Seq[SWTransaction] = args._2
+            assert( nSolutions > 0 )
+            assert( lLaziestPages != List() )
           })
       }).flatten
     }
@@ -102,10 +105,10 @@ object SWDiscoverySelectIterable extends TestSuite {
           .isSubjectOf(URI("http://fake"), "fake")
           .selectByPage( List("fake"))
           .map(args => {
-
-            assert( args._1 == 0 )
-            println( args._2 )
-            assert( args._2 == List() )
+            val nSolutions : Int = args._1
+            val lLaziestPages : Seq[SWTransaction] = args._2
+            assert( nSolutions == 0 )
+            assert( lLaziestPages == List() )
           })
       }).flatten
     }
@@ -119,10 +122,10 @@ object SWDiscoverySelectIterable extends TestSuite {
           .isSubjectOf(URI("http://fake"), "fake")
           .selectDistinctByPage( List("fake"))
           .map(args => {
-
-            assert( args._1 == 0 )
-            println( args._2 )
-            assert( args._2 == List() )
+            val nSolutions : Int = args._1
+            val lLaziestPages : Seq[SWTransaction] = args._2
+            assert( nSolutions == 0 )
+            assert( lLaziestPages == List() )
           })
       }).flatten
     }
