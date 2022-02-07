@@ -1,6 +1,7 @@
 package inrae.data
 
-import facade.npm.{Axios, qs}
+import facade.npm.{qs}
+import com.github.p2m2.facade.Axios
 import inrae.semantic_web.SWDiscoveryException
 
 import scala.scalajs.js

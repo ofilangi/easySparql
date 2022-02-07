@@ -14,13 +14,13 @@ lazy val scalaUriVersion = "3.6.0"
 lazy val scalajsDom = "1.2.0"
 
 /* p2m2 libs */
-lazy val comunica_actor_init_sparql_rdfjs_version = "1.21.1"
-lazy val data_model_rdfjs_version = "1.0.0"
-lazy val n3js_facade_version = "1.11.1"
+lazy val comunica_actor_init_sparql_rdfjs_version = "1.22.3"
+lazy val data_model_rdfjs_version = "1.0.1"
+lazy val n3js_facade_version = "1.13.0"
 lazy val rdfxml_streaming_parser_version = "1.5.0"
+lazy val axios_version = "0.25.0"
 
 /* npm libs */
-lazy val npm_axios_version = "0.25.0"
 lazy val npm_qs_version = "6.10.3"
 lazy val npm_showdown_version = "1.9.1"
 lazy val npm_comunica_version_datasource = "1.22.2"
@@ -129,10 +129,10 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
       "com.github.p2m2" %%% "data-model-rdfjs" % data_model_rdfjs_version ,
       "com.github.p2m2" %%% "n3js" % n3js_facade_version ,
       "com.github.p2m2" %%% "rdfxml-streaming-parser" % rdfxml_streaming_parser_version,
+      "com.github.p2m2" %%% "axios" % axios_version,
     ),
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
     Compile / npmDependencies  ++= Seq(
-      "axios" -> npm_axios_version,
       "qs" -> npm_qs_version,
       "showdown" -> npm_showdown_version,
       "@comunica/utils-datasource" -> npm_comunica_version_datasource,
