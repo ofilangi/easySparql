@@ -133,6 +133,7 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
     ),
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
     Compile / npmDependencies  ++= Seq(
+      "axios" -> axios_version,
       "qs" -> npm_qs_version,
       "showdown" -> npm_showdown_version,
       "@comunica/utils-datasource" -> npm_comunica_version_datasource,
