@@ -204,7 +204,8 @@ jobs:
       steps:
         - checkout
         - setup_remote_docker
-        - node/install
+        - node/install:
+            node-version: '17.4'
         - run:
             name: Test ScalaJs/JavaScript
             command: sbt discoveryJS/test
