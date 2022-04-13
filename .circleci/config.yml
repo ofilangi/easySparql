@@ -292,12 +292,15 @@ jobs:
     executor: openjdk
     steps:
       - checkout
+      - node/install:
+          node-version: '17.4'
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
       - run:
           name: WebPack fullOptJS
           command: |
+            export NODE_OPTIONS=--openssl-legacy-provider
             npm config set registry http://registry.npmjs.org
             mkdir -p build
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
