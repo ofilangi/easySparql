@@ -283,14 +283,16 @@ jobs:
       - run:
           name: "Publish Release on GitHub"
           command: |
-            ls build
             go get github.com/tcnksm/ghr
-            VERSION=${CIRCLE_TAG}
-            ls
-            ls build
-            pwd
-            echo "VERSION=$VERSION"
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} build/discovery-assembly-${CIRCLE_TAG}.jar
+            VERSION=${CIRCLE_TAG:="unknown"}
+            JAR="discovery-$VERSION.jar"
+            mv $(find build -name discovery*.jar) $JAR
+            ghr -t ${GITHUB_TOKEN} \ 
+                -u ${CIRCLE_PROJECT_USERNAME} \ 
+                -r ${CIRCLE_PROJECT_REPONAME} 
+                -c ${CIRCLE_SHA1} \
+                -n $VERSION \
+                -delete $VERSION $JAR
 
   check_discovery_valid_fullopjs_cdn_jsdelivr:
     executor: openjdk
@@ -314,7 +316,7 @@ jobs:
 
   publish_npm:
     docker:
-      - image: cimg/node:16.7.0
+      - image: cimg/node:17.9.0
         auth:
           username: ${DOCKER_USER}
           password: ${DOCKER_PASS}
