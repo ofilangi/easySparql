@@ -199,7 +199,6 @@ jobs:
             cat /dev/null | sbt clean coverage discoveryJVM/Test/test discoveryJVM/coverageReport
             bash <(curl -s https://codecov.io/bash)
             bash <(curl -Ls https://coverage.codacy.com/get.sh) report
-
       - store_artifacts:
           path: discovery/jvm/target/test-reports
 
@@ -268,8 +267,10 @@ jobs:
           command: |
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
             sbt discoveryJVM/assembly
+            find . -name discovery-assembly-${CIRCLE_TAG}.jar
+            find . -name d*-assembly-*.jar
       - persist_to_workspace:
-          root: jvm/target/scala-2.13/
+          root: ./jvm/target/scala-2.13/
           paths:
             - discovery-assembly-${CIRCLE_TAG}.jar
 
