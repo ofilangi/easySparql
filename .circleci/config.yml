@@ -68,7 +68,7 @@ workflows:
               only: /.*/
             branches:
               ignore: /.*/
-      
+
       - publish-github-release:
           context:
             - DOCKER_CONTEXT
@@ -146,7 +146,6 @@ jobs:
       TERM: dumb
     steps:
       - checkout
-      - setup_remote_docker
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "build.sbt" }}
@@ -165,7 +164,6 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - setup_remote_docker
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "build.sbt" }}
@@ -189,6 +187,7 @@ jobs:
       JVM_OPTS: -Xmx3200m
       TERM: dumb
     steps:
+      - checkout
       - run:
           name: Test JVM env and Coverage
           command: |
