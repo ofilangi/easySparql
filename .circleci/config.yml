@@ -275,7 +275,7 @@ jobs:
           name: WebPack fullOptJS
           command: |
             export NODE_OPTIONS=--openssl-legacy-provider
-            npm config set registry http://registry.npmjs.org
+            npm config set registry https://registry.npmjs.org
             mkdir -p build
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
             sbt discoveryJS/fullOptJS/webpack
