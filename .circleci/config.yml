@@ -70,8 +70,8 @@ workflows:
               ignore: /.*/
 
       - build_webpack_fullOptJS:
-#          requires:
-#            - test_and_coverage_jvm
+          requires:
+            - test_js
           context:
             - DOCKER_CONTEXT
             - CREDENTIAL_CONTEXT
@@ -80,11 +80,11 @@ workflows:
             tags:
               only: /.*/
             branches:
-              only: /.*/
+              ignore: /.*/
 
       - build_release_assembly:
-#          requires:
-#            - test_and_coverage_jvm
+          requires:
+            - test_and_coverage_jvm
           context:
             - DOCKER_CONTEXT
             - CREDENTIAL_CONTEXT
@@ -93,7 +93,7 @@ workflows:
             tags:
               only: /.*/
             branches:
-              only: /.*/
+              ignore: /.*/
 
       - publish-github-release:
           requires:
@@ -108,17 +108,6 @@ workflows:
             branches:
               only: /.*/
 
-#      - publish_npm:
-#          requires:
-#            - lib_js
-#          context:
-#            - NPM_CONTEXT
-#          filters:
-#            tags:
-#              only: /.*/
-#            branches:
-#              only: strategySourceRequest
-
       - check_discovery_valid_fullopjs_cdn_jsdelivr:
           filters:
             tags:
@@ -130,10 +119,6 @@ executors:
       working_directory: ~/repo
       docker:
         - image: cimg/openjdk:17.0.2
-          auth:
-            username: ${DOCKER_USER}
-            password: ${DOCKER_PASS}
-        - image: cimg/node:17.9.0
           auth:
             username: ${DOCKER_USER}
             password: ${DOCKER_PASS}
@@ -239,13 +224,6 @@ jobs:
               npm i
               npm test
 
-        #- run:
-        #    name: Set Npm token
-        #    command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
-        #- run:
-        #    name: Publish package
-        #    command: npm publish
-
   publish_snapshot:
     executor: openjdk
     steps:
@@ -350,25 +328,3 @@ jobs:
                echo "repo checksum    : "$(cat dist/checksum)
                exit 1;
             fi ;
-
-  publish_npm:
-    docker:
-      - image: cimg/node:17.9.0
-        auth:
-          username: ${DOCKER_USER}
-          password: ${DOCKER_PASS}
-    working_directory: ~/repo
-    steps:
-        - checkout
-        - attach_workspace:
-            at: ~/repo/js/target/scala-2.13/scalajs-bundler/main/
-
-        - run:
-            name: Authenticate with registry
-            command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-
-        - run:
-            name: Js Opt Lib generation
-            command: |
-              npm config set registry http://registry.npmjs.org
-              npm publish --access public
