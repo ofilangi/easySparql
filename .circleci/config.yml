@@ -287,9 +287,9 @@ jobs:
             VERSION=${CIRCLE_TAG:="unknown"}
             JAR="discovery-$VERSION.jar"
             mv $(find build -name discovery*.jar) $JAR
-            ghr -t ${GITHUB_TOKEN} \ 
-                -u ${CIRCLE_PROJECT_USERNAME} \ 
-                -r ${CIRCLE_PROJECT_REPONAME} 
+            ghr -t ${GITHUB_TOKEN} \
+                -u ${CIRCLE_PROJECT_USERNAME} \
+                -r ${CIRCLE_PROJECT_REPONAME} \
                 -c ${CIRCLE_SHA1} \
                 -n $VERSION \
                 -delete $VERSION $JAR

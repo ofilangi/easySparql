@@ -55,7 +55,7 @@ sbt publish
 ```
 ### NPM publication
 ``` 
-sbt discoveryJS/fullOptJS::webpack
+sbt discoveryJS/fullOptJS/webpack
 sbt npmPackageJson => genere package.json
 npm view @p2m2/discovery version -> list published version
 npm unpublish @p2m2/discovery@X.X.X -> unpublished lib
