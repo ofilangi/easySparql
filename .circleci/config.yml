@@ -70,8 +70,6 @@ workflows:
               ignore: /.*/
 
       - build_webpack_fullOptJS:
-          requires:
-            - test_js
           context:
             - DOCKER_CONTEXT
             - CREDENTIAL_CONTEXT
@@ -83,8 +81,6 @@ workflows:
               ignore: /.*/
 
       - build_release_assembly:
-          requires:
-            - test_and_coverage_jvm
           context:
             - DOCKER_CONTEXT
             - CREDENTIAL_CONTEXT
@@ -106,7 +102,7 @@ workflows:
             tags:
               only: /.*/
             branches:
-              only: /.*/
+              ignore: /.*/
 
       - check_discovery_valid_fullopjs_cdn_jsdelivr:
           filters:
