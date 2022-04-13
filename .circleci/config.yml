@@ -263,11 +263,12 @@ jobs:
           command: |
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
             sbt discoveryJVM/assembly
+            mkdir -p build
             find . -name discovery-assembly-${CIRCLE_TAG}.jar
-            find . -name d*-assembly-*.jar
+            mv $(find . -name d*-assembly-*.jar) build/
             pwd
-      - save_workspace:
-          root: ./jvm/target/scala-2.13/
+      - persist_to_workspace:
+          root: build
           paths:
             - discovery-assembly-${CIRCLE_TAG}.jar
 
@@ -277,13 +278,13 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ./discovery-assembly-${CIRCLE_TAG}.jar
+          at: build
       - run:
           name: "Publish Release on GitHub"
           command: |
             go get github.com/tcnksm/ghr
             VERSION=${CIRCLE_TAG}
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./discovery-assembly-${CIRCLE_TAG}.jar
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} build/discovery-assembly-${CIRCLE_TAG}.jar
 
   check_discovery_valid_fullopjs_cdn_jsdelivr:
     executor: openjdk
