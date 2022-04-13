@@ -285,7 +285,8 @@ jobs:
             sbt npmPackageJson
             npm view @p2m2/discovery
             npm unpublish @p2m2/discovery@${CIRCLE_TAG}
-            npm publish --access public
+            npm config ls
+            npm publish --registry https://registry.npmjs.org --access public
 
   publish-github-release:
     docker:
