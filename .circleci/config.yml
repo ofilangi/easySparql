@@ -269,6 +269,7 @@ jobs:
             sbt discoveryJVM/assembly
             find . -name discovery-assembly-${CIRCLE_TAG}.jar
             find . -name d*-assembly-*.jar
+            pwd
       - persist_to_workspace:
           root: ./jvm/target/scala-2.13/
           paths:
