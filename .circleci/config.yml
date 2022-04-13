@@ -88,6 +88,7 @@ workflows:
           context:
             - DOCKER_CONTEXT
             - CREDENTIAL_CONTEXT
+            - GITHUB_CONTEXT
           filters:
             tags:
               only: /.*/
@@ -284,9 +285,10 @@ jobs:
           command: |
             go get github.com/tcnksm/ghr
             VERSION=${CIRCLE_TAG}
+            ls
             ls build
             pwd
-            echo "VERSION)=$VERSION"
+            echo "VERSION=$VERSION"
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} build/discovery-assembly-${CIRCLE_TAG}.jar
 
   check_discovery_valid_fullopjs_cdn_jsdelivr:
