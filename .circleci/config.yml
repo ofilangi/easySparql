@@ -69,6 +69,19 @@ workflows:
             branches:
               ignore: /.*/
 
+      - build_webpack_fullOptJS:
+#          requires:
+#            - test_and_coverage_jvm
+          context:
+            - DOCKER_CONTEXT
+            - CREDENTIAL_CONTEXT
+            - GPG_CONTEXT
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              only: /.*/
+
       - build_release_assembly:
 #          requires:
 #            - test_and_coverage_jvm
@@ -253,8 +266,7 @@ jobs:
             echo -e "$GPG_KEY" | gpg --import
             sbt publish
   
-  #sbt discoveryJVM/assembly
-  #jvm/target/scala-2.13/discovery-assembly-0.3.2.jar
+
   build_release_assembly:
     executor: openjdk
     steps:
@@ -270,6 +282,21 @@ jobs:
             pwd
       - persist_to_workspace:
           root: build
+          paths:
+            - .
+  build_webpack_fullOptJS:
+    executor: openjdk
+    steps:
+      - checkout
+      - run:
+          name: WebPack fullOptJS
+          command: |
+            export DISCOVERY_VERSION="${CIRCLE_TAG}"
+            update_cdn_libjs.sh
+            cp package.json dist/
+
+      - persist_to_workspace:
+          root: dist
           paths:
             - .
 
