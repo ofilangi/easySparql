@@ -69,11 +69,11 @@ workflows:
             branches:
               ignore: /.*/
 
-      - build_webpack_fullOptJS:
+      - build_webpack_fullOptJS_npm_publish:
           context:
             - DOCKER_CONTEXT
             - CREDENTIAL_CONTEXT
-            - GPG_CONTEXT
+            - NPM_CONTEXT
           filters:
             tags:
               only: /.*/
@@ -262,7 +262,7 @@ jobs:
           root: build
           paths:
             - .
-  build_webpack_fullOptJS:
+  build_webpack_fullOptJS_npm_publish:
     executor: openjdk
     steps:
       - checkout
@@ -279,6 +279,9 @@ jobs:
             mkdir -p build
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
             sbt discoveryJS/fullOptJS/webpack
+      - run:
+          name: Npm publication
+          command: |
             sbt npmPackageJson
             npm view @p2m2/discovery
             npm unpublish @p2m2/discovery@${CIRCLE_TAG}
