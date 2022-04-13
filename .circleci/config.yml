@@ -133,6 +133,10 @@ executors:
           auth:
             username: ${DOCKER_USER}
             password: ${DOCKER_PASS}
+        - image: cimg/node:17.9.0
+          auth:
+            username: ${DOCKER_USER}
+            password: ${DOCKER_PASS}
 
   virtuoso_environment_executor:
       working_directory: ~/repo
@@ -289,16 +293,19 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+      - run:
           name: WebPack fullOptJS
           command: |
+            npm config set registry http://registry.npmjs.org
+            mkdir -p build
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
-            update_cdn_libjs.sh
-            cp package.json dist/
-
-      - persist_to_workspace:
-          root: dist
-          paths:
-            - .
+            sbt discoveryJS/fullOptJS/webpack
+            sbt npmPackageJson
+            npm view @p2m2/discovery
+            npm unpublish @p2m2/discovery@${CIRCLE_TAG}
+            npm publish --access public
 
   publish-github-release:
     docker:
