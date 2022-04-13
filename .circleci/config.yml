@@ -68,6 +68,16 @@ workflows:
               only: /.*/
             branches:
               ignore: /.*/
+      
+      - publish-github-release:
+          context:
+            - DOCKER_CONTEXT
+            - CREDENTIAL_CONTEXT
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
 
 #      - publish_npm:
 #          requires:
@@ -179,13 +189,6 @@ jobs:
       JVM_OPTS: -Xmx3200m
       TERM: dumb
     steps:
-      - checkout
-      - setup_remote_docker
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.sbt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
       - run:
           name: Test JVM env and Coverage
           command: |
@@ -261,6 +264,23 @@ jobs:
             echo "Importing key"
             echo -e "$GPG_KEY" | gpg --import
             sbt publish
+  
+  #sbt discoveryJVM/assembly
+  #jvm/target/scala-2.13/discovery-assembly-0.3.2.jar
+
+  publish-github-release:
+    docker:
+      - image: circleci/golang:1.8
+    steps:
+      - attach_workspace:
+          at: ./artifacts
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+          
+            go get github.com/tcnksm/ghr
+            VERSION=$(my-binary --version)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
 
   check_discovery_valid_fullopjs_cdn_jsdelivr:
     executor: openjdk

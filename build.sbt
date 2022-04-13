@@ -8,8 +8,8 @@ lazy val airframeLogVersion = "21.12.1"
 lazy val sttpClient3Version = "3.4.1"
 lazy val scalaStubVersion = "1.1.0"
 lazy val scalatagVersion = "0.11.1"
-lazy val rdf4jVersion = "3.7.4"
-lazy val slf4j_version = "1.7.32"
+lazy val rdf4jVersion = "3.7.7"
+lazy val slf4j_version = "1.7.36"
 lazy val scalaUriVersion = "3.6.0"
 lazy val scalajsDom = "1.2.0"
 
@@ -52,7 +52,7 @@ ThisBuild / name := "discovery"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / name := "discovery"
 ThisBuild / version :=  version_build
-ThisBuild / scalaVersion := "2.13.7"
+ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / organization := "com.github.p2m2"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / organizationHomepage := Some(url("https://www6.inrae.fr/p2m2"))
@@ -158,9 +158,9 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
       "org.scala-js" %% "scalajs-stubs" % scalaStubVersion % "provided",
       "org.slf4j" % "slf4j-api" % slf4j_version,
       "org.slf4j" % "slf4j-simple" % slf4j_version,
-      "org.eclipse.rdf4j" % "rdf4j-sail" % rdf4jVersion,
-      "org.eclipse.rdf4j" % "rdf4j-storage" % rdf4jVersion,
-      "org.eclipse.rdf4j" % "rdf4j-tools-federation" % rdf4jVersion
+      "org.eclipse.rdf4j" % "rdf4j-sail" % rdf4jVersion % "provided",
+      "org.eclipse.rdf4j" % "rdf4j-storage" % rdf4jVersion % "provided",
+      "org.eclipse.rdf4j" % "rdf4j-tools-federation" % rdf4jVersion % "provided"
     ))
 
 /**
@@ -236,5 +236,13 @@ ${dependencies.mkString("\n")}
  }
  """).stripMargin)
 }
+
+assembly / assemblyMergeStrategy := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
+
+assembly / target := file("assembly")
+assembly / assemblyJarName := s"discovery-$version_build.jar"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
