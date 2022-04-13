@@ -80,7 +80,7 @@ workflows:
             tags:
               only: /.*/
             branches:
-              ignore: /.*/
+              only: /.*/
 
       - publish-github-release:
           requires:

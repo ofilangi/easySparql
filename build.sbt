@@ -18,7 +18,7 @@ lazy val comunica_actor_init_sparql_rdfjs_version = "1.22.3"
 lazy val data_model_rdfjs_version = "1.0.1"
 lazy val n3js_facade_version = "1.13.0"
 lazy val rdfxml_streaming_parser_version = "1.5.0"
-lazy val axios_version = "0.26.0"
+lazy val axios_version = "0.25.0"
 
 /* npm libs */
 lazy val npm_qs_version = "6.10.3"
