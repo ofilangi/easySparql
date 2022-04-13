@@ -70,8 +70,8 @@ workflows:
               ignore: /.*/
 
       - build_release_assembly:
-          requires:
-            - test_and_coverage_jvm
+#          requires:
+#            - test_and_coverage_jvm
           context:
             - DOCKER_CONTEXT
             - CREDENTIAL_CONTEXT
@@ -92,7 +92,7 @@ workflows:
             tags:
               only: /.*/
             branches:
-              ignore: /.*/
+              only: /.*/
 
 #      - publish_npm:
 #          requires:
@@ -284,6 +284,9 @@ jobs:
           command: |
             go get github.com/tcnksm/ghr
             VERSION=${CIRCLE_TAG}
+            ls build
+            pwd
+            echo "VERSION)=$VERSION"
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} build/discovery-assembly-${CIRCLE_TAG}.jar
 
   check_discovery_valid_fullopjs_cdn_jsdelivr:
