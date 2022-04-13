@@ -69,7 +69,22 @@ workflows:
             branches:
               ignore: /.*/
 
+      - build_release_assembly:
+          requires:
+            - test_and_coverage_jvm
+          context:
+            - DOCKER_CONTEXT
+            - CREDENTIAL_CONTEXT
+            - GPG_CONTEXT
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+
       - publish-github-release:
+          requires:
+            - build_release_assembly
           context:
             - DOCKER_CONTEXT
             - CREDENTIAL_CONTEXT
@@ -146,11 +161,6 @@ jobs:
       TERM: dumb
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.sbt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
       - run:
           name: Compile - JVM
           command: cat /dev/null | sbt discoveryJVM/test:compile
@@ -164,11 +174,6 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.sbt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
       - run:
           name: fastOptJS
           command: cat /dev/null | sbt discoveryJS/fastOptJS
@@ -232,12 +237,6 @@ jobs:
     executor: openjdk
     steps:
       - checkout
-      - setup_remote_docker
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.sbt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
       - run:
           name: Snapshot publication
           command: |
@@ -250,12 +249,6 @@ jobs:
     executor: openjdk
     steps:
       - checkout
-      - setup_remote_docker
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.sbt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
       - run:
           name: Snapshot publication
           command: |
@@ -266,20 +259,33 @@ jobs:
   
   #sbt discoveryJVM/assembly
   #jvm/target/scala-2.13/discovery-assembly-0.3.2.jar
+  build_release_assembly:
+    executor: openjdk
+    steps:
+      - checkout
+      - run:
+          name: Release Assembly
+          command: |
+            export DISCOVERY_VERSION="${CIRCLE_TAG}"
+            sbt discoveryJVM/assembly
+      - persist_to_workspace:
+          root: jvm/target/scala-2.13/
+          paths:
+            - discovery-assembly-${CIRCLE_TAG}.jar
 
   publish-github-release:
     docker:
       - image: circleci/golang:1.8
     steps:
+      - checkout
       - attach_workspace:
-          at: ./artifacts
+          at: ./discovery-assembly-${CIRCLE_TAG}.jar
       - run:
           name: "Publish Release on GitHub"
           command: |
-          
             go get github.com/tcnksm/ghr
-            VERSION=$(my-binary --version)
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
+            VERSION=${CIRCLE_TAG}
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./discovery-assembly-${CIRCLE_TAG}.jar
 
   check_discovery_valid_fullopjs_cdn_jsdelivr:
     executor: openjdk
@@ -310,13 +316,6 @@ jobs:
     working_directory: ~/repo
     steps:
         - checkout
-        - setup_remote_docker
-        - restore_cache:
-            keys:
-              - v1-dependencies-{{ checksum "build.sbt" }}
-              # fallback to using the latest cache if no exact match is found
-              - v1-dependencies-
-
         - attach_workspace:
             at: ~/repo/js/target/scala-2.13/scalajs-bundler/main/
 
