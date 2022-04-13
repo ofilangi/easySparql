@@ -182,10 +182,6 @@ jobs:
           name: fullOptJS
           command: cat /dev/null | sbt discoveryJS/fullOptJS
 
-      - persist_to_workspace:
-          root: ./js/target/scala-2.13/scalajs-bundler/main/
-          paths: discovery-opt.js
-
   test_and_coverage_jvm:
     executor: virtuoso_environment_executor
     environment:
@@ -270,7 +266,7 @@ jobs:
             find . -name discovery-assembly-${CIRCLE_TAG}.jar
             find . -name d*-assembly-*.jar
             pwd
-      - persist_to_workspace:
+      - save_workspace:
           root: ./jvm/target/scala-2.13/
           paths:
             - discovery-assembly-${CIRCLE_TAG}.jar
