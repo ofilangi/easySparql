@@ -327,7 +327,10 @@ jobs:
           command: |
             LAST_VERSION=$(git ls-remote --tags --sort="v:refname" https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git | tail -n1  | sed 's/.*\///; s/\^{}//')
             VERSION=$(grep -E "static_version_build[[:blank:]]*=[[:blank:]]*" build.sbt | awk 'BEGIN { FS="="} {gsub("\"","",$2) ; gsub(/[ \t]*/, "", $2);print $2}')
-
+            # -------------------------------------------------------
+            # utiliser gh ? => https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+            #                  https://cli.github.com/manual/gh_release_create
+            # -------------------------------------------------------
             if [ "LAST_VERSION" != "VERSION" ]; then
               go get github.com/tcnksm/ghr
               JAR=discovery-$VERSION.jar
@@ -337,7 +340,7 @@ jobs:
                   -r ${CIRCLE_PROJECT_REPONAME} \
                   -c ${CIRCLE_SHA1} \
                   -n $VERSION \
-                  -delete $VERSION $JAR ./dist/discovery-web.js ./dist/discovery-web-dev.js ./dist/discovery-web-dev.js.map
+                  -delete $VERSION $JAR
             fi
 # obsolete
   check_discovery_valid_fullopjs_cdn_jsdelivr:
