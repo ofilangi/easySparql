@@ -88,7 +88,44 @@ object SWDiscoverySelectIterable extends TestSuite {
           .isSubjectOf(URI("http://bb"), "obj")
           .selectByPage( List("obj","fake"))
           .map(args => {
-            println(args)
+            val nSolutions : Int = args._1
+            val lLaziestPages : Seq[SWTransaction] = args._2
+            assert( nSolutions > 0 )
+            assert( lLaziestPages != List() )
+          })
+      }).flatten
+    }
+
+    test("empty selectByPage") {
+      insertData.map(_ => {
+        SWDiscovery(config)
+          .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
+          .something()
+          .set(URI("http://aa"))
+          .isSubjectOf(URI("http://fake"), "fake")
+          .selectByPage( List("fake"))
+          .map(args => {
+            val nSolutions : Int = args._1
+            val lLaziestPages : Seq[SWTransaction] = args._2
+            assert( nSolutions == 0 )
+            assert( lLaziestPages == List() )
+          })
+      }).flatten
+    }
+
+    test("empty selectDistinctByPage") {
+      insertData.map(_ => {
+        SWDiscovery(config)
+          .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
+          .something()
+          .set(URI("http://aa"))
+          .isSubjectOf(URI("http://fake"), "fake")
+          .selectDistinctByPage( List("fake"))
+          .map(args => {
+            val nSolutions : Int = args._1
+            val lLaziestPages : Seq[SWTransaction] = args._2
+            assert( nSolutions == 0 )
+            assert( lLaziestPages == List() )
           })
       }).flatten
     }
