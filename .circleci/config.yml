@@ -17,7 +17,7 @@
 #
 version: 2.1
 orbs:
-  node: circleci/node@5.0.0
+  node: circleci/node@5.0.2
 workflows:
   compile-workflow:
     jobs:
@@ -69,22 +69,58 @@ workflows:
             branches:
               ignore: /.*/
 
-#      - publish_npm:
-#          requires:
-#            - lib_js
-#          context:
-#            - NPM_CONTEXT
-#          filters:
-#            tags:
-#              only: /.*/
-#            branches:
-#              only: strategySourceRequest
-
-      - check_discovery_valid_fullopjs_cdn_jsdelivr:
+      - build_webpack_fullOptJS_npm_publish:
+          context:
+            - DOCKER_CONTEXT
+            - CREDENTIAL_CONTEXT
+            - NPM_CONTEXT
           filters:
             tags:
               only: /.*/
+            branches:
+              ignore: /.*/
 
+      - build_release_assembly:
+          context:
+            - DOCKER_CONTEXT
+            - CREDENTIAL_CONTEXT
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+
+      - publish-github-release:
+          requires:
+            - build_release_assembly
+          context:
+            - DOCKER_CONTEXT
+            - CREDENTIAL_CONTEXT
+            - GITHUB_CONTEXT
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+
+      - build_javascript_distribution:
+          context:
+            - DOCKER_CONTEXT
+            - GITHUB_CONTEXT
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+
+      - check_discovery_valid_fullopjs_cdn_jsdelivr:
+          requires:
+            - build_javascript_distribution
+          filters:
+            branches:
+              only:
+                - develop
+                - master
 executors:
 
   openjdk:
@@ -136,12 +172,6 @@ jobs:
       TERM: dumb
     steps:
       - checkout
-      - setup_remote_docker
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.sbt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
       - run:
           name: Compile - JVM
           command: cat /dev/null | sbt discoveryJVM/test:compile
@@ -155,12 +185,6 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - setup_remote_docker
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.sbt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
       - run:
           name: fastOptJS
           command: cat /dev/null | sbt discoveryJS/fastOptJS
@@ -169,10 +193,6 @@ jobs:
           name: fullOptJS
           command: cat /dev/null | sbt discoveryJS/fullOptJS
 
-      - persist_to_workspace:
-          root: ./js/target/scala-2.13/scalajs-bundler/main/
-          paths: discovery-opt.js
-
   test_and_coverage_jvm:
     executor: virtuoso_environment_executor
     environment:
@@ -180,19 +200,12 @@ jobs:
       TERM: dumb
     steps:
       - checkout
-      - setup_remote_docker
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.sbt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
       - run:
           name: Test JVM env and Coverage
           command: |
             cat /dev/null | sbt clean coverage discoveryJVM/Test/test discoveryJVM/coverageReport
             bash <(curl -s https://codecov.io/bash)
             bash <(curl -Ls https://coverage.codacy.com/get.sh) report
-
       - store_artifacts:
           path: discovery/jvm/target/test-reports
 
@@ -205,7 +218,7 @@ jobs:
         - checkout
         - setup_remote_docker
         - node/install:
-            node-version: '17.4'
+            node-version: '17.9'
         - run:
             name: Test ScalaJs/JavaScript
             command: sbt discoveryJS/test
@@ -219,23 +232,10 @@ jobs:
               npm i
               npm test
 
-        #- run:
-        #    name: Set Npm token
-        #    command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
-        #- run:
-        #    name: Publish package
-        #    command: npm publish
-
   publish_snapshot:
     executor: openjdk
     steps:
       - checkout
-      - setup_remote_docker
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.sbt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
       - run:
           name: Snapshot publication
           command: |
@@ -248,12 +248,6 @@ jobs:
     executor: openjdk
     steps:
       - checkout
-      - setup_remote_docker
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.sbt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
       - run:
           name: Snapshot publication
           command: |
@@ -261,6 +255,91 @@ jobs:
             echo "Importing key"
             echo -e "$GPG_KEY" | gpg --import
             sbt publish
+
+  build_javascript_distribution:
+    executor: openjdk
+    steps:
+      - checkout
+      - node/install:
+          node-version: '17.9'
+      - run:
+          name: Release Assembly
+          command: |
+            export NODE_OPTIONS=--openssl-legacy-provider
+            export DISCOVERY_VERSION="${CIRCLE_TAG}"
+            export BRANCH=${CIRCLE_TAG:=$CIRCLE_BRANCH}
+            git config --global -l
+            git config --global user.email circleci@circleci
+            git config --global user.name CircleCI
+            # browser debug lib
+            sbt discoveryJS/fastOptJS/webpack
+            # browser release lib
+            sbt discoveryJS/fullOptJS/webpack
+            # browser lib js
+            cp $(find ./js -name discovery-fastopt-bundle.js)  ./dist/discovery-web-dev.js
+            cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
+            cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
+            git commit dist -m"[Automatic commit / CI] Javascript librairies publication"
+            git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $BRANCH
+  build_release_assembly:
+    executor: openjdk
+    steps:
+      - checkout
+      - run:
+          name: Release Assembly
+          command: |
+            export DISCOVERY_VERSION="${CIRCLE_TAG}"
+            sbt discoveryJVM/assembly
+            mkdir -p build
+            find . -name discovery-assembly-${CIRCLE_TAG}.jar
+            mv $(find . -name d*-assembly-*.jar) build/
+      - persist_to_workspace:
+          root: build
+          paths:
+            - .
+
+  build_webpack_fullOptJS_npm_publish:
+    executor: openjdk
+    steps:
+      - checkout
+      - node/install:
+          node-version: '17.9'
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+      - run:
+          name: WebPack fullOptJS
+          command: |
+            export NODE_OPTIONS=--openssl-legacy-provider
+            npm config set registry https://registry.npmjs.org
+            export DISCOVERY_VERSION="${CIRCLE_TAG}"
+            sbt discoveryJS/fullOptJS/webpack
+            sbt npmPackageJson
+            npm unpublish @p2m2/discovery@${DISCOVERY_VERSION}
+            last=$(npm view @p2m2/discovery version)
+            [ "$last" = "${DISCOVERY_VERSION}" ] && sleep 5s
+            npm publish --access public
+
+  publish-github-release:
+    docker:
+      - image: circleci/golang:1.16
+    steps:
+      - checkout
+      - attach_workspace:
+          at: build
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION=${CIRCLE_TAG:="unknown"}
+            JAR="discovery-$VERSION.jar"
+            mv $(find build -name discovery*.jar) $JAR
+            ghr -t ${GITHUB_TOKEN} \
+                -u ${CIRCLE_PROJECT_USERNAME} \
+                -r ${CIRCLE_PROJECT_REPONAME} \
+                -c ${CIRCLE_SHA1} \
+                -n $VERSION \
+                -delete $VERSION $JAR ./dist/discovery-web.js ./dist/discovery-web-dev.js ./dist/discovery-web-dev.js.map
 
   check_discovery_valid_fullopjs_cdn_jsdelivr:
     executor: openjdk
@@ -281,32 +360,3 @@ jobs:
                echo "repo checksum    : "$(cat dist/checksum)
                exit 1;
             fi ;
-
-  publish_npm:
-    docker:
-      - image: cimg/node:16.7.0
-        auth:
-          username: ${DOCKER_USER}
-          password: ${DOCKER_PASS}
-    working_directory: ~/repo
-    steps:
-        - checkout
-        - setup_remote_docker
-        - restore_cache:
-            keys:
-              - v1-dependencies-{{ checksum "build.sbt" }}
-              # fallback to using the latest cache if no exact match is found
-              - v1-dependencies-
-
-        - attach_workspace:
-            at: ~/repo/js/target/scala-2.13/scalajs-bundler/main/
-
-        - run:
-            name: Authenticate with registry
-            command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-
-        - run:
-            name: Js Opt Lib generation
-            command: |
-              npm config set registry http://registry.npmjs.org
-              npm publish --access public

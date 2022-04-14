@@ -8,8 +8,8 @@ lazy val airframeLogVersion = "21.12.1"
 lazy val sttpClient3Version = "3.4.1"
 lazy val scalaStubVersion = "1.1.0"
 lazy val scalatagVersion = "0.11.1"
-lazy val rdf4jVersion = "3.7.4"
-lazy val slf4j_version = "1.7.32"
+lazy val rdf4jVersion = "3.7.7"
+lazy val slf4j_version = "1.7.36"
 lazy val scalaUriVersion = "3.6.0"
 lazy val scalajsDom = "1.2.0"
 
@@ -18,7 +18,8 @@ lazy val comunica_actor_init_sparql_rdfjs_version = "1.22.3"
 lazy val data_model_rdfjs_version = "1.0.1"
 lazy val n3js_facade_version = "1.13.0"
 lazy val rdfxml_streaming_parser_version = "1.5.0"
-lazy val axios_version = "0.25.0"
+lazy val axios_version = "0.26.1"
+lazy val scalaJsMacrotaskExecutor = "1.0.0"
 
 /* npm libs */
 lazy val npm_qs_version = "6.10.3"
@@ -52,7 +53,7 @@ ThisBuild / name := "discovery"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / name := "discovery"
 ThisBuild / version :=  version_build
-ThisBuild / scalaVersion := "2.13.7"
+ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / organization := "com.github.p2m2"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / organizationHomepage := Some(url("https://www6.inrae.fr/p2m2"))
@@ -125,6 +126,7 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
   .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
   .jsSettings(
     libraryDependencies ++= Seq(
+     // "org.scala-js"    %%% "scala-js-macrotask-executor" % scalaJsMacrotaskExecutor,
       "com.github.p2m2" %%% "comunica-actor-init-sparql-rdfjs" % comunica_actor_init_sparql_rdfjs_version ,
       "com.github.p2m2" %%% "data-model-rdfjs" % data_model_rdfjs_version ,
       "com.github.p2m2" %%% "n3js" % n3js_facade_version ,
@@ -158,9 +160,9 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
       "org.scala-js" %% "scalajs-stubs" % scalaStubVersion % "provided",
       "org.slf4j" % "slf4j-api" % slf4j_version,
       "org.slf4j" % "slf4j-simple" % slf4j_version,
-      "org.eclipse.rdf4j" % "rdf4j-sail" % rdf4jVersion,
-      "org.eclipse.rdf4j" % "rdf4j-storage" % rdf4jVersion,
-      "org.eclipse.rdf4j" % "rdf4j-tools-federation" % rdf4jVersion
+      "org.eclipse.rdf4j" % "rdf4j-sail" % rdf4jVersion % "provided",
+      "org.eclipse.rdf4j" % "rdf4j-storage" % rdf4jVersion % "provided",
+      "org.eclipse.rdf4j" % "rdf4j-tools-federation" % rdf4jVersion % "provided"
     ))
 
 /**
@@ -236,5 +238,13 @@ ${dependencies.mkString("\n")}
  }
  """).stripMargin)
 }
+
+assembly / assemblyMergeStrategy := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
+
+assembly / target := file("assembly")
+assembly / assemblyJarName := s"discovery-$version_build.jar"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
