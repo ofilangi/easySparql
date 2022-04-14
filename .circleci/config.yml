@@ -104,8 +104,6 @@ workflows:
               ignore: /.*/
 
       - build_javascript_distribution:
-          requires:
-            - compile
           context:
             - DOCKER_CONTEXT
             - GITHUB_CONTEXT
@@ -324,7 +322,9 @@ jobs:
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
             sbt discoveryJS/fullOptJS/webpack
             sbt npmPackageJson
-            npm unpublish @p2m2/discovery@${CIRCLE_TAG}
+            npm unpublish @p2m2/discovery@${DISCOVERY_VERSION}
+            last=$(npm view @p2m2/discovery version) 
+            [ "$last" = "${DISCOVERY_VERSION}" ] && sleep 5s
             npm publish --access public
 
   publish-github-release:
