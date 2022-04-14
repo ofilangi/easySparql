@@ -111,14 +111,6 @@ workflows:
                 - develop
                 - master
 
-      - check_discovery_valid_fullopjs_cdn_jsdelivr:
-          requires:
-            - build_javascript_distribution
-          filters:
-            branches:
-              only:
-                - develop
-                - master
 executors:
 
   openjdk:
@@ -346,7 +338,7 @@ jobs:
                   -n $VERSION \
                   -delete $VERSION $JAR ./dist/discovery-web.js ./dist/discovery-web-dev.js ./dist/discovery-web-dev.js.map
             fi
-
+# obsolete
   check_discovery_valid_fullopjs_cdn_jsdelivr:
     executor: openjdk
     steps:

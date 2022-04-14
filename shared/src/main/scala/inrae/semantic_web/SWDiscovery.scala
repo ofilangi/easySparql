@@ -14,9 +14,6 @@ import io.lemonlabs.uri.{QueryString, Url}
 final case class SWDiscoveryException(private val message: String = "",
                                       private val cause: Throwable = None.orNull) extends Exception(message,cause)
 
-/**
- * Main Object
- */
 object SWDiscovery {
 
   private val version : String = SWDiscoveryVersionAtBuildTime.version
