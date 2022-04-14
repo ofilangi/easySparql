@@ -260,6 +260,7 @@ jobs:
           command: |
             export NODE_OPTIONS=--openssl-legacy-provider
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
+            export BRANCH=${CIRCLE_TAG:=$CIRCLE_BRANCH}
             echo "https://${GITHUB_TOKEN}:@github.com" > ~/.git-credentials
             # browser debug lib
             sbt discoveryJS/fastOptJS/webpack
@@ -270,7 +271,7 @@ jobs:
             cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
             cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
             git commit dist -m"[Automatic commit / CI] Javascript librairies."
-            git push 
+            git push origin $BRANCH
 
   build_release_assembly:
     executor: openjdk
