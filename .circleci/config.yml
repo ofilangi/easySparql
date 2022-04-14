@@ -43,6 +43,12 @@ workflows:
           context:
             - DOCKER_CONTEXT
 
+      - build_javascript_distribution:
+          requires:
+            - compile
+          context:
+            - DOCKER_CONTEXT
+
       - publish_snapshot:
           requires:
             - test_and_coverage_jvm
@@ -84,7 +90,6 @@ workflows:
           context:
             - DOCKER_CONTEXT
             - CREDENTIAL_CONTEXT
-            - GPG_CONTEXT
           filters:
             tags:
               only: /.*/
@@ -206,7 +211,7 @@ jobs:
         - checkout
         - setup_remote_docker
         - node/install:
-            node-version: '17.4'
+            node-version: '17.9'
         - run:
             name: Test ScalaJs/JavaScript
             command: sbt discoveryJS/test
@@ -243,9 +248,29 @@ jobs:
             echo "Importing key"
             echo -e "$GPG_KEY" | gpg --import
             sbt publish
-  
 
-  build_release_assembly:
+  build_javascript_distribution:
+    executor: openjdk
+    steps:
+      - checkout
+      - node/install:
+          node-version: '17.9'
+      - run:
+          name: Release Assembly
+          command: |
+            export DISCOVERY_VERSION="${CIRCLE_TAG}"
+            # browser debug lib
+            sbt discoveryJS/fastOptJS/webpack
+            # browser release lib
+            sbt discoveryJS/fullOptJS/webpack
+            # browser lib js
+            cp $(find ./js -name discovery-fastopt-bundle.js)  ./dist/discovery-web-dev.js
+            cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
+            cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
+            git commit dist -m"[Automatic commit / CI] Javascript librairies."
+            git push 
+
+build_release_assembly:
     executor: openjdk
     steps:
       - checkout
@@ -257,7 +282,6 @@ jobs:
             mkdir -p build
             find . -name discovery-assembly-${CIRCLE_TAG}.jar
             mv $(find . -name d*-assembly-*.jar) build/
-            pwd
       - persist_to_workspace:
           root: build
           paths:
@@ -267,7 +291,7 @@ jobs:
     steps:
       - checkout
       - node/install:
-          node-version: '17.4'
+          node-version: '17.9'
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
@@ -279,16 +303,6 @@ jobs:
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
             sbt discoveryJS/fullOptJS/webpack
             sbt npmPackageJson
-            echo "========================================"
-            echo "=== Update NPM Package ${CIRCLE_TAG} == "
-            cat package.json
-            echo "========================================"
-            echo "== /home/circleci/.npmrc =="
-            cat /home/circleci/.npmrc
-            echo "========================================"
-            echo "== ~/.npmrc =="
-            cat ~/.npmrc
-            
             npm unpublish @p2m2/discovery@${CIRCLE_TAG}
             npm config ls -l | grep userconf
             npm publish --access public
