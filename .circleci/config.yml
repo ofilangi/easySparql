@@ -267,14 +267,15 @@ jobs:
             git config --global user.name CircleCI
             echo "https://${GITHUB_TOKEN}:@github.com" >> ~/.git-credentials
             
-            # browser debug lib
-            sbt discoveryJS/fastOptJS/webpack
-            # browser release lib
-            sbt discoveryJS/fullOptJS/webpack
-            # browser lib js
-            cp $(find ./js -name discovery-fastopt-bundle.js)  ./dist/discovery-web-dev.js
-            cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
-            cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
+            ## browser debug lib
+            #sbt discoveryJS/fastOptJS/webpack
+            ## browser release lib
+            #sbt discoveryJS/fullOptJS/webpack
+            ## browser lib js
+            #cp $(find ./js -name discovery-fastopt-bundle.js)  ./dist/discovery-web-dev.js
+            #cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
+            #cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
+            touch ./dist/test_file
             git commit dist -m"[Automatic commit / CI] Javascript librairies."
             git push origin $BRANCH
 
