@@ -43,13 +43,6 @@ workflows:
           context:
             - DOCKER_CONTEXT
 
-      - build_javascript_distribution:
-          requires:
-            - compile
-          context:
-            - DOCKER_CONTEXT
-            - GITHUB_CONTEXT
-
       - publish_snapshot:
           requires:
             - test_and_coverage_jvm
@@ -110,13 +103,30 @@ workflows:
             branches:
               ignore: /.*/
 
+      - build_javascript_distribution:
+          requires:
+            - compile
+          context:
+            - DOCKER_CONTEXT
+            - GITHUB_CONTEXT
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              only:
+                - develop
+                - master
+
       - check_discovery_valid_fullopjs_cdn_jsdelivr:
           requires:
             - build_javascript_distribution
           filters:
             tags:
               only: /.*/
-
+            branches:
+              only:
+                - develop
+                - master
 executors:
 
   openjdk:
