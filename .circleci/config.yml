@@ -48,6 +48,7 @@ workflows:
             - compile
           context:
             - DOCKER_CONTEXT
+            - GITHUB_CONTEXT
 
       - publish_snapshot:
           requires:
