@@ -85,10 +85,9 @@ workflows:
             - DOCKER_CONTEXT
             - CREDENTIAL_CONTEXT
           filters:
-            tags:
-              only: /.*/
             branches:
-              ignore: /.*/
+              only:
+                - master
 
       - publish-github-release:
           requires:
@@ -98,10 +97,9 @@ workflows:
             - CREDENTIAL_CONTEXT
             - GITHUB_CONTEXT
           filters:
-            tags:
-              only: /.*/
             branches:
-              ignore: /.*/
+              only:
+                - master
 
       - build_javascript_distribution:
           context:
@@ -280,23 +278,7 @@ jobs:
             cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
             cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
             git commit dist -m"[ci skip] - Javascript librairies publication"
-            git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $BRANCH || true
-  build_release_assembly:
-    executor: openjdk
-    steps:
-      - checkout
-      - run:
-          name: Release Assembly
-          command: |
-            export DISCOVERY_VERSION="${CIRCLE_TAG}"
-            sbt discoveryJVM/assembly
-            mkdir -p build
-            find . -name discovery-assembly-${CIRCLE_TAG}.jar
-            mv $(find . -name d*-assembly-*.jar) build/
-      - persist_to_workspace:
-          root: build
-          paths:
-            - .
+            git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $BRANCH
 
   build_webpack_fullOptJS_npm_publish:
     executor: openjdk
@@ -320,6 +302,26 @@ jobs:
             [ "$last" = "${DISCOVERY_VERSION}" ] && sleep 5s
             npm publish --access public
 
+  build_release_assembly:
+    executor: openjdk
+    steps:
+      - checkout
+      - run:
+          name: Release Assembly
+          command: |
+            LAST_VERSION=$(git ls-remote --tags --sort="v:refname" https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git | tail -n1  | sed 's/.*\///; s/\^{}//')
+            VERSION=$(grep -E "static_version_build[[:blank:]]*=[[:blank:]]*" build.sbt | awk 'BEGIN { FS="="} {gsub("\"","",$2) ; gsub(/[ \t]*/, "", $2);print $2}')
+            if [ "LAST_VERSION" != "VERSION" ]; then
+              sbt discoveryJVM/assembly
+              mkdir -p build
+              mv $(find . -name d*-assembly-*.jar) build/
+            fi
+
+      - persist_to_workspace:
+          root: build
+          paths:
+            - .
+
   publish-github-release:
     docker:
       - image: circleci/golang:1.16
@@ -330,16 +332,20 @@ jobs:
       - run:
           name: "Publish Release on GitHub"
           command: |
-            go get github.com/tcnksm/ghr
-            VERSION=${CIRCLE_TAG:="unknown"}
-            JAR="discovery-$VERSION.jar"
-            mv $(find build -name discovery*.jar) $JAR
-            ghr -t ${GITHUB_TOKEN} \
-                -u ${CIRCLE_PROJECT_USERNAME} \
-                -r ${CIRCLE_PROJECT_REPONAME} \
-                -c ${CIRCLE_SHA1} \
-                -n $VERSION \
-                -delete $VERSION $JAR ./dist/discovery-web.js ./dist/discovery-web-dev.js ./dist/discovery-web-dev.js.map
+            LAST_VERSION=$(git ls-remote --tags --sort="v:refname" https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git | tail -n1  | sed 's/.*\///; s/\^{}//')
+            VERSION=$(grep -E "static_version_build[[:blank:]]*=[[:blank:]]*" build.sbt | awk 'BEGIN { FS="="} {gsub("\"","",$2) ; gsub(/[ \t]*/, "", $2);print $2}')
+            
+            if [ "LAST_VERSION" != "VERSION" ]; then
+              go get github.com/tcnksm/ghr
+              JAR=discovery-$VERSION.jar
+              cp $(find build -name discovery*.jar) $JAR
+              ghr -t ${GITHUB_TOKEN} \
+                  -u ${CIRCLE_PROJECT_USERNAME} \
+                  -r ${CIRCLE_PROJECT_REPONAME} \
+                  -c ${CIRCLE_SHA1} \
+                  -n $VERSION \
+                  -delete $VERSION $JAR ./dist/discovery-web.js ./dist/discovery-web-dev.js ./dist/discovery-web-dev.js.map
+            fi
 
   check_discovery_valid_fullopjs_cdn_jsdelivr:
     executor: openjdk
