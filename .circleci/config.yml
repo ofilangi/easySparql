@@ -270,7 +270,7 @@ jobs:
             git commit dist -m"[Automatic commit / CI] Javascript librairies."
             git push 
 
-build_release_assembly:
+  build_release_assembly:
     executor: openjdk
     steps:
       - checkout
@@ -286,6 +286,7 @@ build_release_assembly:
           root: build
           paths:
             - .
+
   build_webpack_fullOptJS_npm_publish:
     executor: openjdk
     steps:
@@ -304,7 +305,6 @@ build_release_assembly:
             sbt discoveryJS/fullOptJS/webpack
             sbt npmPackageJson
             npm unpublish @p2m2/discovery@${CIRCLE_TAG}
-            npm config ls -l | grep userconf
             npm publish --access public
 
   publish-github-release:
