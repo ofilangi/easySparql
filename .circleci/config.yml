@@ -278,9 +278,6 @@ jobs:
             npm config set registry https://registry.npmjs.org
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
             sbt discoveryJS/fullOptJS/webpack
-      - run:
-          name: Npm publication
-          command: |
             sbt npmPackageJson
             echo "========================================"
             echo "=== Update NPM Package ${CIRCLE_TAG} == "
