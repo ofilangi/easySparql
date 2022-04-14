@@ -269,9 +269,10 @@ jobs:
             cp $(find ./js -name discovery-fastopt-bundle.js)  ./dist/discovery-web-dev.js
             cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
             cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
-            git commit dist -m"[ci skip] - Javascript librairies publication"
-            git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $BRANCH
-
+            if [[ ! -z "$(git status -s | grep -v -E "^\?\?")" ]]; then 
+              git commit dist -m"[ci skip] - Javascript librairies publication"
+              git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $BRANCH
+            fi
   build_webpack_fullOptJS_npm_publish:
     executor: openjdk
     steps:
