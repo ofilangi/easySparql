@@ -269,6 +269,7 @@ jobs:
             cp $(find ./js -name discovery-fastopt-bundle.js)  ./dist/discovery-web-dev.js
             cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
             cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
+            
             if [[ ! -z "$(git status -s | grep -v -E "^\?\?")" ]]; then 
               git commit dist -m"[ci skip] - Javascript librairies publication"
               git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $BRANCH
@@ -307,7 +308,10 @@ jobs:
             if [ "LAST_VERSION" != "VERSION" ]; then
               sbt discoveryJVM/assembly
               mkdir -p build
-              mv $(find . -name d*-assembly-*.jar) build/
+              mv $(find . -name d*-assembly-*.jar) build/discovery-$VERSION.jar
+              cp dist/discovery-web-dev.js build/discovery-web-dev-$VERSION.js
+              cp dist/discovery-web-dev.js.map build/discovery-web-dev-$VERSION.js.map
+              cp dist/discovery-web.js build/discovery-web-$VERSION.js
             fi
 
       - persist_to_workspace:
@@ -333,14 +337,12 @@ jobs:
             # -------------------------------------------------------
             if [ "LAST_VERSION" != "VERSION" ]; then
               go get github.com/tcnksm/ghr
-              JAR=discovery-$VERSION.jar
-              cp $(find build -name discovery*.jar) $JAR
               ghr -t ${GITHUB_TOKEN} \
                   -u ${CIRCLE_PROJECT_USERNAME} \
                   -r ${CIRCLE_PROJECT_REPONAME} \
                   -c ${CIRCLE_SHA1} \
                   -n $VERSION \
-                  -delete $VERSION $JAR
+                  -delete $VERSION build/
             fi
 # obsolete
   check_discovery_valid_fullopjs_cdn_jsdelivr:
