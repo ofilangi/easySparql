@@ -61,3 +61,23 @@ npm view @p2m2/discovery version -> list published version
 npm unpublish @p2m2/discovery@X.X.X -> unpublished lib
 npm publish --access public
 ```
+### generate-changelog / Usage
+
+
+```
+type(category): description [flags]
+Where type is one of the following:
+```
+* breaking
+* build
+* ci
+* chore
+* docs
+* feat
+* fix
+* other
+* perf
+* refactor
+* revert
+* style
+* test

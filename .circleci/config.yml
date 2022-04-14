@@ -270,10 +270,11 @@ jobs:
             cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
             cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
             
-            if [[ ! -z "$(git status -s | grep -v -E "^\?\?")" ]]; then 
+            if [[ ! -z "$(git status -s | grep -v -E "^\?\?")" ]]; then
               git commit dist -m"[ci skip] - Javascript librairies publication"
               git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $BRANCH
             fi
+
   build_webpack_fullOptJS_npm_publish:
     executor: openjdk
     steps:
@@ -324,6 +325,8 @@ jobs:
       - image: circleci/golang:1.16
     steps:
       - checkout
+      - node/install:
+          node-version: '17.9'
       - attach_workspace:
           at: build
       - run:
@@ -337,6 +340,7 @@ jobs:
             # -------------------------------------------------------
             if [ "LAST_VERSION" != "VERSION" ]; then
               go get github.com/tcnksm/ghr
+              npm install generate-changelog -g
               ghr -t ${GITHUB_TOKEN} \
                   -u ${CIRCLE_PROJECT_USERNAME} \
                   -r ${CIRCLE_PROJECT_REPONAME} \
