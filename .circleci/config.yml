@@ -276,17 +276,25 @@ jobs:
           command: |
             export NODE_OPTIONS=--openssl-legacy-provider
             npm config set registry https://registry.npmjs.org
-            mkdir -p build
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
             sbt discoveryJS/fullOptJS/webpack
       - run:
           name: Npm publication
           command: |
             sbt npmPackageJson
-            npm view @p2m2/discovery
+            echo "========================================"
+            echo "=== Update NPM Package ${CIRCLE_TAG} == "
+            cat package.json
+            echo "========================================"
+            echo "== /home/circleci/.npmrc =="
+            cat /home/circleci/.npmrc
+            echo "========================================"
+            echo "== ~/.npmrc =="
+            cat ~/.npmrc
+            
             npm unpublish @p2m2/discovery@${CIRCLE_TAG}
-            npm config ls
-            npm publish --registry https://registry.npmjs.org --access public
+            npm config ls -l | grep userconf
+            npm publish --access public
 
   publish-github-release:
     docker:
