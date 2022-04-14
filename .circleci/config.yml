@@ -44,8 +44,6 @@ workflows:
             - DOCKER_CONTEXT
 
       - build_javascript_distribution:
-          requires:
-            - compile
           context:
             - DOCKER_CONTEXT
             - GITHUB_CONTEXT
