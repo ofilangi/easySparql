@@ -275,7 +275,7 @@ jobs:
             #cp $(find ./js -name discovery-fastopt-bundle.js)  ./dist/discovery-web-dev.js
             #cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
             #cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
-            touch ./dist/test_file
+            touch ./dist/discovery-web-dev.js
             git commit dist -m"[Automatic commit / CI] Javascript librairies."
             git push origin $BRANCH
 
