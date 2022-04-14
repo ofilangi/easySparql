@@ -44,6 +44,8 @@ workflows:
             - DOCKER_CONTEXT
 
       - build_javascript_distribution:
+          requires:
+            - compile
           context:
             - DOCKER_CONTEXT
             - GITHUB_CONTEXT
@@ -109,6 +111,8 @@ workflows:
               ignore: /.*/
 
       - check_discovery_valid_fullopjs_cdn_jsdelivr:
+          requires:
+            - build_javascript_distribution
           filters:
             tags:
               only: /.*/
@@ -257,15 +261,23 @@ jobs:
       - run:
           name: Release Assembly
           command: |
+            
             export NODE_OPTIONS=--openssl-legacy-provider
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
             export BRANCH=${CIRCLE_TAG:=$CIRCLE_BRANCH}
             git config --global -l
             git config --global user.email circleci@circleci 
             git config --global user.name CircleCI
-            touch empty
-            cp empty ./dist/discovery-web-dev.js
-            rm empty
+            
+            # browser debug lib
+            sbt discoveryJS/fastOptJS/webpack
+            # browser release lib
+            sbt discoveryJS/fullOptJS/webpack
+            # browser lib js
+            cp $(find ./js -name discovery-fastopt-bundle.js)  ./dist/discovery-web-dev.js
+            cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
+            cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
+            
             git commit dist -m"[Automatic commit / CI] Javascript librairies."
             git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $BRANCH
   build_release_assembly:
