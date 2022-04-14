@@ -263,13 +263,11 @@ jobs:
             git config --global -l
             git config --global user.email circleci@circleci 
             git config --global user.name CircleCI
-            echo "https://${GITHUB_TOKEN}:@github.com" >> ~/.git-credentials
             touch empty
             cp empty ./dist/discovery-web-dev.js
             rm empty
             git commit dist -m"[Automatic commit / CI] Javascript librairies."
-            git push origin $BRANCH
-
+            git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $BRANCH
   build_release_assembly:
     executor: openjdk
     steps:
