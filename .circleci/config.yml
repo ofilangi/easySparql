@@ -108,8 +108,6 @@ workflows:
             - DOCKER_CONTEXT
             - GITHUB_CONTEXT
           filters:
-            tags:
-              only: /.*/
             branches:
               only:
                 - develop
@@ -119,8 +117,6 @@ workflows:
           requires:
             - build_javascript_distribution
           filters:
-            tags:
-              only: /.*/
             branches:
               only:
                 - develop
@@ -286,7 +282,7 @@ jobs:
             cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
             cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
             
-            git commit dist -m"[Automatic commit / CI] Javascript librairies."
+            git commit dist -m"[Automatic commit / CI] Javascript librairies publication"
             git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $BRANCH
   build_release_assembly:
     executor: openjdk
@@ -346,7 +342,7 @@ jobs:
                 -r ${CIRCLE_PROJECT_REPONAME} \
                 -c ${CIRCLE_SHA1} \
                 -n $VERSION \
-                -delete $VERSION $JAR
+                -delete $VERSION $JAR ./dist/discovery-web.js ./dist/discovery-web-dev.js ./dist/discovery-web-dev.js.map
 
   check_discovery_valid_fullopjs_cdn_jsdelivr:
     executor: openjdk
