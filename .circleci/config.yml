@@ -271,8 +271,7 @@ jobs:
             export BRANCH=${CIRCLE_TAG:=$CIRCLE_BRANCH}
             git config --global -l
             git config --global user.email circleci@circleci 
-            git config --global user.name CircleCI
-            
+            git config --global user.name CircleCI 
             # browser debug lib
             sbt discoveryJS/fastOptJS/webpack
             # browser release lib
@@ -281,7 +280,6 @@ jobs:
             cp $(find ./js -name discovery-fastopt-bundle.js)  ./dist/discovery-web-dev.js
             cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
             cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
-            
             git commit dist -m"[Automatic commit / CI] Javascript librairies publication"
             git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $BRANCH
   build_release_assembly:
@@ -319,7 +317,7 @@ jobs:
             sbt discoveryJS/fullOptJS/webpack
             sbt npmPackageJson
             npm unpublish @p2m2/discovery@${DISCOVERY_VERSION}
-            last=$(npm view @p2m2/discovery version) 
+            last=$(npm view @p2m2/discovery version)
             [ "$last" = "${DISCOVERY_VERSION}" ] && sleep 5s
             npm publish --access public
 
