@@ -217,7 +217,7 @@ jobs:
             command: |
               ## bug with Node 17 -> https://github.com/webpack/webpack/issues/14532
               export NODE_OPTIONS=--openssl-legacy-provider
-              sbt "discoveryJS / Compile / fastOptJS / webpack"
+              sbt discoveryJS/fastOptJS/webpack
               sbt npmPackageJson
               npm i
               npm test
@@ -313,6 +313,8 @@ jobs:
               cp dist/discovery-web-dev.js build/discovery-web-dev-$VERSION.js
               cp dist/discovery-web-dev.js.map build/discovery-web-dev-$VERSION.js.map
               cp dist/discovery-web.js build/discovery-web-$VERSION.js
+              export NODE_OPTIONS=--openssl-legacy-provider
+              sbt discoveryJS/fastOptJS/webpack
               sbt npmPackageJson
               cp package.json build/
             fi
