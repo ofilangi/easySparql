@@ -265,7 +265,6 @@ jobs:
       - run:
           name: Release Assembly
           command: |
-            
             export NODE_OPTIONS=--openssl-legacy-provider
             export DISCOVERY_VERSION="${CIRCLE_TAG}"
             export BRANCH=${CIRCLE_TAG:=$CIRCLE_BRANCH}
