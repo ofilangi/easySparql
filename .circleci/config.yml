@@ -354,7 +354,7 @@ jobs:
                   -r ${CIRCLE_PROJECT_REPONAME} \
                   -c ${CIRCLE_SHA1} \
                   -n $VERSION \
-                  -b $BODY \
+                  -b "$BODY" \
                   -delete $VERSION build/
             fi
 # obsolete
