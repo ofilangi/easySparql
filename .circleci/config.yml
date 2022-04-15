@@ -301,6 +301,8 @@ jobs:
     executor: openjdk
     steps:
       - checkout
+      - node/install:
+          node-version: '17.9'
       - run:
           name: Release Assembly
           command: |
