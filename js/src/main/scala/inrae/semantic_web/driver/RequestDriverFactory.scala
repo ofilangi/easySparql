@@ -1,6 +1,6 @@
 package inrae.semantic_web.driver
 
-import inrae.semantic_web.configuration.ConfigurationObject.Source
+import inrae.semantic_web.configuration._
 import inrae.semantic_web.exception.SWDiscoveryException
 
 object RequestDriverFactory  {

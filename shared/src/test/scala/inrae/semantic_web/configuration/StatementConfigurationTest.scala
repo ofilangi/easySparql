@@ -43,8 +43,8 @@ object StatementConfigurationTest extends TestSuite {
       val url = "http://test"
       val mimetype = "application/sparql-query"
 
-      val configDbpediaBasic: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
-        Seq(ConfigurationObject.Source(id=dbname, url=url, mimetype=mimetype))))
+      val configDbpediaBasic: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfig(StatementConfigurationJson(
+        Seq(Source(id=dbname, url=url, mimetype=mimetype))))
       val source = configDbpediaBasic.source("dbpedia")
 
       assert(source.id == dbname)
@@ -58,8 +58,8 @@ object StatementConfigurationTest extends TestSuite {
       val url = "http://test"
       val mimetype = " -- "
 
-      Try(SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
-        Seq(ConfigurationObject.Source(id=dbname, url=url, mimetype=mimetype))))) match {
+      Try(SWDiscoveryConfiguration.setConfig(StatementConfigurationJson(
+        Seq(Source(id=dbname, url=url, mimetype=mimetype))))) match {
         case Success(s) => assert(false)
         case Failure(e) => assert(true)
       }
@@ -71,8 +71,8 @@ object StatementConfigurationTest extends TestSuite {
       val url = "http://test"
       val method = " -- "
 
-      Try(SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
-        Seq(ConfigurationObject.Source(id=dbname, url=url, method=method))))) match {
+      Try(SWDiscoveryConfiguration.setConfig(StatementConfigurationJson(
+        Seq(Source(id=dbname, url=url, method=method))))) match {
         case Success(s) => assert(false)
         case Failure(e) => assert(true)
       }
@@ -83,26 +83,26 @@ object StatementConfigurationTest extends TestSuite {
       val dbname = "dbpedia"
       val url = "http://test"
 
-      Try(SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
-        Seq(ConfigurationObject.Source(id=dbname, url=url, file="sss", content="sss"))))) match {
+      Try(SWDiscoveryConfiguration.setConfig(StatementConfigurationJson(
+        Seq(Source(id=dbname, url=url, file="sss", content="sss"))))) match {
         case Success(s) => assert(false)
         case Failure(e) => assert(true)
       }
 
-      Try(SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
-        Seq(ConfigurationObject.Source(id=dbname, file="sss", content="sss"))))) match {
+      Try(SWDiscoveryConfiguration.setConfig(StatementConfigurationJson(
+        Seq(Source(id=dbname, file="sss", content="sss"))))) match {
         case Success(s) => assert(false)
         case Failure(e) => assert(true)
       }
 
-      Try(SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
-        Seq(ConfigurationObject.Source(id=dbname, url=url, file="sss"))))) match {
+      Try(SWDiscoveryConfiguration.setConfig(StatementConfigurationJson(
+        Seq(Source(id=dbname, url=url, file="sss"))))) match {
         case Success(s) => assert(false)
         case Failure(e) => assert(true)
       }
 
-      Try(SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
-        Seq(ConfigurationObject.Source(id=dbname, url=url, content="sss"))))) match {
+      Try(SWDiscoveryConfiguration.setConfig(StatementConfigurationJson(
+        Seq(Source(id=dbname, url=url, content="sss"))))) match {
         case Success(s) => assert(false)
         case Failure(e) => assert(true)
       }
