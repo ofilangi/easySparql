@@ -7,7 +7,7 @@ import utest.{TestSuite, Tests, test}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object FixLimitOrderbyDescTest extends TestSuite {
-  val config: StatementConfiguration = StatementConfiguration.setConfigString(
+  val config: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     """
         {
          "sources" : [{

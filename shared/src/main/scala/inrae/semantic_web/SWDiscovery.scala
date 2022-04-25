@@ -27,7 +27,7 @@ object SWDiscovery {
 }
 
 case class SWDiscovery(
-                        config: StatementConfiguration=StatementConfiguration(),
+                        config: SWDiscoveryConfiguration=SWDiscoveryConfiguration(),
                         rootNode : Root = Root(),
                         fn : Option[String] = None)
 {
@@ -101,10 +101,10 @@ case class SWDiscovery(
   def finder : SWDiscoveryHelper = SWDiscoveryHelper(this)
 
   /* configuration */
-  def setConfig(newConfig : StatementConfiguration) : SWDiscovery =
+  def setConfig(newConfig : SWDiscoveryConfiguration) : SWDiscovery =
     SWDiscovery(newConfig,rootNode,Some(focusNode))
 
-  def getConfig : StatementConfiguration = config
+  def getConfig : SWDiscoveryConfiguration = config
 
   /* get current focus */
   def focus() : String = focusNode

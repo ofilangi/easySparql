@@ -19,7 +19,7 @@ object SolutionModifierTest extends TestSuite {
       <http://p3>    <http://xmlns.com/foaf/0.1/mbox>   <mailto:alice.smith@example.com> .
       """.stripMargin, this.getClass.getSimpleName)
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
   val basereq : SWTransaction = SWDiscovery(config)
     .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))

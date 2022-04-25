@@ -40,7 +40,7 @@ object SWDiscoveryFilterTest extends TestSuite {
 
       """.stripMargin, this.getClass.getSimpleName)
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
   def tests = Tests {
 

@@ -10,7 +10,7 @@ import inrae.semantic_web.configuration._
  */
 object StrategyRequestBuilder {
 
-  def build(config: StatementConfiguration): StrategyRequest = {
+  def build(config: SWDiscoveryConfiguration): StrategyRequest = {
 
     config.sources().length match {
       case 0 => throw SWDiscoveryException("No sources specified")

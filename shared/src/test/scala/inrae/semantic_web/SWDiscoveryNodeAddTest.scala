@@ -11,7 +11,7 @@ import scala.util.{Failure, Success, Try}
 
 object SWDiscoveryNodeAddTest extends TestSuite {
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
   def tests: Tests = Tests {
 

@@ -8,7 +8,7 @@ import utest.{TestSuite, Tests, test}
 
 
 object Fix144TriplyDb extends TestSuite {
-  val config: StatementConfiguration = StatementConfiguration.setConfigString(
+  val config: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     """
         {
           "sources" : [{

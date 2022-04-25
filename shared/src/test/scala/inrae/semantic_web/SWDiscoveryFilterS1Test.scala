@@ -20,7 +20,7 @@ object SWDiscoveryFilterS1Test extends TestSuite {
       <http://url_w3_class_stuff> a <http://www.w3.org/2002/07/owl#Class> .
       """.stripMargin, this.getClass.getSimpleName)
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
   def tests = Tests {
     test("SW Filter contains") {

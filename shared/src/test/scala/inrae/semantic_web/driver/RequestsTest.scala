@@ -16,7 +16,7 @@ object RequestsTest extends TestSuite {
       """.stripMargin, this.getClass.getSimpleName)
   val logLevel = "off"
 
-  val config: StatementConfiguration = StatementConfiguration.setConfigString(
+  val config: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     s"""
         {
          "sources" : [{
@@ -30,7 +30,7 @@ object RequestsTest extends TestSuite {
          }
         """.stripMargin)
 
-  val config2: StatementConfiguration = StatementConfiguration.setConfigString(
+  val config2: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     s"""
         {
          "sources" : [{
@@ -45,7 +45,7 @@ object RequestsTest extends TestSuite {
          }
         """.stripMargin)
 
-  val config3: StatementConfiguration = StatementConfiguration.setConfigString(
+  val config3: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     s"""
         {
          "sources" : [{
@@ -79,7 +79,7 @@ object RequestsTest extends TestSuite {
                               |  </rdf:Description>
                               |</rdf:RDF>""".stripMargin.replace("\"","\\\"").replace("\n","")
 
-  val config4: StatementConfiguration = StatementConfiguration.setConfigString(
+  val config4: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     s"""
         {
          "sources" : [{
@@ -94,7 +94,7 @@ object RequestsTest extends TestSuite {
          }
         """.stripMargin)
 
-  val mixconfig: StatementConfiguration = StatementConfiguration.setConfigString(
+  val mixconfig: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     s"""
         {
          "sources" : [

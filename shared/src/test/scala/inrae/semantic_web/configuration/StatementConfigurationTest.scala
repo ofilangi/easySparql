@@ -25,11 +25,11 @@ object StatementConfigurationTest extends TestSuite {
 
   def tests = Tests {
     test("Create a simple source with string configuration") {
-      StatementConfiguration.setConfigString(configBase)
+      SWDiscoveryConfiguration.setConfigString(configBase)
     }
 
     test("Get a unknown source") {
-      val c = StatementConfiguration.setConfigString(configBase)
+      val c = SWDiscoveryConfiguration.setConfigString(configBase)
 
       Try(c.source("something")) match {
         case Success(_) => assert(false)
@@ -43,7 +43,7 @@ object StatementConfigurationTest extends TestSuite {
       val url = "http://test"
       val mimetype = "application/sparql-query"
 
-      val configDbpediaBasic: StatementConfiguration = StatementConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
+      val configDbpediaBasic: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
         Seq(ConfigurationObject.Source(id=dbname, url=url, mimetype=mimetype))))
       val source = configDbpediaBasic.source("dbpedia")
 
@@ -58,7 +58,7 @@ object StatementConfigurationTest extends TestSuite {
       val url = "http://test"
       val mimetype = " -- "
 
-      Try(StatementConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
+      Try(SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
         Seq(ConfigurationObject.Source(id=dbname, url=url, mimetype=mimetype))))) match {
         case Success(s) => assert(false)
         case Failure(e) => assert(true)
@@ -71,7 +71,7 @@ object StatementConfigurationTest extends TestSuite {
       val url = "http://test"
       val method = " -- "
 
-      Try(StatementConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
+      Try(SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
         Seq(ConfigurationObject.Source(id=dbname, url=url, method=method))))) match {
         case Success(s) => assert(false)
         case Failure(e) => assert(true)
@@ -83,25 +83,25 @@ object StatementConfigurationTest extends TestSuite {
       val dbname = "dbpedia"
       val url = "http://test"
 
-      Try(StatementConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
+      Try(SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
         Seq(ConfigurationObject.Source(id=dbname, url=url, file="sss", content="sss"))))) match {
         case Success(s) => assert(false)
         case Failure(e) => assert(true)
       }
 
-      Try(StatementConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
+      Try(SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
         Seq(ConfigurationObject.Source(id=dbname, file="sss", content="sss"))))) match {
         case Success(s) => assert(false)
         case Failure(e) => assert(true)
       }
 
-      Try(StatementConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
+      Try(SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
         Seq(ConfigurationObject.Source(id=dbname, url=url, file="sss"))))) match {
         case Success(s) => assert(false)
         case Failure(e) => assert(true)
       }
 
-      Try(StatementConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
+      Try(SWDiscoveryConfiguration.setConfig(ConfigurationObject.StatementConfigurationJson(
         Seq(ConfigurationObject.Source(id=dbname, url=url, content="sss"))))) match {
         case Success(s) => assert(false)
         case Failure(e) => assert(true)
@@ -109,7 +109,7 @@ object StatementConfigurationTest extends TestSuite {
     }
 
     test("Create a config with a bad tag ") {
-      Try(StatementConfiguration
+      Try(SWDiscoveryConfiguration
         .setConfigString(
           """
           {
@@ -122,13 +122,13 @@ object StatementConfigurationTest extends TestSuite {
     }
 
     test("Create a request config with an unknown log level ") {
-      assert(StatementConfiguration
+      assert(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
           "\"hello.world\"")).conf.settings.getLogLevel == LogLevel.WARN)
     }
 
     test("Create a request config log level debug ") {
-      Try(StatementConfiguration
+      Try(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
           "\"debug\"")).conf.settings.getLogLevel == LogLevel.DEBUG) match {
         case Success(_) => assert(true)
@@ -138,47 +138,47 @@ object StatementConfigurationTest extends TestSuite {
 
     test("Create a request config log level info ") {
 
-      val c = StatementConfiguration
+      val c = SWDiscoveryConfiguration
         .setConfigString(configBase)
       assert(c.conf.settings.getLogLevel == LogLevel.INFO)
 
     }
     test("Create a request config log level trace ") {
-      val c = StatementConfiguration
+      val c = SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
           "\"trace\""))
       assert(c.conf.settings.getLogLevel == LogLevel.TRACE)
     }
     test("Create a request config log level warn ") {
-      val c = StatementConfiguration
+      val c = SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
           "\"warn\""))
       assert(c.conf.settings.getLogLevel == LogLevel.WARN)
     }
 
     test("Create a request config log level error ") {
-      val c = StatementConfiguration
+      val c = SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
           "\"error\""))
       assert(c.conf.settings.getLogLevel == LogLevel.ERROR)
     }
 
     test("Create a request config log level all ") {
-      val c = StatementConfiguration
+      val c = SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
           "\"all\""))
       assert(c.conf.settings.getLogLevel == LogLevel.ALL)
     }
 
     test("Create a request config log level off ") {
-      val c = StatementConfiguration
+      val c = SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
           "\"off\""))
       assert(c.conf.settings.getLogLevel == LogLevel.OFF)
     }
 
     test("pageSize can not be negative") {
-      Try(StatementConfiguration
+      Try(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"pageSize\" : 10",
           "\"pageSize\" : -1"))) match {
         case Success(c) => assert(false)
@@ -186,7 +186,7 @@ object StatementConfigurationTest extends TestSuite {
       }
     }
     test("pageSize can be equal to zero") {
-      Try(StatementConfiguration
+      Try(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"pageSize\" : 10",
           "\"pageSize\" : 0"))) match {
         case Success(c) => assert(false)
@@ -194,7 +194,7 @@ object StatementConfigurationTest extends TestSuite {
       }
     }
     test("pageSize") {
-      val c = StatementConfiguration
+      val c = SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"pageSize\" : 10",
           "\"pageSize\" : 5"))
       assert(c.conf.settings.pageSize == 5)

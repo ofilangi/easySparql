@@ -14,8 +14,6 @@ import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import scala.util.{Failure, Success}
 
 
-
-
 final case class StatementConfigurationException(private val message: String = "",
                                             private val cause: Throwable = None.orNull) extends Exception(message,cause)
 
@@ -163,33 +161,33 @@ object ConfigurationObject {
   }
 }
 
-@JSExportTopLevel(name="SWDiscoveryConfiguration")
-object StatementConfiguration {
-  implicit val rw: RW[StatementConfiguration] = macroRW
+@JSExportTopLevel(name="SWStringJsonConfiguration")
+object SWDiscoveryConfiguration {
+  implicit val rw: RW[SWDiscoveryConfiguration] = macroRW
   /**
    * Set a config using class definition
    * @param conf_ext : configuration
    */
   @JSExport
-  def setConfig(conf_ext : ConfigurationObject.StatementConfigurationJson) : StatementConfiguration = StatementConfiguration(conf_ext)
+  def setConfig(conf_ext : ConfigurationObject.StatementConfigurationJson) : SWDiscoveryConfiguration = SWDiscoveryConfiguration(conf_ext)
 
   /**
    * set a config using string configuration
    * @param json_conf : configuration in json format
    */
   @JSExport
-  def setConfigString(json_conf: String) : StatementConfiguration = {
+  def setConfigString(json_conf: String) : SWDiscoveryConfiguration = {
     util.Try(upickle.default.read[ConfigurationObject.StatementConfigurationJson](json_conf))
     match {
-      case Success(v) => StatementConfiguration(v)
+      case Success(v) => SWDiscoveryConfiguration(v)
       case Failure(e) => throw StatementConfigurationException(e.getMessage)
     }
   }
 
 }
 
-@JSExportTopLevel(name="StatementConfiguration")
-case class StatementConfiguration(
+//@JSExportTopLevel(name="SWDiscoveryConfiguration")
+case class SWDiscoveryConfiguration(
                                    conf : ConfigurationObject.StatementConfigurationJson =
                                    new ConfigurationObject.StatementConfigurationJson(
                                      Seq[ConfigurationObject.Source](),ConfigurationObject.GeneralSetting())

@@ -31,7 +31,7 @@ object SWDiscoveryTest extends TestSuite {
       <http://OwlClass> a owl:Class .
       """.stripMargin, this.getClass.getSimpleName)
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
   override def utestAfterAll(): Unit = {
     DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
@@ -45,7 +45,7 @@ object SWDiscoveryTest extends TestSuite {
   def tests = Tests {
     test("No sources definition") {
       insertData.map(_ => {
-        val config: StatementConfiguration = StatementConfiguration.setConfigString(""" { "sources" : [] } """)
+        val config: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(""" { "sources" : [] } """)
         SWDiscovery(config)
           .something("h1")
           .select(List("h1"))

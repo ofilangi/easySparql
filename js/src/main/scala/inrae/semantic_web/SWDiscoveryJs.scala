@@ -14,7 +14,7 @@ import upickle.default.write
 
 @JSExportTopLevel(name="SWDiscovery")
 case class SWDiscoveryJs(
-                          config: StatementConfiguration=StatementConfiguration(),
+                          config: SWDiscoveryConfiguration=SWDiscoveryConfiguration(),
                           swArg: SWDiscovery = null
                         ) {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
@@ -50,10 +50,10 @@ case class SWDiscoveryJs(
   def finder :SWDiscoveryHelperJs = SWDiscoveryHelperJs(sw)
 
   @JSExport
-  def setConfig(newConfig : StatementConfiguration) : SWDiscoveryJs = SWDiscoveryJs(newConfig,sw.setConfig(newConfig))
+  def setConfig(newConfig : SWDiscoveryConfiguration) : SWDiscoveryJs = SWDiscoveryJs(newConfig,sw.setConfig(newConfig))
 
   @JSExport
-  def getConfig() : StatementConfiguration = sw.getConfig
+  def getConfig() : SWDiscoveryConfiguration = sw.getConfig
 
   @JSExport
   def focus(ref : String) : SWDiscoveryJs = SWDiscoveryJs(config,sw.focus(ref))

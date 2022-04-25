@@ -28,7 +28,7 @@ object SWDiscoveryHelperTest  extends TestSuite  {
       <http://OwlClass> a owl:Class .
       """.stripMargin, this.getClass.getSimpleName)
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
 
   def tests = Tests {

@@ -11,7 +11,7 @@ object StrategyRequestBuilderTest extends TestSuite {
 
     test("none source should fail") {
       Try(StrategyRequestBuilder.build(
-        StatementConfiguration.setConfigString(
+        SWDiscoveryConfiguration.setConfigString(
           """
           {
            "sources" : []
@@ -23,7 +23,7 @@ object StrategyRequestBuilderTest extends TestSuite {
     }
 
     test("1 source") {
-      Try(StrategyRequestBuilder.build(StatementConfiguration
+      Try(StrategyRequestBuilder.build(SWDiscoveryConfiguration
         .setConfigString(
           """{
            "sources" : [{
@@ -38,7 +38,7 @@ object StrategyRequestBuilderTest extends TestSuite {
       }
     }
     test("2 sources") {
-      Try(StrategyRequestBuilder.build(StatementConfiguration
+      Try(StrategyRequestBuilder.build(SWDiscoveryConfiguration
         .setConfigString(
           """{
            "sources" : [{
@@ -58,7 +58,7 @@ object StrategyRequestBuilderTest extends TestSuite {
     }
 
     test("2 sources - proxy use") {
-      Try(StrategyRequestBuilder.build(StatementConfiguration
+      Try(StrategyRequestBuilder.build(SWDiscoveryConfiguration
         .setConfigString(
           """{
            "sources" : [{

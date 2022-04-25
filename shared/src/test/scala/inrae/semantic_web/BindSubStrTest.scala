@@ -16,7 +16,7 @@ object BindSubStrTest extends TestSuite {
       <http://aa1> <http://bb> "defijklm" .
       """.stripMargin, this.getClass.getSimpleName)
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
   def tests = Tests {
     test("bind subStr") {

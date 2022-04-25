@@ -18,7 +18,7 @@ object OrderByTest extends TestSuite {
       <http://aa> <http://bb> 10 .
       """.stripMargin, this.getClass.getSimpleName)
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
   def tests = Tests {
     test("order by") {
