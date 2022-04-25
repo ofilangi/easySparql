@@ -74,7 +74,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
     debug(" -- process_datatypes --")
     val labelProperty = datatypeNode.property.reference()
 
-    lUris.grouped(sw.config.conf.settings.sizeBatchProcessing).toList.map(
+    lUris.grouped(sw.config.settings.sizeBatchProcessing).toList.map(
       f = lSubUris => {
         trace(" datatypes:" + lSubUris.toString)
         /* request using api */

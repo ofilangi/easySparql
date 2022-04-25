@@ -276,10 +276,10 @@ object SWDiscoveryTest extends TestSuite {
     }
 
     test("setConfig/getConfig") {
-      assert(startRequest.getConfig.conf.sources.head.id == DataTestFactory.getConfigVirtuoso1().conf.sources.head.id)
+      assert(startRequest.getConfig.sources.head.id == DataTestFactory.getConfigVirtuoso1().sources.head.id)
 
-      assert(startRequest.setConfig(DataTestFactory.getConfigVirtuoso2()).getConfig.conf.sources.head.id ==
-        DataTestFactory.getConfigVirtuoso2().conf.sources.head.id)
+      assert(startRequest.setConfig(DataTestFactory.getConfigVirtuoso2()).getConfig.sources.head.id ==
+        DataTestFactory.getConfigVirtuoso2().sources.head.id)
     }
 
     test("setConfig/getConfig during query build") {
@@ -287,7 +287,7 @@ object SWDiscoveryTest extends TestSuite {
         startRequest
         .setConfig(DataTestFactory.getConfigVirtuoso2())
          .isObjectOf("http://test11")
-          .getConfig.conf.sources.head.id == DataTestFactory.getConfigVirtuoso2().conf.sources.head.id )
+          .getConfig.sources.head.id == DataTestFactory.getConfigVirtuoso2().sources.head.id )
     }
 
   }

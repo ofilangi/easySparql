@@ -93,7 +93,7 @@ case class SWDiscovery(
 
   //private val logger = Logger.of[SWDiscovery]
   // Set the root logger's log level
-  Logger.setDefaultLogLevel(config.conf.settings.getLogLevel)
+  Logger.setDefaultLogLevel(config.settings.getLogLevel)
 
   /* set focus on root */
   def root: SWDiscovery  = SWDiscovery(config,rootNode,Some(rootNode.reference()))
@@ -262,7 +262,7 @@ case class SWDiscovery(
     println("USER REQUEST\n" +
       pm.SimpleConsole().get(rootNode) + "\n" +
       "FOCUS NODE:"+ focusNode +
-      "\nENDPOINT:"+config.sources().map(v => println(v.url)).mkString(",") +"\n\n" +
+      "\nENDPOINT:"+config.sources.map(v => println(v.url)).mkString(",") +"\n\n" +
       "\n--------------------------------------------------------------------\n -- HTTP GET -- \n\n" +
       sparql_get +
       "\n--------------------------------------------------------------------\n -- HTTP CURL -- \n\n" +
@@ -277,8 +277,8 @@ case class SWDiscovery(
   def sparql: String = SparqlQueryBuilder.selectQueryString(rootNode).trim
 
   def sparql_get : String =
-    (config.sources().length match {
-      case 1 => config.sources()(0).url
+    (config.sources.length match {
+      case 1 => config.sources(0).url
       case _ => ""
     }) + Url(path="", query=QueryString.fromPairs(
       "query"-> sparql,
@@ -286,8 +286,8 @@ case class SWDiscovery(
     )
 
   def sparql_curl : String =
-    "curl -H \"Accept: application/json\" -G " +  (config.sources().length match {
-        case 1 => config.sources()(0).url
+    "curl -H \"Accept: application/json\" -G " +  (config.sources.length match {
+        case 1 => config.sources(0).url
         case _ => ""
       }) + " --data-urlencode query='" + sparql + "'"
 
@@ -320,10 +320,10 @@ case class SWDiscovery(
     SWDiscoveryHelper(this).count(lRef.filter( ! lDatatypeRef.contains(_)) ).map {
       case nSolutions if nSolutions == 0 => (nSolutions, Seq())
       case nSolutions =>
-        val nit : Int = nSolutions / config.conf.settings.pageSize
+        val nit : Int = nSolutions / config.settings.pageSize
         (nSolutions,(0 to nit).map( p =>{
-          val limit = config.conf.settings.pageSize
-          val offset = p*config.conf.settings.pageSize
+          val limit = config.settings.pageSize
+          val offset = p*config.settings.pageSize
           select(lRef,limit,offset)
         }))
       }
@@ -341,10 +341,10 @@ case class SWDiscovery(
     SWDiscoveryHelper(this).count(lRef.filter(!lDatatypeRef.contains(_)), true).map {
       case nSolutions if nSolutions == 0 => (nSolutions, Seq())
       case nSolutions =>
-        val nit: Int = nSolutions / config.conf.settings.pageSize
+        val nit: Int = nSolutions / config.settings.pageSize
         (nSolutions, (0 to nit).map(p => {
-          val limit = config.conf.settings.pageSize
-          val offset = p * config.conf.settings.pageSize
+          val limit = config.settings.pageSize
+          val offset = p * config.settings.pageSize
           select(lRef, limit, offset).distinct
         }))
     }
