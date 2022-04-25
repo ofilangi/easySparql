@@ -1,4 +1,7 @@
 package inrae.semantic_web
+
+import inrae.semantic_web.configuration._
+import inrae.semantic_web.exception._
 import inrae.semantic_web.node._
 import inrae.semantic_web.node.pm.{NodeVisitor, RemoveNode}
 import inrae.semantic_web.rdf._
@@ -10,9 +13,6 @@ import java.util.UUID.randomUUID
 import scala.concurrent.Future
 import upickle.default.{macroRW, read, write, ReadWriter => RW}
 import io.lemonlabs.uri.{QueryString, Url}
-
-final case class SWDiscoveryException(private val message: String = "",
-                                      private val cause: Throwable = None.orNull) extends Exception(message,cause)
 
 object SWDiscovery {
 

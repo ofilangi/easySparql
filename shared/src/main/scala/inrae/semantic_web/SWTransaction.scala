@@ -1,5 +1,6 @@
 package inrae.semantic_web
 
+import inrae.semantic_web.exception._
 import inrae.semantic_web.event._
 import inrae.semantic_web.node._
 import inrae.semantic_web.rdf.{QueryVariable, SparqlDefinition, URI}

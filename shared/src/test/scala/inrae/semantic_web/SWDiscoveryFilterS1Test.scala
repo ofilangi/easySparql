@@ -2,6 +2,7 @@ package inrae.semantic_web
 
 import inrae.data.DataTestFactory
 import inrae.semantic_web.rdf.{IRI, SparqlBuilder, URI}
+import inrae.semantic_web.configuration._
 import utest._
 
 object SWDiscoveryFilterS1Test extends TestSuite {

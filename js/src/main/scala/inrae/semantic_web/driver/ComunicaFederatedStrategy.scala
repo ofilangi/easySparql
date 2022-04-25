@@ -1,11 +1,12 @@
 package inrae.semantic_web.driver
 
-import inrae.semantic_web.ConfigurationObject.Source
+import inrae.semantic_web.configuration.ConfigurationObject.Source
 import inrae.semantic_web.driver.ComunicaRequestDriver.SourceComunica
 import inrae.semantic_web.event.{DiscoveryRequestEvent, DiscoveryStateRequestEvent}
 import inrae.semantic_web.sparql.QueryResult
 import inrae.semantic_web.strategy.StrategyRequest
-import inrae.semantic_web.{SWDiscoveryException, SWTransaction, SparqlQueryBuilder}
+import inrae.semantic_web.{SWTransaction, SparqlQueryBuilder}
+import inrae.semantic_web.exception._
 
 import scala.concurrent.Future
 

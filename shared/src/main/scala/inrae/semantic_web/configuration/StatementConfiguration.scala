@@ -4,7 +4,7 @@
  *
  *
  */
-package inrae.semantic_web
+package inrae.semantic_web.configuration
 
 import upickle.default.{macroRW, ReadWriter => RW}
 import wvlet.log.LogLevel

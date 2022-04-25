@@ -2,7 +2,9 @@ package inrae.semantic_web.driver
 
 import inrae.data.DataTestFactory
 import inrae.semantic_web.rdf.{SparqlBuilder, URI}
-import inrae.semantic_web.{SWDiscovery, StatementConfiguration}
+import inrae.semantic_web.configuration._
+import inrae.semantic_web._
+
 import utest.{TestSuite, Tests, test}
 
 object RequestsTest extends TestSuite {

@@ -1,7 +1,7 @@
 package inrae.semantic_web.driver
 
 import com.github.p2m2.facade._
-import inrae.semantic_web.SWDiscoveryException
+import inrae.semantic_web.exception.SWDiscoveryException
 import inrae.semantic_web.driver.ComunicaRequestDriver.SourceComunica
 import inrae.semantic_web.sparql.QueryResult
 

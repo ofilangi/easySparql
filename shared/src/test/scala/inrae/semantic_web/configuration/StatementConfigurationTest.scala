@@ -1,4 +1,4 @@
-package inrae.semantic_web
+package inrae.semantic_web.configuration
 
 import utest._
 import wvlet.log.LogLevel

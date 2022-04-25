@@ -1,6 +1,6 @@
 package inrae.semantic_web.strategy
 
-import inrae.semantic_web.StatementConfiguration
+import inrae.semantic_web.configuration._
 import utest.{TestSuite, Tests, test}
 
 import scala.util.{Failure, Success, Try}

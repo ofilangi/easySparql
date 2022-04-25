@@ -1,6 +1,7 @@
 package inrae.semantic_web.strategy
 
-import inrae.semantic_web.ConfigurationObject.Source
+import inrae.semantic_web.exception._
+import inrae.semantic_web.configuration.ConfigurationObject.Source
 import inrae.semantic_web.driver._
 import inrae.semantic_web.event.{DiscoveryRequestEvent, DiscoveryStateRequestEvent, Publisher, Subscriber}
 import inrae.semantic_web.{SWTransaction, SparqlQueryBuilder}

@@ -1,6 +1,7 @@
 package inrae.semantic_web
 import inrae.data.DataTestFactory
 import inrae.semantic_web.rdf._
+import inrae.semantic_web.configuration._
 import utest._
 
 import scala.concurrent.ExecutionContext.Implicits.global

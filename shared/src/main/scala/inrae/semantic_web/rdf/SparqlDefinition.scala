@@ -1,5 +1,5 @@
 package inrae.semantic_web.rdf
-import inrae.semantic_web.SWDiscoveryException
+import inrae.semantic_web.exception._
 //import upickle.default.{macroRW, ReadWriter => RW, Reader => R, Writer => W}
 import upickle.default.{macroRW, ReadWriter => RW}
 

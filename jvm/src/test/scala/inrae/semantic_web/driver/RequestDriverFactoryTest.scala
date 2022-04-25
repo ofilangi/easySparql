@@ -1,7 +1,8 @@
 package inrae.semantic_web.driver
 
 import inrae.data.DataTestFactory
-import inrae.semantic_web.ConfigurationObject.Source
+import inrae.semantic_web.configuration._
+import inrae.semantic_web.configuration.ConfigurationObject.Source
 import utest.{TestSuite, Tests, test}
 
 import scala.util.{Failure, Success, Try}

@@ -2,7 +2,7 @@ package inrae.semantic_web.driver
 
 import facade.npm.{qs}
 import com.github.p2m2.facade.Axios
-import inrae.semantic_web.SWDiscoveryException
+import inrae.semantic_web.exception.SWDiscoveryException
 import inrae.semantic_web.event.{DiscoveryRequestEvent, DiscoveryStateRequestEvent}
 import inrae.semantic_web.sparql.QueryResult
 import wvlet.log.Logger.rootLogger.debug

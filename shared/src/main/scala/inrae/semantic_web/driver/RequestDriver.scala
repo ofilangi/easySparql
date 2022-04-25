@@ -1,5 +1,6 @@
 package inrae.semantic_web.driver
 
+import inrae.semantic_web.exception._
 import inrae.semantic_web.event.{DiscoveryRequestEvent, DiscoveryStateRequestEvent, Publisher}
 import inrae.semantic_web.sparql.{QueryResult, QueryResultManager}
 import wvlet.log.Logger.rootLogger.debug

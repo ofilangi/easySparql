@@ -1,6 +1,6 @@
 package inrae.semantic_web.node
 
-import inrae.semantic_web.SWDiscoveryException
+import inrae.semantic_web.exception._
 import inrae.semantic_web.rdf._
 import upickle.default.{macroRW, ReadWriter => RW}
 import wvlet.log.Logger.rootLogger.debug

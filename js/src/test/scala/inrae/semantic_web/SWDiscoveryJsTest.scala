@@ -2,6 +2,7 @@ package inrae.semantic_web
 import scala.scalajs.js.JSConverters._
 import inrae.data.DataTestFactory
 import utest.{TestSuite, Tests, test}
+import inrae.semantic_web.configuration._
 
 object SWDiscoveryJsTest extends TestSuite{
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global

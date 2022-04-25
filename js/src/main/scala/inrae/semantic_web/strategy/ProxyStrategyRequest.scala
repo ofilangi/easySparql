@@ -2,7 +2,8 @@ package inrae.semantic_web.strategy
 
 import com.github.p2m2.facade.Axios
 import inrae.semantic_web.sparql.QueryResult
-import inrae.semantic_web.{SWDiscoveryException, SWTransaction}
+import inrae.semantic_web.exception._
+import inrae.semantic_web._
 import upickle.default._
 
 import scala.concurrent.Future

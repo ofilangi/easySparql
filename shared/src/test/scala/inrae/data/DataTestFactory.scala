@@ -1,6 +1,6 @@
 package inrae.data
 
-import inrae.semantic_web.StatementConfiguration
+import inrae.semantic_web.configuration._
 
 import scala.concurrent.Future
 

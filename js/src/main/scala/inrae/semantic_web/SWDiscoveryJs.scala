@@ -2,6 +2,8 @@ package inrae.semantic_web
 
 import inrae.semantic_web.node.Node
 import inrae.semantic_web.rdf.{IRI, SparqlDefinition, URI}
+import inrae.semantic_web.configuration._
+import inrae.semantic_web.exception._
 import inrae.semantic_web.view.HtmlView
 
 import scala.scalajs._
