@@ -13,7 +13,7 @@ import scala.concurrent.Future
 
 case class DiscoveryStrategyRequest(source : Source) extends StrategyRequest {
 
-  val driver : RequestDriver = RequestDriverFactory.build(source)
+  val driver : RequestDriver = RequestDriverFactory.get.addRepositoryConnection(source).lCon.map(_._1).last
 
   driver.subscribe(this.asInstanceOf[Subscriber[DiscoveryRequestEvent,Publisher[DiscoveryRequestEvent]]])
 

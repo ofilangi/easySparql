@@ -18,7 +18,7 @@ object BindSubStrTest extends TestSuite {
 
   val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
-  def tests = Tests {
+  def tests: Tests = Tests {
     test("bind subStr") {
       insertData.map(_ => {
         SWDiscovery(config)

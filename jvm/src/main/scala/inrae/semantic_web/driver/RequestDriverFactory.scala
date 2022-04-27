@@ -12,23 +12,43 @@ import java.net.URL
 import java.nio.file.Files
 import scala.util.{Failure, Success, Try}
 
-object RequestDriverFactory  {
+object RequestDriverFactory {
 
-  lazy val dataDir: File = Files.createTempDirectory("rdf4j-discovery").toFile
-  lazy val repository = new SailRepository(new NativeStore(dataDir))
-  var lCon : Seq[RepositoryConnection] = Seq()
-
+  val dataDir: File = Files.createTempDirectory("rdf4j-discovery").toFile
+  val repository : Repository  = new SailRepository(new NativeStore(dataDir))
   repository.init()
 
-  def close() : Unit = {
-    lCon.foreach(_.close())
-    repository.shutDown()
+  def get : RequestDriverFactory = {
+    RequestDriverFactory(Some(repository),dataDir, Seq())
   }
 
-  def build( source : Source ) : RequestDriver = {
-    val r = build_withRepository(source,repository)
-    lCon = lCon :+ r._2
-    r._1
+  def shutDown() : Unit = if (repository.isInitialized) repository.shutDown()
+
+  def mimetypeToRdfFormat( mimetype : String ): RDFFormat = mimetype match {
+    case "text/turtle" => RDFFormat.TURTLE
+    case "text/n3" => RDFFormat.N3
+    case "text/rdf-xml" => RDFFormat.RDFXML
+    case _ => throw SWDiscoveryException(mimetype + " : this format is not supported")
+  }
+}
+
+case class RequestDriverFactory(
+                                 repository : Option[Repository] = None,
+                                 dataDir: File,
+                                 lCon : Seq[(RequestDriver, RepositoryConnection)] = Seq()
+                               )  {
+
+  def close() : RequestDriverFactory =
+    RequestDriverFactory(repository,dataDir,
+      lCon
+        .filter { case (_ : RequestDriver,con : RepositoryConnection) => con.isOpen }
+        .map { case (r : RequestDriver,con : RepositoryConnection) => con.close();(r,con) })
+
+  def addRepositoryConnection(source : Source) : RequestDriverFactory = repository match {
+    case Some(repository) =>
+      RequestDriverFactory(Some(repository),dataDir,lCon :+ build_withRepository(source,repository))
+
+    case _ => throw SWDiscoveryException("The main repository is not initialized.")
   }
 
   def build_withRepository( source : Source, repository : Repository ) : (RequestDriver, RepositoryConnection) =
@@ -66,20 +86,12 @@ object RequestDriverFactory  {
               case Success(_) =>
               case Failure(e) => throw SWDiscoveryException(e.getMessage)
             }
-          case _ => throw SWDiscoveryException("Bad definition of source configuration :"+source.toString)
           }
 
         (Rdf4jLocalRequestDriver(con),con)
       case _ =>
-          throw SWDiscoveryException("Bad definition of source configuration :"+source.toString)
+          throw SWDiscoveryException(s"mimetype ${source.mimetype} is not managed.")
       }
-  }
-
-  def mimetypeToRdfFormat( mimetype : String ): RDFFormat = mimetype match {
-    case "text/turtle" => RDFFormat.TURTLE
-    case "text/n3" => RDFFormat.N3
-    case "text/rdf-xml" => RDFFormat.RDFXML
-    case _ => throw SWDiscoveryException(mimetype + " : this format is not supported")
   }
 
 }

@@ -3,14 +3,19 @@ package inrae.semantic_web.driver
 import inrae.semantic_web.configuration._
 import inrae.semantic_web.exception.SWDiscoveryException
 
-object RequestDriverFactory  {
+object RequestDriverFactory {
+  def get : RequestDriverFactory = {
+    RequestDriverFactory()
+  }
+}
 
+case class RequestDriverFactory(lCon : Seq[(RequestDriver, Unit)] = Seq())  {
 
-  def build( source : Source ) : RequestDriver = {
+  def addRepositoryConnection( source : Source ) : RequestDriverFactory = {
 
     val graph = "fr:inrae:semantic_web:discovery:"+source.id
 
-    source.mimetype match {
+    val rq : RequestDriver = source.mimetype match {
       case "application/sparql-query"  =>
         AxiosRequestDriver(
           source.id,
@@ -43,6 +48,8 @@ object RequestDriverFactory  {
       case _ =>
         throw SWDiscoveryException("Bad definition of source configuration :"+source.toString)
     }
+
+    RequestDriverFactory(Seq( (rq,()) ))
   }
 
 }

@@ -18,7 +18,7 @@ object BindTest extends TestSuite {
 
   val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
-  def tests = Tests {
+  def tests: Tests = Tests {
     val regexv = "defg"
 
     test("filter regex") {
