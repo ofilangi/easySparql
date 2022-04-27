@@ -22,7 +22,7 @@ object RequestDriverFactory {
     RequestDriverFactory(Some(repository),dataDir, Seq())
   }
 
-  def shutDown() : Unit = if (repository.isInitialized) repository.shutDown()
+  // def shutDown() : Unit = if (repository.isInitialized) repository.shutDown()
 
   def mimetypeToRdfFormat( mimetype : String ): RDFFormat = mimetype match {
     case "text/turtle" => RDFFormat.TURTLE

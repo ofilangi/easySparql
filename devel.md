@@ -21,7 +21,7 @@ sbt discoveryJVM/test
 ## coverage
 
 ```
-sbt clean coverage discoveryJVM/test discoveryJVM/coverageReport 
+sbt clean coverage discoveryJVM/test discoveryJVM/coverageReport
 chromium ./jvm/target/scala-2.13/scoverage-report/index.html
 ```
 

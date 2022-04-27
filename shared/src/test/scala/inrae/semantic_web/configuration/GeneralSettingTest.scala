@@ -3,7 +3,7 @@ package inrae.semantic_web.configuration
 import utest.{TestSuite, Tests, test}
 
 object GeneralSettingTest extends TestSuite {
-  def tests = Tests {
+  def tests: Tests = Tests {
     test("GeneralSetting default") {
       GeneralSetting()
     }

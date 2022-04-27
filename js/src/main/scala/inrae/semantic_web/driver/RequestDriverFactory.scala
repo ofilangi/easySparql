@@ -12,9 +12,6 @@ object RequestDriverFactory {
 case class RequestDriverFactory(lCon : Seq[(RequestDriver, Unit)] = Seq())  {
 
   def addRepositoryConnection( source : Source ) : RequestDriverFactory = {
-
-    val graph = "fr:inrae:semantic_web:discovery:"+source.id
-
     val rq : RequestDriver = source.mimetype match {
       case "application/sparql-query"  =>
         AxiosRequestDriver(

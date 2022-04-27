@@ -10,8 +10,24 @@ import java.io.File
 
 object RequestDriverFactoryTest extends TestSuite {
   
-  def teardown() = RequestDriverFactory.shutDown
   def tests: Tests = Tests {
+
+    test("Bad us of method mimetypeToRdfFormat / RequestDriverFactory should send an error message") {
+      Try(RequestDriverFactory.mimetypeToRdfFormat("xxx/yyy")) match {
+        case Success(_) => assert(false)
+        case Failure(_) => assert(true)
+      }
+    }
+
+    test("Bad initialization of RequestDriverFactory should send an error message") {
+
+      val source : Source = Source(id="test",path="http://test",mimetype="application/sparql-query",method=Some("POST"))
+
+      Try(RequestDriverFactory(None,null,Seq()).addRepositoryConnection(source).lCon.map(_._1).last) match {
+        case Success(_) => assert(false)
+        case Failure(_) => assert(true)
+      }
+    }
 
     val startRequestDriverFactoryInst: RequestDriverFactory = RequestDriverFactory.get
 
@@ -72,6 +88,26 @@ object RequestDriverFactoryTest extends TestSuite {
         case Success(_ : Rdf4jLocalRequestDriver) => assert(false)
         case Success(_) => tempFile.delete() ;assert(false)
         case Failure(_) => tempFile.delete() ;assert(true)
+      }
+    }
+
+    test("bad definition of rdf content should give an error") {
+      val source : Source = Source(id="test",path="/some/some",sourcePath=SourcePath.Content,mimetype="text/turtle")
+
+      Try(startRequestDriverFactoryInst.addRepositoryConnection(source).lCon.map(_._1).last) match {
+        case Success(_ : Rdf4jLocalRequestDriver) => assert(false)
+        case Success(_) => assert(false)
+        case Failure(_) => assert(true)
+      }
+    }
+
+    test("bad definition of mimetype should give an error") {
+      val source : Source = Source(id="test",path="/some/some",sourcePath=SourcePath.Content,mimetype="yyyy/xxxx")
+
+      Try(startRequestDriverFactoryInst.addRepositoryConnection(source).lCon.map(_._1).last) match {
+        case Success(_ : Rdf4jLocalRequestDriver) => assert(false)
+        case Success(_) => assert(false)
+        case Failure(_) => assert(true)
       }
     }
   }

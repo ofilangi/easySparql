@@ -4,13 +4,14 @@ import inrae.data.DataTestFactory
 import inrae.semantic_web.rdf.{SparqlBuilder, URI}
 import inrae.semantic_web.configuration._
 import inrae.semantic_web._
-
 import utest.{TestSuite, Tests, test}
+
+import scala.concurrent.Future
 
 object RequestsTest extends TestSuite {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  val insertData = DataTestFactory.insertVirtuoso1(
+  val insertData: Future[Any] = DataTestFactory.insertVirtuoso1(
     """
       <http://aaaaaa> <http://bbbbbb> <http://cc> .
       """.stripMargin, this.getClass.getSimpleName)
@@ -25,7 +26,7 @@ object RequestsTest extends TestSuite {
            "mimetype" : "application/sparql-query"
          }],
          "settings" : {
-            "logLevel" : "${logLevel}",
+            "logLevel" : "$logLevel",
             "sizeBatchProcessing" : 100
           }
          }
@@ -41,7 +42,7 @@ object RequestsTest extends TestSuite {
            "sourcePath" : "Content"
          }],
          "settings" : {
-            "logLevel" : "${logLevel}",
+            "logLevel" : "$logLevel",
             "sizeBatchProcessing" : 100
           }
          }
@@ -62,7 +63,7 @@ object RequestsTest extends TestSuite {
            "sourcePath" : "Content"
          }],
          "settings" : {
-            "logLevel" : "${logLevel}",
+            "logLevel" : "$logLevel",
             "sizeBatchProcessing" : 100
           }
          }
@@ -88,9 +89,44 @@ object RequestsTest extends TestSuite {
         {
          "sources" : [{
            "id"       : "local_content",
-           "path"     : "${contentXml}",
+           "path"     : "$contentXml",
            "sourcePath" : "Content",
            "mimetype" : "text/rdf-xml"
+         }],
+         "settings" : {
+            "logLevel" : "off",
+            "sizeBatchProcessing" : 100
+          }
+         }
+        """.stripMargin)
+
+  val contentN3 : String = """@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+                             |@prefix ns0: <http://www.some-ficticious-zoo.com/rdf#> .
+                             |
+                             |ns0:something1 a rdf:Seq ;
+                             |  rdf:_1 [
+                             |    ns0:name "Lion" ;
+                             |    ns0:species "Panthera leo" ;
+                             |    ns0:class "Mammal"
+                             |  ] ;
+                             |  rdf:_2 [
+                             |    ns0:name "Tarantula" ;
+                             |    ns0:species "Avicularia avicularia" ;
+                             |    ns0:class "Arachnid"
+                             |  ] ;
+                             |  rdf:_3 [
+                             |    ns0:name "Hippopotamus" ;
+                             |    ns0:species "Hippopotamus amphibius" ;
+                             |    ns0:class "Mammal"
+                             |  ] .
+                             |  """.stripMargin.replace("\"","\\\"").replace("\n","")
+  val config5: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
+    s"""{
+         "sources" : [{
+           "id"       : "local_content",
+           "path"     : "$contentN3",
+           "sourcePath" : "Content",
+           "mimetype" : "text/n3"
          }],
          "settings" : {
             "logLevel" : "off",
@@ -114,7 +150,7 @@ object RequestsTest extends TestSuite {
            "mimetype" : "text/turtle"
          }],
          "settings" : {
-            "logLevel" : "${logLevel}",
+            "logLevel" : "$logLevel",
             "sizeBatchProcessing" : 100
           }
          }
@@ -186,6 +222,22 @@ object RequestsTest extends TestSuite {
           })
       }).flatten
     }
+
+    test("inline n3") {
+      insertData.map(_ => {
+        SWDiscovery(config5)
+          .prefix("ns0","http://www.some-ficticious-zoo.com/rdf#")
+          .something("h1")
+          .isSubjectOf(URI("ns0:name"), "v")
+          .select(List("v"))
+          .commit()
+          .raw
+          .map(result => {
+            assert(result("results")("bindings").arr.length == 3)
+          })
+      }).flatten
+    }
+
   }
 
 }

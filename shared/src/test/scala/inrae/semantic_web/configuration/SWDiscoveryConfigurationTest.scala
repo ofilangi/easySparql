@@ -7,7 +7,7 @@ import wvlet.log.LogLevel
 import scala.util.{Failure, Success, Try}
 
 object SWDiscoveryConfigurationTest extends TestSuite {
-  val configBase = """
+  val configBase: String = """
             {
              "sources" : [{
                "id"  : "dbpedia",
@@ -24,7 +24,7 @@ object SWDiscoveryConfigurationTest extends TestSuite {
             }
             """.stripMargin
 
-  def tests = Tests {
+  def tests: Tests = Tests {
 
     test("Create a simple source with string configuration") {
       SWDiscoveryConfiguration.setConfigString(configBase)
