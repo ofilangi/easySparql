@@ -6,7 +6,8 @@ describe('SWDiscovery', () => {
   const json : string  =  `{
          "sources" : [{
               "id"  : "local_endpoint",
-              "url" : "http://localhost:8890/sparql"
+              "path" : "http://localhost:8890/sparql",
+              "mimetype" : "application/sparql-query"
            }],
            "settings" : {
              "cache" : true,
@@ -18,7 +19,8 @@ describe('SWDiscovery', () => {
   const json2 : string  =  `{
            "sources" : [{
                 "id"  : "local_endpoint2",
-                "url" : "http://somethingelse:8890/sparql"
+                "path" : "http://somethingelse:8890/sparql",
+                "mimetype" : "application/sparql-query"
              }]}`
            
   const localConf = SWDiscoveryConfiguration.setConfigString(json)
