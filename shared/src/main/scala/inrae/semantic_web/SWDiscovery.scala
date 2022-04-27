@@ -11,14 +11,13 @@ import wvlet.log.Logger.rootLogger._
 
 import java.util.UUID.randomUUID
 import scala.concurrent.Future
-import upickle.default.{macroRW, read, write, ReadWriter => RW}
 import io.lemonlabs.uri.{QueryString, Url}
 
 object SWDiscovery {
 
   private val version : String = SWDiscoveryVersionAtBuildTime.version
 
-  implicit val rw: RW[SWDiscovery] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[SWDiscovery] = OptionPickler.macroRW
 
   info(" --------------------------------------------------" )
   info(" ---- Discovery :"+ SWDiscovery.version + "         -----------" )
@@ -93,7 +92,7 @@ case class SWDiscovery(
 
   //private val logger = Logger.of[SWDiscovery]
   // Set the root logger's log level
-  Logger.setDefaultLogLevel(config.settings.getLogLevel)
+  Logger.setDefaultLogLevel(config.settings._logLevel)
 
   /* set focus on root */
   def root: SWDiscovery  = SWDiscovery(config,rootNode,Some(rootNode.reference()))
@@ -252,9 +251,9 @@ case class SWDiscovery(
           case _ => rootNode.idRef
         }))
 
-  def getSerializedString : String = write(this)
+  def getSerializedString : String = OptionPickler.write(this)
 
-  def setSerializedString(query : String) : SWDiscovery = read[SWDiscovery](query)
+  def setSerializedString(query : String) : SWDiscovery = OptionPickler.read[SWDiscovery](query)
 
 
   def console : SWDiscovery = {
@@ -262,12 +261,12 @@ case class SWDiscovery(
     println("USER REQUEST\n" +
       pm.SimpleConsole().get(rootNode) + "\n" +
       "FOCUS NODE:"+ focusNode +
-      "\nENDPOINT:"+config.sources.map(v => println(v.url)).mkString(",") +"\n\n" +
+      "\nSOURCE:"+config.sources.map(v => println(v.path)).mkString(",") +"\n\n" +  {
       "\n--------------------------------------------------------------------\n -- HTTP GET -- \n\n" +
       sparql_get +
       "\n--------------------------------------------------------------------\n -- HTTP CURL -- \n\n" +
       sparql_curl+
-      "\n--------------------------------------------------------------------\n"
+      "\n--------------------------------------------------------------------\n" }
        )
       //"QUERY PLANNER\n"+
       //"todo....")
@@ -278,7 +277,7 @@ case class SWDiscovery(
 
   def sparql_get : String =
     (config.sources.length match {
-      case 1 => config.sources(0).url
+      case 1 => config.sources(0).path
       case _ => ""
     }) + Url(path="", query=QueryString.fromPairs(
       "query"-> sparql,
@@ -287,7 +286,7 @@ case class SWDiscovery(
 
   def sparql_curl : String =
     "curl -H \"Accept: application/json\" -G " +  (config.sources.length match {
-        case 1 => config.sources(0).url
+        case 1 => config.sources(0).path
         case _ => ""
       }) + " --data-urlencode query='" + sparql + "'"
 

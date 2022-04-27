@@ -4,7 +4,7 @@ import com.github.p2m2.facade.Axios
 import inrae.semantic_web.sparql.QueryResult
 import inrae.semantic_web.exception._
 import inrae.semantic_web._
-import upickle.default._
+import inrae.semantic_web.configuration.OptionPickler
 
 import scala.concurrent.Future
 
@@ -26,10 +26,8 @@ case class ProxyStrategyRequest(urlProxy: String) extends StrategyRequest {
       "url" -> urlProxy,
       "method" -> "POST",
       "type" -> "transaction",
-      "object" -> write(swt)
+      "object" -> OptionPickler.write(swt)
     )
-//js.Dictionary[String]("q" -> "scalajs")
-    println(Axios.toString)
 
     Axios.post(urlProxy)
       .toFuture.map(

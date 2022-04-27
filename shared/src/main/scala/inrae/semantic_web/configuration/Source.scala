@@ -1,33 +1,31 @@
 package inrae.semantic_web.configuration
 
-import inrae.semantic_web.exception._
-import upickle.default.{macroRW, ReadWriter => RW}
+import inrae.semantic_web.configuration.SourcePath.{SourcePath, UrlPath}
+import inrae.semantic_web.exception.SWStatementConfigurationException
 
-object Source{
-  implicit val rw: RW[Source] = macroRW
+object Source {
+  implicit val rw: OptionPickler.ReadWriter[Source] = OptionPickler.macroRW
 }
 
 case class Source(
                    id:String, /* identify the source endpoint */
-                   url: String       = "", /* url access */
-                   file: String      = "", /* local file access */
-                   content: String   = "", /* online definition */
-                   mimetype: String  = "application/sparql-query",  /* application/sparql-query, 'turtle', 'text/turtle' 'hypermedia' */
-                   method: String    = "POST", /* POST, POST_ENCODED, GET */
-                   auth : String     = "", /* basic, digest, bearer, proxy */
-                   login : String    = "" ,
-                   password : String = "",
-                   token : String    = ""
+                   path: String,
+                   sourcePath: SourcePath = UrlPath, /* local file access */
+                   mimetype: String,
+                   method: Option[String] = None, /* POST, POST_ENCODED, GET */
+                   auth : Option[String]  = None, /* basic, digest, bearer, proxy */
+                   login : Option[String]  = None,
+                   password : Option[String] = None,
+                   token : Option[String] = None
                  ) {
   override def toString: String = {
     { "##### ID :" + id +"\n"} +
-      { if (url != "") { " - **url**:" + url +"\n"} else {""} } +
-      { if (file != "") { " - **file**:" + file +"\n"} else {""} } +
-      { if (content != "") { " - **content**:" + content +"\n"} else {""} } +
-      { if (mimetype != "") { " - **mimetype**:" + mimetype +"\n"} else {""} } +
-      { if (method != "") { " - **method**:" + method +"\n"} else {""} } +
-      { if (auth != "") { " - **auth**:" + auth +"\n"} else {""} } +
-      { if (token != "") { " - **method**:" + token +"\n"} else {""} }
+      { " - **path**:" + path +"\n"} +
+      { " - **file**:" + sourcePath +"\n"}  +
+      { " - **mimetype**:" + mimetype +"\n"}  +
+      { " - **method**:" + method +"\n"}  +
+      { " - **auth**:" + auth +"\n"}  +
+      { " - **method**:" + token +"\n"}
   }
 
   val mimetype_legal = List(
@@ -39,28 +37,28 @@ case class Source(
   )
 
   mimetype match {
-    case a if ! mimetype_legal.contains(a) => throw SWStatementConfigurationException(s"type source unknown :${mimetype}")
+    case a if sourcePath == SourcePath.UrlPath && ! mimetype_legal.contains(a) =>
+      throw SWStatementConfigurationException(s"unknown mimetype :$mimetype")
     case _ =>
   }
 
   val method_legal = List("post","get")
 
-  method.toLowerCase() match {
-    case a if ! method_legal.contains(a) => throw SWStatementConfigurationException("method source unknown :" + method)
-    case _ =>
+  method match {
+    case Some(methodValue) =>  methodValue.toLowerCase() match {
+      case a if ! method_legal.contains(a) => throw SWStatementConfigurationException("method source unknown :" + method)
+      case _ =>
+    }
+    case None =>
   }
 
-  val auth_legal = List("basic", "digest", "bearer", "proxy","")
+  val auth_legal = List("basic", "digest", "bearer", "proxy")
 
-  auth.toLowerCase() match {
-    case a if ! auth_legal.contains(a) => throw SWStatementConfigurationException(s"auth source not managed :$auth")
-    case _ =>
+  auth match {
+    case Some(authValue) => authValue.toLowerCase() match {
+      case a if ! auth_legal.contains(a) => throw SWStatementConfigurationException(s"auth source is not managed :$auth")
+      case _ =>
+    }
+    case None =>
   }
-
-  if ( url == "" && file == ""&& content == "") throw SWStatementConfigurationException("url/file/content. one of these parameters must be defined.")
-  if (( url != "" && file != "") ||
-    (url != "" && content != "") ||
-    (file != "" && content != "")
-  ) throw SWStatementConfigurationException("url/file/content. only one of theses parameters should be defined .")
-
 }

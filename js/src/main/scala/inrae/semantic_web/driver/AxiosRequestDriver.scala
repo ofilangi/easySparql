@@ -16,10 +16,10 @@ case class AxiosRequestDriver(
                                idName : String,
                                method : String,
                                url: String,
-                               login : String,
-                               password: String,
-                               token : String,
-                               auth : String)
+                               login : Option[String] = None ,
+                               password: Option[String] = None ,
+                               token : Option[String] = None ,
+                               auth : Option[String] = None )
   extends HttpRequestDriver {
 
   def requestOnSWDB(query: String): Future[QueryResult] = {

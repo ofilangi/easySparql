@@ -5,15 +5,14 @@ import inrae.semantic_web.rdf.URI
 import inrae.semantic_web.configuration._
 import utest.{TestSuite, Tests, test}
 
-
-
 object Fix144TriplyDb extends TestSuite {
   val config: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     """
         {
           "sources" : [{
                "id"  : "triplydb",
-               "url" : "https://api.triplydb.com/datasets/gr/gr/services/gr/sparql"
+               "path" : "https://api.triplydb.com/datasets/gr/gr/services/gr/sparql",
+               "mimetype" : "application/sparql-query"
             }],
             "settings" : {
               "cache" : true,

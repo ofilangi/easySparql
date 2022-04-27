@@ -1,13 +1,11 @@
 package inrae.semantic_web.configuration
 
 import inrae.semantic_web.exception._
-
-import upickle.default.{macroRW, ReadWriter => RW}
 import wvlet.log.LogLevel
 import wvlet.log.Logger.rootLogger.warn
 
-object GeneralSetting{
-  implicit val rw: RW[GeneralSetting] = macroRW
+object GeneralSetting {
+  implicit val rw: OptionPickler.ReadWriter[GeneralSetting] = OptionPickler.macroRW
 }
 
 /**
@@ -16,10 +14,9 @@ object GeneralSetting{
  * @constructor create a configuration.
  * @param cache to available cache
  * @param logLevel level definition (trace, debug, info, warn, error, all, off)
- * @param sizeBatchProcessing
- * @param pageSize
- * @param proxy
- * @param urlProxy
+ * @param sizeBatchProcessing size of number of element inside a sparql request
+ * @param pageSize number of result by page when a lazy request is used
+ * @param proxy url discovery proxy
  */
 
 
@@ -28,8 +25,7 @@ case class GeneralSetting(
                            logLevel : String = "warn"          , // trace, debug, info, warn, error, all, off
                            sizeBatchProcessing : Int = 150,
                            pageSize : Int = 10,
-                           proxy : Boolean = false ,  /* send request to a discovery proxy */
-                           urlProxy : String = "http://urlProxy",
+                           proxy : String = "" ,  // send request to a discovery proxy http://discovery-*****/proxy
                          ) {
 
   override def toString: String = {
@@ -38,10 +34,10 @@ case class GeneralSetting(
       s" - **logLevel** :$logLevel \n" +
       s" - **sizeBatchProcessing** :$sizeBatchProcessing \n" +
       s" - **pageSize** :$pageSize \n" +
-      { if (proxy) { " - **urlProxy**:" + urlProxy +"\n"} else {""} }
+      s" - **proxy**: $proxy \n"
   }
 
-  def getLogLevel: LogLevel = logLevel.toLowerCase() match {
+  val _logLevel : LogLevel = logLevel.toLowerCase() match {
     case "debug" | "d" => LogLevel.DEBUG
     case "info" | "i" => LogLevel.INFO
     case "warn" | "w" => LogLevel.WARN
@@ -56,6 +52,10 @@ case class GeneralSetting(
 
   if ( pageSize<=0 ) {
     throw SWStatementConfigurationException("pageSize can not be equal to zero or negative !")
+  }
+
+  if ( sizeBatchProcessing<=0 ) {
+    throw SWStatementConfigurationException("sizeBatchProcessing can not be equal to zero or negative !")
   }
 
 }

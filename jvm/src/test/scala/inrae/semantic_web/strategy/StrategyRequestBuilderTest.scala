@@ -28,7 +28,7 @@ object StrategyRequestBuilderTest extends TestSuite {
           """{
            "sources" : [{
                "id"  : "dbpedia",
-               "url" : "https://dbpedia.org/sparql",
+               "path" : "https://dbpedia.org/sparql",
                "mimetype" : "application/sparql-query"
              }]
            }""".stripMargin))) match {
@@ -43,11 +43,11 @@ object StrategyRequestBuilderTest extends TestSuite {
           """{
            "sources" : [{
                "id"  : "dbpedia",
-               "url" : "https://dbpedia.org/sparql",
+               "path" : "https://dbpedia.org/sparql",
                "mimetype" : "application/sparql-query"
              },{
                "id"  : "dbpedia2",
-               "url" : "https://dbpedia.org/sparql2",
+               "path" : "https://dbpedia.org/sparql2",
                "mimetype" : "application/sparql-query"
              }]
            }""".stripMargin))) match {
@@ -63,16 +63,15 @@ object StrategyRequestBuilderTest extends TestSuite {
           """{
            "sources" : [{
                "id"  : "dbpedia",
-               "url" : "https://dbpedia.org/sparql",
+               "path" : "https://dbpedia.org/sparql",
                "mimetype" : "application/sparql-query"
              },{
                "id"  : "dbpedia2",
-               "url" : "https://dbpedia.org/sparql2",
+               "path" : "https://dbpedia.org/sparql2",
                "mimetype" : "application/sparql-query"
              }],
              "settings" : {
-               "proxy"   : true,
-               "urlProxy" : "https://myproxy/sparql"
+               "proxy"   : "https://myproxy/sparql"
              }
            }""".stripMargin))) match {
         case Success(strategy : ProxyStrategyRequest) => assert(strategy.urlProxy == "https://myproxy/sparql")

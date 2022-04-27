@@ -12,7 +12,7 @@ object Fix126UrlFileUnusedVariable extends TestSuite {
         {
          "sources" : [{
            "id"       : "file_turtle",
-           "file"     : "http://localhost:8080/animals_basic.ttl",
+           "path"     : "http://localhost:8080/animals_basic.ttl",
            "mimetype" : "text/turtle"
          }],
          "settings" : {

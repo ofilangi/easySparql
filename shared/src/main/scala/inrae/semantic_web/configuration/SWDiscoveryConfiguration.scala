@@ -7,15 +7,12 @@
 package inrae.semantic_web.configuration
 
 import inrae.semantic_web.exception._
-import upickle.default.{macroRW, ReadWriter => RW}
-
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import scala.util.{Failure, Success}
 
-
 @JSExportTopLevel(name="SWDiscoveryConfiguration")
 object SWDiscoveryConfiguration {
-  implicit val rw: RW[SWDiscoveryConfiguration] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[SWDiscoveryConfiguration] = OptionPickler.macroRW
 
   /**
    * set a config using string configuration
@@ -23,7 +20,7 @@ object SWDiscoveryConfiguration {
    */
   @JSExport
   def setConfigString(json_conf: String) : SWDiscoveryConfiguration = {
-    util.Try(upickle.default.read[SWDiscoveryConfiguration](json_conf))
+    util.Try(OptionPickler.read[SWDiscoveryConfiguration](json_conf))
     match {
       case Success(v) => v
       case Failure(e) => throw SWStatementConfigurationException(e.getMessage)

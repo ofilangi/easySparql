@@ -11,11 +11,11 @@ object RequestDriverFactory  {
     val graph = "fr:inrae:semantic_web:discovery:"+source.id
 
     source.mimetype match {
-      case "application/sparql-query" if source.url != "" =>
+      case "application/sparql-query"  =>
         AxiosRequestDriver(
           source.id,
-          source.method,
-          source.url,
+          source.method.getOrElse("POST"),
+          source.path,
           source.login,
           source.password,
           source.token,
@@ -35,12 +35,11 @@ object RequestDriverFactory  {
         "application/xml" =>
           ComunicaRequestDriver(
             source.id,
-            source.url,
-            source.content,
+            source.path,
+            source.sourcePath,
             source.mimetype,
             source.login,
-            source.password,
-            sourceType = "file")
+            source.password)
       case _ =>
         throw SWDiscoveryException("Bad definition of source configuration :"+source.toString)
     }

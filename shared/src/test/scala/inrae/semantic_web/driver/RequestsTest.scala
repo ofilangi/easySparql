@@ -21,7 +21,8 @@ object RequestsTest extends TestSuite {
         {
          "sources" : [{
            "id"       : "local_sparql",
-           "url"      : "${DataTestFactory.urlEndpoint}"
+           "path"      : "${DataTestFactory.urlEndpoint}",
+           "mimetype" : "application/sparql-query"
          }],
          "settings" : {
             "logLevel" : "${logLevel}",
@@ -35,8 +36,9 @@ object RequestsTest extends TestSuite {
         {
          "sources" : [{
            "id"       : "local_content",
-           "content"  : "<http://iiaaaaaa> <http://iibbbbbb2> <http://iicc2> .",
-           "mimetype" : "text/turtle"
+           "path"  : "<http://iiaaaaaa> <http://iibbbbbb2> <http://iicc2> .",
+           "mimetype" : "text/turtle",
+           "sourcePath" : "Content"
          }],
          "settings" : {
             "logLevel" : "${logLevel}",
@@ -50,12 +52,14 @@ object RequestsTest extends TestSuite {
         {
          "sources" : [{
            "id"       : "local_content",
-           "content"  : "<http://aaaaaa> <http://bbbbbb2> <http://cc2> .",
-           "mimetype" : "text/turtle"
+           "path"  : "<http://aaaaaa> <http://bbbbbb2> <http://cc2> .",
+           "mimetype" : "text/turtle",
+           "sourcePath" : "Content"
          },{
            "id"       : "local_content2",
-           "content"  : "<http://aaaaaa> <http://bbbbbb2> <http://cc3> .",
-           "mimetype" : "text/turtle"
+           "path"  : "<http://aaaaaa> <http://bbbbbb2> <http://cc3> .",
+           "mimetype" : "text/turtle",
+           "sourcePath" : "Content"
          }],
          "settings" : {
             "logLevel" : "${logLevel}",
@@ -84,7 +88,8 @@ object RequestsTest extends TestSuite {
         {
          "sources" : [{
            "id"       : "local_content",
-           "content"  :"${contentXml}",
+           "path"     : "${contentXml}",
+           "sourcePath" : "Content",
            "mimetype" : "text/rdf-xml"
          }],
          "settings" : {
@@ -100,11 +105,12 @@ object RequestsTest extends TestSuite {
          "sources" : [
          {
            "id"       : "local_sparql",
-           "url"      : "${DataTestFactory.urlEndpoint}"
+           "path"      : "${DataTestFactory.urlEndpoint}",
+           "mimetype" : "application/sparql-query"
          },
          {
            "id"       : "local_content",
-           "content"  : "<http://aaaaaa> <http://bbbbbb> <http://cc2> .",
+           "path"     : "<http://aaaaaa> <http://bbbbbb> <http://cc2> .",
            "mimetype" : "text/turtle"
          }],
          "settings" : {

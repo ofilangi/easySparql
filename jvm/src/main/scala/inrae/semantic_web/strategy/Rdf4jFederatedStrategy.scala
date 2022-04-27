@@ -1,6 +1,5 @@
 package inrae.semantic_web.strategy
 
-import inrae.semantic_web.exception._
 import inrae.semantic_web.configuration._
 import inrae.semantic_web.driver.{Rdf4jRequestDriver, Rdf4jSparqlRequestDriver, RequestDriver, RequestDriverFactory}
 import inrae.semantic_web.event.{DiscoveryRequestEvent, DiscoveryStateRequestEvent, Publisher, Subscriber}
@@ -16,7 +15,7 @@ import scala.concurrent.Future
 /**
  * Requests are the responsibility of a third party
  */
-case class Rdf4jFederatedStrategy(sources: Seq[Source])
+case class Rdf4jFederatedStrategy(sources: scala.Seq[Source])
   extends StrategyRequest with Rdf4jRequestDriver {
 
   /* creation des repos pour les locaux */

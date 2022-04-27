@@ -12,11 +12,11 @@ object StrategyRequestBuilder {
 
   def build(config: SWDiscoveryConfiguration): StrategyRequest = {
 
-    config.sources().length match {
+    config.sources.length match {
       case 0 => throw SWDiscoveryException("No sources specified")
-      case _ if config.conf.settings.proxy => ProxyStrategyRequest(config.conf.settings.urlProxy)
-      case 1 => DiscoveryStrategyRequest(config.sources()(0))
-      case _ => ComunicaFederatedStrategy(config.sources())
+      case _ if config.settings.proxy.nonEmpty => ProxyStrategyRequest(config.settings.proxy)
+      case 1 => DiscoveryStrategyRequest(config.sources.head)
+      case _ => ComunicaFederatedStrategy(config.sources)
     }
   }
 }

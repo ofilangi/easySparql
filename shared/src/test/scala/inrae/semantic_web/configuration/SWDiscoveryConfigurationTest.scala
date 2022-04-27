@@ -1,16 +1,17 @@
 package inrae.semantic_web.configuration
 
+import inrae.semantic_web.exception.SWStatementConfigurationException
 import utest._
 import wvlet.log.LogLevel
 
 import scala.util.{Failure, Success, Try}
 
-object StatementConfigurationTest extends TestSuite {
+object SWDiscoveryConfigurationTest extends TestSuite {
   val configBase = """
             {
              "sources" : [{
                "id"  : "dbpedia",
-               "url" : "https://dbpedia.org/sparql",
+               "path" : "https://dbpedia.org/sparql",
                "mimetype" : "application/sparql-query",
                "method" : "POST"
              }],
@@ -24,8 +25,33 @@ object StatementConfigurationTest extends TestSuite {
             """.stripMargin
 
   def tests = Tests {
+
     test("Create a simple source with string configuration") {
       SWDiscoveryConfiguration.setConfigString(configBase)
+    }
+
+    test("Get message error") {
+      Try(SWDiscoveryConfiguration.setConfigString("""
+            {
+            """.stripMargin)) match {
+        case Success(_) => assert(false)
+        case Failure(_: SWStatementConfigurationException) => assert(true)
+        case Failure(_) => assert(false)
+      }
+    }
+
+    test("Get message error - general setting - virgule") {
+      Try(SWDiscoveryConfiguration.setConfigString("""
+            {
+             "settings" : {
+               "cache" : true,
+             }
+             }
+            """.stripMargin)) match {
+        case Success(_) => assert(false)
+        case Failure(_: SWStatementConfigurationException) => assert(true)
+        case Failure(_) => assert(false)
+      }
     }
 
     test("Get a unknown source") {
@@ -44,11 +70,11 @@ object StatementConfigurationTest extends TestSuite {
       val mimetype = "application/sparql-query"
 
       val configDbpediaBasic: SWDiscoveryConfiguration = SWDiscoveryConfiguration(
-        Seq(Source(id=dbname, url=url, mimetype=mimetype)))
+        Seq(Source(id=dbname, path=url, mimetype=mimetype)))
       val source = configDbpediaBasic.source("dbpedia")
 
       assert(source.id == dbname)
-      assert(source.url == url)
+      assert(source.path == url)
       assert(source.mimetype == mimetype)
     }
 
@@ -59,9 +85,9 @@ object StatementConfigurationTest extends TestSuite {
       val mimetype = " -- "
 
       Try(SWDiscoveryConfiguration(
-        Seq(Source(id=dbname, url=url, mimetype=mimetype)))) match {
-        case Success(s) => assert(false)
-        case Failure(e) => assert(true)
+        Seq(Source(id=dbname, path=url, mimetype=mimetype)))) match {
+        case Success(_) => assert(false)
+        case Failure(_) => assert(true)
       }
     }
 
@@ -72,50 +98,7 @@ object StatementConfigurationTest extends TestSuite {
       val method = " -- "
 
       Try(SWDiscoveryConfiguration(
-        Seq(Source(id=dbname, url=url, method=method)))) match {
-        case Success(s) => assert(false)
-        case Failure(e) => assert(true)
-      }
-    }
-
-    test("defined too much source") {
-
-      val dbname = "dbpedia"
-      val url = "http://test"
-
-      Try(SWDiscoveryConfiguration(
-        Seq(Source(id=dbname, url=url, file="sss", content="sss")))) match {
-        case Success(s) => assert(false)
-        case Failure(e) => assert(true)
-      }
-
-      Try(SWDiscoveryConfiguration(
-        Seq(Source(id=dbname, file="sss", content="sss")))) match {
-        case Success(s) => assert(false)
-        case Failure(e) => assert(true)
-      }
-
-      Try(SWDiscoveryConfiguration(
-        Seq(Source(id=dbname, url=url, file="sss")))) match {
-        case Success(s) => assert(false)
-        case Failure(e) => assert(true)
-      }
-
-      Try(SWDiscoveryConfiguration(
-        Seq(Source(id=dbname, url=url, content="sss")))) match {
-        case Success(s) => assert(false)
-        case Failure(e) => assert(true)
-      }
-    }
-
-    test("Create a config with a bad tag ") {
-      Try(SWDiscoveryConfiguration
-        .setConfigString(
-          """
-          {
-           "hello" : [{
-           }]}
-          """.stripMargin)) match {
+        Seq(Source(id=dbname, path=url, mimetype="application/sparql-query",method=Some(method))))) match {
         case Success(_) => assert(false)
         case Failure(_) => assert(true)
       }
@@ -124,13 +107,13 @@ object StatementConfigurationTest extends TestSuite {
     test("Create a request config with an unknown log level ") {
       assert(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
-          "\"hello.world\"")).settings.getLogLevel == LogLevel.WARN)
+          "\"hello.world\"")).settings._logLevel == LogLevel.WARN)
     }
 
     test("Create a request config log level debug ") {
       Try(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
-          "\"debug\"")).settings.getLogLevel == LogLevel.DEBUG) match {
+          "\"debug\"")).settings._logLevel == LogLevel.DEBUG) match {
         case Success(_) => assert(true)
         case Failure(_) => assert(false)
       }
@@ -140,57 +123,57 @@ object StatementConfigurationTest extends TestSuite {
 
       val c = SWDiscoveryConfiguration
         .setConfigString(configBase)
-      assert(c.settings.getLogLevel == LogLevel.INFO)
+      assert(c.settings._logLevel == LogLevel.INFO)
 
     }
     test("Create a request config log level trace ") {
       val c = SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
           "\"trace\""))
-      assert(c.settings.getLogLevel == LogLevel.TRACE)
+      assert(c.settings._logLevel == LogLevel.TRACE)
     }
     test("Create a request config log level warn ") {
       val c = SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
           "\"warn\""))
-      assert(c.settings.getLogLevel == LogLevel.WARN)
+      assert(c.settings._logLevel == LogLevel.WARN)
     }
 
     test("Create a request config log level error ") {
       val c = SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
           "\"error\""))
-      assert(c.settings.getLogLevel == LogLevel.ERROR)
+      assert(c.settings._logLevel == LogLevel.ERROR)
     }
 
     test("Create a request config log level all ") {
       val c = SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
           "\"all\""))
-      assert(c.settings.getLogLevel == LogLevel.ALL)
+      assert(c.settings._logLevel == LogLevel.ALL)
     }
 
     test("Create a request config log level off ") {
       val c = SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
           "\"off\""))
-      assert(c.settings.getLogLevel == LogLevel.OFF)
+      assert(c.settings._logLevel == LogLevel.OFF)
     }
 
     test("pageSize can not be negative") {
       Try(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"pageSize\" : 10",
           "\"pageSize\" : -1"))) match {
-        case Success(c) => assert(false)
-        case Failure(e) => assert(true)
+        case Success(_) => assert(false)
+        case Failure(_) => assert(true)
       }
     }
     test("pageSize can be equal to zero") {
       Try(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"pageSize\" : 10",
           "\"pageSize\" : 0"))) match {
-        case Success(c) => assert(false)
-        case Failure(e) => assert(true)
+        case Success(_) => assert(false)
+        case Failure(_) => assert(true)
       }
     }
     test("pageSize") {
@@ -198,6 +181,29 @@ object StatementConfigurationTest extends TestSuite {
         .setConfigString(configBase.replace("\"pageSize\" : 10",
           "\"pageSize\" : 5"))
       assert(c.settings.pageSize == 5)
+    }
+
+    test("sizeBatchProcessing can not be negative") {
+      Try(SWDiscoveryConfiguration
+        .setConfigString(configBase.replace("\"sizeBatchProcessing\" : 10",
+          "\"sizeBatchProcessing\" : -1"))) match {
+        case Success(_) => assert(false)
+        case Failure(_) => assert(true)
+      }
+    }
+    test("sizeBatchProcessing can be equal to zero") {
+      Try(SWDiscoveryConfiguration
+        .setConfigString(configBase.replace("\"sizeBatchProcessing\" : 10",
+          "\"sizeBatchProcessing\" : 0"))) match {
+        case Success(_) => assert(false)
+        case Failure(_) => assert(true)
+      }
+    }
+    test("sizeBatchProcessing") {
+      val c = SWDiscoveryConfiguration
+        .setConfigString(configBase.replace("\"sizeBatchProcessing\" : 10",
+          "\"sizeBatchProcessing\" : 5"))
+      assert(c.settings.sizeBatchProcessing == 5)
     }
   }
 }

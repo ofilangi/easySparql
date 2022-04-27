@@ -1,6 +1,6 @@
 package inrae.semantic_web.rdf
 
-import upickle.default.{read, write}
+import inrae.semantic_web.configuration.OptionPickler
 import utest._
 
 object SparqlDefinitionTest extends TestSuite {
@@ -216,8 +216,8 @@ problem with js generation and round
       val v : String = "?aaaa"
       val v2 = SparqlDefinition.fromAny(v.asInstanceOf[Any])
       assert(v2 == QueryVariable(v))
-      val s : String = write(v2)
-      val v3 = read[QueryVariable](s)
+      val s : String = OptionPickler.write(v2)
+      val v3 = OptionPickler.read[QueryVariable](s)
       assert(v2 == v3)
     }
 

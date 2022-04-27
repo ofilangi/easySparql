@@ -119,8 +119,8 @@ object SWDiscoveryJsTest extends TestSuite{
     }
 
     test("setConfig") {
-      assert(startRequest.setConfig(DataTestFactory.getConfigVirtuoso2()).getConfig().conf.sources.head.id ==
-        DataTestFactory.getConfigVirtuoso2().conf.sources.head.id)
+      assert(startRequest.setConfig(DataTestFactory.getConfigVirtuoso2()).getConfig().sources.head.id ==
+        DataTestFactory.getConfigVirtuoso2().sources.head.id)
     }
 
   }

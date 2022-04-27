@@ -41,7 +41,8 @@ object SWDiscoverySelectIterable extends TestSuite {
         {
          "sources" : [{
            "id"       : "local",
-           "url"      : "${DataTestFactory.urlEndpoint}"
+           "path"      : "${DataTestFactory.urlEndpoint}",
+           "mimetype" : "application/sparql-query"
          }],
          "settings" : {
             "logLevel" : "info",

@@ -34,10 +34,10 @@ object RequestDriverFactory  {
   def build_withRepository( source : Source, repository : Repository ) : (RequestDriver, RepositoryConnection) =
   {
     source.mimetype match {
-      case "application/sparql-query" if source.url != "" =>
+      case "application/sparql-query"  =>
         val r = Rdf4jSparqlRequestDriver(
           source.id,
-          source.url,
+          source.path,
           source.login,
           source.password,
           source.token,
@@ -47,27 +47,21 @@ object RequestDriverFactory  {
       case "text/turtle" | "text/n3" | "text/rdf-xml" | "application/rdf+xml" =>
 
         lazy val con = repository.getConnection
-        source match {
-          case _ if source.url != "" =>
+        source.sourcePath match {
+          case SourcePath.UrlPath =>
             /* name file is the graph name  */
-            Try(con.add(new URL(source.url), source.url, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
+            Try(con.add(new URL(source.path), source.path, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
               case Success(_) =>
               case Failure(e) => throw SWDiscoveryException(e.getMessage)
             }
-          case _ if source.file != "" && (source.file.startsWith("http://")||source.file.startsWith("https://"))  =>
-            Try(con.add(new URL(source.file), source.file, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
+          case SourcePath.LocalFile  =>
+            Try(con.add(new File(source.path), source.path, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
               case Success(_) =>
               case Failure(e) =>
                 throw SWDiscoveryException(e.getMessage)
             }
-          case _   if source.file != ""  =>
-            Try(con.add(new File(source.file), source.file, RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
-              case Success(_) =>
-              case Failure(e) =>
-                throw SWDiscoveryException(e.getMessage)
-            }
-          case _ if source.content != "" =>
-            val targetStream = new java.io.ByteArrayInputStream(source.content.getBytes(java.nio.charset.StandardCharsets.UTF_8.name))
+          case SourcePath.Content =>
+            val targetStream = new java.io.ByteArrayInputStream(source.path.getBytes(java.nio.charset.StandardCharsets.UTF_8.name))
             Try(con.add(targetStream, s"http://${source.id}/graph", RequestDriverFactory.mimetypeToRdfFormat(source.mimetype))) match {
               case Success(_) =>
               case Failure(e) => throw SWDiscoveryException(e.getMessage)

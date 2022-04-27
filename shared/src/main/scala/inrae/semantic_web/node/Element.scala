@@ -1,8 +1,8 @@
 package inrae.semantic_web.node
 
+import inrae.semantic_web.configuration.OptionPickler
 import inrae.semantic_web.exception._
 import inrae.semantic_web.rdf._
-import upickle.default.{macroRW, ReadWriter => RW}
 import wvlet.log.Logger.rootLogger.debug
 
 import java.util.UUID.randomUUID
@@ -71,7 +71,7 @@ sealed abstract class Node(
 }
 
 object Node {
-  implicit val rw: RW[Node] = RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[Node] = OptionPickler.ReadWriter.merge(
     Root.rw,
     RdfNode.rw,
     Value.rw,
@@ -89,7 +89,7 @@ object Node {
 }
 
 object Root {
-  implicit val rw: RW[Root] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Root] = OptionPickler.macroRW
 }
 
 /* Node case */
@@ -227,7 +227,7 @@ final case class Root(
 }
 
 object RdfNode {
-  implicit val rw: RW[RdfNode] = RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[RdfNode] = OptionPickler.ReadWriter.merge(
     Something.rw,
     SubjectOf.rw,
     ObjectOf.rw,
@@ -264,7 +264,7 @@ abstract class URIRdfNode(
 
 
 object Something {
-  implicit val rw: RW[Something] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Something] = OptionPickler.macroRW
 }
 
 @JSExportTopLevel(name="Something")
@@ -280,7 +280,7 @@ final case class Something(
 }
 
 object SubjectOf {
-  implicit val rw: RW[SubjectOf] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[SubjectOf] = OptionPickler.macroRW
 }
 
 
@@ -297,7 +297,7 @@ final case class SubjectOf(
 }
 
 object ObjectOf {
-  implicit val rw: RW[ObjectOf] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[ObjectOf] = OptionPickler.macroRW
 }
 
 @JSExportTopLevel(name="ObjectOf")
@@ -315,7 +315,7 @@ final case class ObjectOf(
 
 
 object LinkTo {
-  implicit val rw: RW[LinkTo] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[LinkTo] = OptionPickler.macroRW
 }
 
 @JSExportTopLevel(name="LinkTo")
@@ -332,7 +332,7 @@ final case class LinkTo(
 }
 
 object LinkFrom {
-  implicit val rw: RW[LinkFrom] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[LinkFrom] = OptionPickler.macroRW
 }
 
 @JSExportTopLevel(name="LinkFrom")
@@ -349,7 +349,7 @@ final case class LinkFrom(
 }
 
 object Value {
-  implicit val rw: RW[Value] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Value] = OptionPickler.macroRW
 }
 
 final case class Value(
@@ -372,7 +372,7 @@ final case class Value(
 }
 
 object ListValues {
-  implicit val rw: RW[ListValues] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[ListValues] = OptionPickler.macroRW
 }
 
 final case class ListValues(
@@ -398,7 +398,7 @@ final case class ListValues(
 /* Logic */
 
 object LogicNode {
-  implicit val rw: RW[LogicNode] = RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[LogicNode] = OptionPickler.ReadWriter.merge(
     UnionBlock.rw,
     NotBlock.rw
   )
@@ -408,14 +408,10 @@ sealed abstract class LogicNode(
                                  val sire : Node,idRef : String=randomUUID.toString,
                                  override val children: Seq[Node],
                                  override val decorations: Map[String,String]
-                               ) extends Node(idRef,children,decorations) {
-  implicit val rw: RW[LogicNode] = RW.merge(
-    UnionBlock.rw,
-    NotBlock.rw)
-}
+                               ) extends Node(idRef,children,decorations)
 
 object UnionBlock {
-  implicit val rw: RW[UnionBlock] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[UnionBlock] = OptionPickler.macroRW
 }
 
 final case class UnionBlock(
@@ -429,7 +425,7 @@ final case class UnionBlock(
 }
 
 object NotBlock {
-  implicit val rw: RW[NotBlock] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[NotBlock] = OptionPickler.macroRW
 }
 
 final case class NotBlock(
@@ -444,7 +440,7 @@ final case class NotBlock(
 
 
 object FilterNode {
-  implicit val rw: RW[FilterNode] = RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[FilterNode] = OptionPickler.ReadWriter.merge(
     isBlank.rw,
     isLiteral.rw,
     isURI.rw,
@@ -476,7 +472,7 @@ sealed abstract class FilterNode(
 }
 
 object isBlank {
-  implicit val rw: RW[isBlank] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[isBlank] = OptionPickler.macroRW
 }
 
 final case class isBlank(
@@ -492,7 +488,7 @@ final case class isBlank(
 }
 
 object isLiteral {
-  implicit val rw: RW[isLiteral] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[isLiteral] = OptionPickler.macroRW
 }
 
 final case class isLiteral(
@@ -508,7 +504,7 @@ final case class isLiteral(
 }
 
 object isURI {
-  implicit val rw: RW[isURI] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[isURI] = OptionPickler.macroRW
 }
 
 final case class isURI(
@@ -524,7 +520,7 @@ final case class isURI(
 }
 
 object Regex {
-  implicit val rw: RW[Regex] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Regex] = OptionPickler.macroRW
 }
 
 final case class Regex(
@@ -540,7 +536,7 @@ final case class Regex(
 }
 
 object Contains {
-  implicit val rw: RW[Contains] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Contains] = OptionPickler.macroRW
 }
 
 final case class Contains(
@@ -557,7 +553,7 @@ final case class Contains(
 }
 
 object StrStarts {
-  implicit val rw: RW[StrStarts] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[StrStarts] = OptionPickler.macroRW
 }
 
 final case class StrStarts(
@@ -574,7 +570,7 @@ final case class StrStarts(
 }
 
 object StrEnds {
-  implicit val rw: RW[StrEnds] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[StrEnds] = OptionPickler.macroRW
 }
 
 final case class StrEnds(
@@ -591,7 +587,7 @@ final case class StrEnds(
 }
 
 object Equal {
-  implicit val rw: RW[Equal] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Equal] = OptionPickler.macroRW
 }
 
 final case class Equal(
@@ -608,7 +604,7 @@ final case class Equal(
 }
 
 object NotEqual {
-  implicit val rw: RW[NotEqual] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[NotEqual] = OptionPickler.macroRW
 }
 
 final case class NotEqual(
@@ -625,7 +621,7 @@ final case class NotEqual(
 }
 
 object Inf {
-  implicit val rw: RW[Inf] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Inf] = OptionPickler.macroRW
 }
 
 
@@ -643,7 +639,7 @@ final case class Inf(
 }
 
 object InfEqual {
-  implicit val rw: RW[InfEqual] = macroRW
+  implicit val rw:  OptionPickler.ReadWriter[InfEqual] = OptionPickler.macroRW
 }
 
 final case class InfEqual(
@@ -660,7 +656,7 @@ final case class InfEqual(
 }
 
 object Sup {
-  implicit val rw: RW[Sup] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Sup] = OptionPickler.macroRW
 }
 
 final case class Sup(
@@ -678,7 +674,7 @@ final case class Sup(
 }
 
 object SupEqual {
-  implicit val rw: RW[SupEqual] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[SupEqual] = OptionPickler.macroRW
 }
 
 final case class SupEqual(
@@ -697,7 +693,7 @@ final case class SupEqual(
 }
 
 object DatatypeNode {
-  implicit val rw: RW[DatatypeNode] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[DatatypeNode] = OptionPickler.macroRW
 }
 
 /* Datatype Node */
@@ -715,7 +711,7 @@ final case class DatatypeNode(
 }
 
 object SourcesNode {
-  implicit val rw: RW[SourcesNode] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[SourcesNode] = OptionPickler.macroRW
 }
 
 /* SourcesNode */
@@ -737,7 +733,7 @@ final case class SourcesNode(
 /* ----------------------------------------------------------------------------------------------------------------------------- */
 /* Solution Sequence Modifier */
 object SolutionSequenceModifierNode {
-  implicit val rw: RW[SolutionSequenceModifierNode] = RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[SolutionSequenceModifierNode] = OptionPickler.ReadWriter.merge(
     OrderByAsc.rw,
     OrderByDesc.rw,
     Projection.rw,
@@ -761,7 +757,7 @@ sealed abstract class SolutionSequenceModifierNode(
  */
 
 object OrderByAsc {
-  implicit val rw: RW[OrderByAsc] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[OrderByAsc] = OptionPickler.macroRW
 }
 
 final case class OrderByAsc(
@@ -777,7 +773,7 @@ final case class OrderByAsc(
 }
 
 object OrderByDesc {
-  implicit val rw: RW[OrderByDesc] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[OrderByDesc] = OptionPickler.macroRW
 }
 
 final case class OrderByDesc(
@@ -800,7 +796,7 @@ final case class OrderByDesc(
  */
 
 object Projection {
-  implicit val rw: RW[Projection] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Projection] = OptionPickler.macroRW
 }
 
 final case class Projection(
@@ -826,7 +822,7 @@ final case class Projection(
  */
 
 object Distinct {
-  implicit val rw: RW[Distinct] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Distinct] = OptionPickler.macroRW
 }
 
 final case class Distinct(
@@ -845,7 +841,7 @@ final case class Distinct(
  */
 
 object Reduced {
-  implicit val rw: RW[Reduced] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Reduced] = OptionPickler.macroRW
 }
 
 final case class Reduced(
@@ -864,7 +860,7 @@ final case class Reduced(
  */
 
 object Offset {
-  implicit val rw: RW[Offset] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Offset] = OptionPickler.macroRW
 }
 
 final case class Offset(
@@ -884,7 +880,7 @@ final case class Offset(
  */
 
 object Limit {
-  implicit val rw: RW[Limit] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Limit] = OptionPickler.macroRW
 }
 
 
@@ -908,7 +904,7 @@ final case class Limit(
 /* Expression */
 
 object Bind {
-  implicit val rw: RW[Bind] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Bind] = OptionPickler.macroRW
 }
 
 final case class Bind(
@@ -933,8 +929,7 @@ final case class Bind(
 }
 
 object ExpressionNode {
-  implicit val rw: RW[ExpressionNode] =
-    RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[ExpressionNode] = OptionPickler.ReadWriter.merge(
 /*      ConditionalOrExpression.rw,
       ConditionalAndExpression.rw,
       ValueLogical.rw,
@@ -1051,8 +1046,7 @@ sealed abstract class UnaryExpression(
 */
 
 object PrimaryExpression {
-  implicit val rw: RW[PrimaryExpression] =
-    RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[PrimaryExpression] = OptionPickler.ReadWriter.merge(
       SparqlDefinitionExpression.rw,
       FunctionStringNode.rw,
       FunctionNumericNode.rw,
@@ -1070,7 +1064,7 @@ sealed abstract class PrimaryExpression(
 
 
 object SparqlDefinitionExpression {
-  implicit val rw: RW[SparqlDefinitionExpression] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[SparqlDefinitionExpression] = OptionPickler.macroRW
 }
 
 final case class SparqlDefinitionExpression(
@@ -1086,7 +1080,7 @@ final case class SparqlDefinitionExpression(
 }
 
 object FunctionStringNode {
-  implicit val rw: RW[FunctionStringNode] =  RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[FunctionStringNode] = OptionPickler.ReadWriter.merge(
     SubStr.rw,
     Replace.rw
   )
@@ -1099,7 +1093,7 @@ sealed abstract class FunctionStringNode(
                                         ) extends PrimaryExpression(idRef,children,decorations)
 
 object SubStr {
-  implicit val rw: RW[SubStr] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[SubStr] = OptionPickler.macroRW
 }
 
 final case class SubStr(
@@ -1116,7 +1110,7 @@ final case class SubStr(
 }
 
 object Replace {
-  implicit val rw: RW[Replace] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Replace] = OptionPickler.macroRW
 }
 
 
@@ -1135,7 +1129,7 @@ final case class Replace(
 }
 
 object FunctionNumericNode {
-  implicit val rw: RW[FunctionNumericNode] =  RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[FunctionNumericNode] = OptionPickler.ReadWriter.merge(
     Abs.rw,
     Round.rw,
     Ceil.rw,
@@ -1151,7 +1145,7 @@ sealed abstract class FunctionNumericNode(
                                          ) extends PrimaryExpression(idRef,children,decorations)
 
 object Abs {
-  implicit val rw: RW[Abs] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Abs] = OptionPickler.macroRW
 }
 
 
@@ -1167,7 +1161,7 @@ final case class Abs(
 }
 
 object Round {
-  implicit val rw: RW[Round] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Round] = OptionPickler.macroRW
 }
 
 
@@ -1183,7 +1177,7 @@ final case class Round(
 }
 
 object Ceil {
-  implicit val rw: RW[Ceil] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Ceil] = OptionPickler.macroRW
 }
 
 final case class Ceil(
@@ -1198,7 +1192,7 @@ final case class Ceil(
 }
 
 object Floor {
-  implicit val rw: RW[Floor] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Floor] = OptionPickler.macroRW
 }
 
 final case class Floor(
@@ -1213,7 +1207,7 @@ final case class Floor(
 }
 
 object Rand {
-  implicit val rw: RW[Rand] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Rand] = OptionPickler.macroRW
 }
 
 final case class Rand(
@@ -1235,13 +1229,13 @@ sealed abstract class FunctionUriNode(
                                      ) extends PrimaryExpression(idRef,children,decorations)
 
 object FunctionUriNode {
-  implicit val rw: RW[FunctionUriNode] =  RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[FunctionUriNode] = OptionPickler.ReadWriter.merge(
     Datatype.rw
   )
 }
 
 object Datatype {
-  implicit val rw: RW[Datatype] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Datatype] = OptionPickler.macroRW
 }
 
 final case class Datatype(
@@ -1259,13 +1253,13 @@ final case class Datatype(
 
 
 object AggregateNode {
-  implicit val rw: RW[AggregateNode] = RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[AggregateNode] = OptionPickler.ReadWriter.merge(
     Count.rw
   )
 }
 
 object ProjectionExpression {
-  implicit val rw: RW[ProjectionExpression] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[ProjectionExpression] = OptionPickler.macroRW
 }
 
 final case class ProjectionExpression(
@@ -1295,7 +1289,7 @@ sealed abstract class AggregateNode(
 }
 
 object Count {
-  implicit val rw: RW[Count] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Count] = OptionPickler.macroRW
 }
 
 final case class Count(
@@ -1312,7 +1306,7 @@ final case class Count(
 }
 
 object BuiltInCallNode {
-  implicit val rw: RW[BuiltInCallNode] = RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[BuiltInCallNode] = OptionPickler.ReadWriter.merge(
     Str.rw,
     Lang.rw,
     LangMatches.rw
@@ -1332,7 +1326,7 @@ sealed abstract class BuiltInCallNode(
 }
 
 object Str {
-  implicit val rw: RW[Str] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Str] = OptionPickler.macroRW
 }
 
 final case class Str(
@@ -1348,7 +1342,7 @@ final case class Str(
 }
 
 object Lang {
-  implicit val rw: RW[Lang] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Lang] = OptionPickler.macroRW
 }
 
 final case class Lang(
@@ -1364,7 +1358,7 @@ final case class Lang(
 }
 
 object LangMatches {
-  implicit val rw: RW[LangMatches] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[LangMatches] = OptionPickler.macroRW
 }
 
 final case class LangMatches(

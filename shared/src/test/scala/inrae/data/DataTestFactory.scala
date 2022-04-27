@@ -62,7 +62,8 @@ object DataTestFactory  {
         {
          "sources" : [{
            "id"       : "configVirtuoso1",
-           "url"      : "${DataTestFactory.urlEndpoint}"
+           "path"      : "${DataTestFactory.urlEndpoint}",
+           "mimetype" : "application/sparql-query"
          }],
          "settings" : {
             "logLevel" : "off",
@@ -78,7 +79,8 @@ object DataTestFactory  {
         {
          "sources" : [{
            "id"       : "configVirtuoso2",
-           "url"      : "${DataTestFactory.urlEndpoint}"
+           "path"      : "${DataTestFactory.urlEndpoint}",
+           "mimetype" : "application/sparql-query"
          }],
          "settings" : {
             "logLevel" : "off",
@@ -92,7 +94,8 @@ object DataTestFactory  {
             {
              "sources" : [{
                "id"  : "dbpedia",
-               "url" : "https://dbpedia.org/sparql"
+               "path" : "https://dbpedia.org/sparql",
+               "mimetype" : "application/sparql-query"
              }],
             "settings" : {
               "driver" : "inrae.semantic_web.driver.JenaRequestDriver",

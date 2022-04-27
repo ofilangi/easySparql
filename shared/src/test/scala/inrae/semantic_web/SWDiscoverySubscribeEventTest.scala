@@ -76,7 +76,8 @@ object SWDiscoverySubscribeEventTest extends TestSuite {
         SWDiscoveryConfiguration.setConfigString(""" {
                                |         "sources" : [{
                                |           "id"       : "badtps",
-                               |           "url"      : "http://bidon"
+                               |           "path"      : "http://bidon",
+                               |           "mimetype" : "application/sparql-query"
                                |         }]} """.stripMargin)
 
       var stepDiscovery : Map[String,Boolean] = Map(

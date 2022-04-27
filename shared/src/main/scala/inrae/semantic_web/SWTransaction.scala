@@ -1,12 +1,12 @@
 package inrae.semantic_web
 
+import inrae.semantic_web.configuration.OptionPickler
 import inrae.semantic_web.exception._
 import inrae.semantic_web.event._
 import inrae.semantic_web.node._
 import inrae.semantic_web.rdf.{QueryVariable, SparqlDefinition, URI}
 import inrae.semantic_web.sparql.QueryResult
 import inrae.semantic_web.strategy._
-import upickle.default.{macroRW, read, write, ReadWriter => RW}
 import wvlet.log.Logger.rootLogger.{debug, trace}
 
 import scala.concurrent.{Future, Promise}
@@ -14,7 +14,7 @@ import scala.util.{Failure, Success, Try}
 
 
 object SWTransaction {
-  implicit val rw: RW[SWTransaction] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[SWTransaction] = OptionPickler.macroRW
 }
 
 case class SWTransaction(sw : SWDiscovery = SWDiscovery())
@@ -235,8 +235,8 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
     sw.root.focusManagement(OrderByDesc(lRef.map(QueryVariable(_)),sw.getUniqueRef()), false).transaction
   }
 
-  def getSerializedString : String = write(this)
-  def setSerializedString(query : String) : SWTransaction = read[SWTransaction](query)
+  def getSerializedString : String = OptionPickler.write(this)
+  def setSerializedString(query : String) : SWTransaction = OptionPickler.read[SWTransaction](query)
 
   def console : SWTransaction = sw.console.transaction
 }
