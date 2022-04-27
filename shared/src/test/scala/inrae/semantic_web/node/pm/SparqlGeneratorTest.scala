@@ -5,8 +5,6 @@ import inrae.semantic_web.node._
 import inrae.semantic_web.rdf._
 import utest.{TestSuite, Tests, assert, test}
 
-import scala.util.{Failure, Success, Try}
-
 object SparqlGeneratorTest extends TestSuite {
   def tests: Tests = Tests {
 
@@ -276,6 +274,12 @@ object SparqlGeneratorTest extends TestSuite {
     test("sparqlNode Str") {
       val v = SparqlGenerator.sparqlNode(Str(URI("test"),""),"nothingSire","nothingVar")
       assert(v.trim().split(" ").toList == List("STR","(","?nothingSire",")"))
+    }
+
+    test(" == basic test all element == ") {
+      ApplyAllNode.listNodes.map(n => {
+        SparqlGenerator.sparqlNode(n,"nothingSire","nothingVar")
+      })
     }
 
   }

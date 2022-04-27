@@ -125,7 +125,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
       case Failure(e) => _prom_raw failure (e)
       case Success(driver) => {
         driver.subscribe(this.asInstanceOf[Subscriber[DiscoveryRequestEvent,Publisher[DiscoveryRequestEvent]]])
-          driver.execute(this)
+        driver.execute(this)
           /* manage datatype decoration */
           .map((qr: QueryResult) => {
             notify(DiscoveryRequestEvent(DiscoveryStateRequestEvent.DATATYPE_BUILD))

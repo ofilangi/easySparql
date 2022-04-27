@@ -49,9 +49,11 @@ object ElementTest extends TestSuite {
     }
 
     test("all") {
-      ApplyAllNode.listNodes.map(n => {
+      assert(ApplyAllNode.listNodes.map(n => {
         OptionPickler.write(n)
-      }).map( n => OptionPickler.read[Node](n) )
+      }).map( n => OptionPickler.read[Node](n) ).map(
+        n => n.copy()
+      ) == ApplyAllNode.listNodes)
     }
   }
 }
