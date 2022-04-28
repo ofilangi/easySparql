@@ -4,7 +4,7 @@ import inrae.semantic_web.configuration._
 import inrae.semantic_web.exception.SWDiscoveryException
 
 object RequestDriverFactory {
-  def get : RequestDriverFactory = {
+  def build() : RequestDriverFactory = {
     RequestDriverFactory()
   }
 }

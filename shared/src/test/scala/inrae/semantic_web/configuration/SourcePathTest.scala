@@ -25,10 +25,7 @@ object SourcePathTest extends TestSuite {
     }
 
     test("bad SourcePath definition") {
-      Try(OptionPickler.read[SourcePath](ujson.Str("some"))) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
+      assert(Try(OptionPickler.read[SourcePath](ujson.Str("some"))).isFailure)
     }
   }
 }

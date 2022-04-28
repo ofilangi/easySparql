@@ -144,56 +144,28 @@ object SWDiscoveryTest extends TestSuite {
     test("focus on the root using focus method") {
       val disco = SWDiscovery(config)
       val f = disco.focus()
-
-      Try(disco.focus(f)) match {
-        case Success(_) => assert(true)
-        case Failure(_) => assert(false)
-      }
-
-      Try(disco.something("h1").focus(f)) match {
-        case Success(_) => assert(true)
-        case Failure(_) => assert(false)
-      }
-
+      assert(Try(disco.focus(f)).isSuccess)
+      assert(Try(disco.something("h1").focus(f)).isSuccess)
     }
 
     test("bad focus") {
-      Try(startRequest
-        .focus("h2")) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
+      assert(Try(startRequest.focus("h2")).isFailure)
     }
 
     test("use named graph") {
-      Try( startRequest
-          .isSubjectOf(URI("http://bb2"))) match {
-        case Success(_) => assert(true)
-        case Failure(_) => assert(false)
-      }
+      assert(Try(startRequest.isSubjectOf(URI("http://bb2"))).isSuccess)
     }
 
     test("test console") {
-      Try( startRequest
-        .isSubjectOf(URI("http://bb2"))
-        .console) match {
-        case Success(_) => assert(true)
-        case Failure(_) => assert(false)
-      }
+      assert(Try(startRequest.isSubjectOf(URI("http://bb2")).console).isSuccess)
     }
 
     test("refExist") {
-      Try(startRequest.refExist("h1")) match {
-        case Success(_) => assert(true)
-        case Failure(_) => assert(false)
-      }
+      assert(Try(startRequest.refExist("h1")).isSuccess)
     }
 
     test("refExist2") {
-      Try(startRequest.refExist("h2")) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
+      assert(Try(startRequest.refExist("h2")).isFailure)
     }
 
     test("remove Something h1") {

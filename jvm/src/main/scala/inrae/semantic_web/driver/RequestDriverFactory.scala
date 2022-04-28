@@ -18,7 +18,7 @@ object RequestDriverFactory {
   val repository : Repository  = new SailRepository(new NativeStore(dataDir))
   repository.init()
 
-  def get : RequestDriverFactory = {
+  def build() : RequestDriverFactory = {
     RequestDriverFactory(Some(repository),dataDir, Seq())
   }
 

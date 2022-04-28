@@ -20,7 +20,7 @@ import scala.concurrent.Future
 case class Rdf4jFederatedStrategy(sources: scala.Seq[Source])
   extends StrategyRequest with Rdf4jRequestDriver {
 
-  val startRequestDriverFactoryInst: RequestDriverFactory = RequestDriverFactory.get
+  val startRequestDriverFactoryInst: RequestDriverFactory = RequestDriverFactory.build
   val requestDriverFactoryInst: RequestDriverFactory = sources.map(startRequestDriverFactoryInst.addRepositoryConnection).last
   /* creation des repos pour les connexions locales */
   val drivers: Seq[RequestDriver] = requestDriverFactoryInst.lCon.map(_._1)

@@ -9,8 +9,11 @@ import scala.util.{Failure, Success, Try}
 import java.io.File
 
 object RequestDriverFactoryTest extends TestSuite {
-  
+
   def tests: Tests = Tests {
+    test("build") {
+      assert(Try(RequestDriverFactory.build()).isSuccess)
+    }
 
     test("Bad us of method mimetypeToRdfFormat / RequestDriverFactory should send an error message") {
       Try(RequestDriverFactory.mimetypeToRdfFormat("xxx/yyy")) match {
@@ -29,7 +32,7 @@ object RequestDriverFactoryTest extends TestSuite {
       }
     }
 
-    val startRequestDriverFactoryInst: RequestDriverFactory = RequestDriverFactory.get
+    val startRequestDriverFactoryInst: RequestDriverFactory = RequestDriverFactory.build
 
     test("url application/sparql-query should instantiate Rdf4jSparqlRequestDriver") {
       val source : Source = Source(id="test",path="http://test",mimetype="application/sparql-query",method=Some("POST"))

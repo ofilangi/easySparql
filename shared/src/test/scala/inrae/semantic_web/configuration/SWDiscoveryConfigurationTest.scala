@@ -4,7 +4,7 @@ import inrae.semantic_web.exception.SWStatementConfigurationException
 import utest._
 import wvlet.log.LogLevel
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Try}
 
 object SWDiscoveryConfigurationTest extends TestSuite {
   val configBase: String = """
@@ -34,9 +34,8 @@ object SWDiscoveryConfigurationTest extends TestSuite {
       Try(SWDiscoveryConfiguration.setConfigString("""
             {
             """.stripMargin)) match {
-        case Success(_) => assert(false)
         case Failure(_: SWStatementConfigurationException) => assert(true)
-        case Failure(_) => assert(false)
+        case _ => assert(false)
       }
     }
 
@@ -48,19 +47,13 @@ object SWDiscoveryConfigurationTest extends TestSuite {
              }
              }
             """.stripMargin)) match {
-        case Success(_) => assert(false)
         case Failure(_: SWStatementConfigurationException) => assert(true)
-        case Failure(_) => assert(false)
+        case _ => assert(false)
       }
     }
 
     test("Get a unknown source") {
-      val c = SWDiscoveryConfiguration.setConfigString(configBase)
-
-      Try(c.source("something")) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
+      assert(Try(SWDiscoveryConfiguration.setConfigString(configBase).source("something")).isFailure)
     }
 
     test("Create a simple source") {
@@ -79,29 +72,12 @@ object SWDiscoveryConfigurationTest extends TestSuite {
     }
 
     test("unknown mimetype") {
-
-      val dbname = "dbpedia"
-      val url = "http://test"
-      val mimetype = " -- "
-
-      Try(SWDiscoveryConfiguration(
-        Seq(Source(id=dbname, path=url, mimetype=mimetype)))) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
+      assert(Try(SWDiscoveryConfiguration(Seq(Source(id="dbpedia", path="http://test", mimetype="-")))).isFailure)
     }
 
     test("unknown method") {
-
-      val dbname = "dbpedia"
-      val url = "http://test"
-      val method = " -- "
-
-      Try(SWDiscoveryConfiguration(
-        Seq(Source(id=dbname, path=url, mimetype="application/sparql-query",method=Some(method))))) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
+      assert(Try(SWDiscoveryConfiguration(
+        Seq(Source(id="dbpedia", path="http://test", mimetype="application/sparql-query",method=Some("-"))))).isFailure)
     }
 
     test("Create a request config with an unknown log level ") {
@@ -111,12 +87,9 @@ object SWDiscoveryConfigurationTest extends TestSuite {
     }
 
     test("Create a request config log level debug ") {
-      Try(SWDiscoveryConfiguration
+      assert(Try(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"info\"",
-          "\"debug\"")).settings._logLevel == LogLevel.DEBUG) match {
-        case Success(_) => assert(true)
-        case Failure(_) => assert(false)
-      }
+          "\"debug\"")).settings._logLevel == LogLevel.DEBUG).isSuccess)
     }
 
     test("Create a request config log level info ") {
@@ -161,20 +134,15 @@ object SWDiscoveryConfigurationTest extends TestSuite {
     }
 
     test("pageSize can not be negative") {
-      Try(SWDiscoveryConfiguration
+      assert(Try(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"pageSize\" : 10",
-          "\"pageSize\" : -1"))) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
+          "\"pageSize\" : -1"))).isFailure)
     }
+
     test("pageSize can be equal to zero") {
-      Try(SWDiscoveryConfiguration
+      assert(Try(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"pageSize\" : 10",
-          "\"pageSize\" : 0"))) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
+          "\"pageSize\" : 0"))).isFailure)
     }
     test("pageSize") {
       val c = SWDiscoveryConfiguration
@@ -184,20 +152,14 @@ object SWDiscoveryConfigurationTest extends TestSuite {
     }
 
     test("sizeBatchProcessing can not be negative") {
-      Try(SWDiscoveryConfiguration
+      assert(Try(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"sizeBatchProcessing\" : 10",
-          "\"sizeBatchProcessing\" : -1"))) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
+          "\"sizeBatchProcessing\" : -1"))).isFailure)
     }
     test("sizeBatchProcessing can be equal to zero") {
-      Try(SWDiscoveryConfiguration
+      assert(Try(SWDiscoveryConfiguration
         .setConfigString(configBase.replace("\"sizeBatchProcessing\" : 10",
-          "\"sizeBatchProcessing\" : 0"))) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
+          "\"sizeBatchProcessing\" : 0"))).isFailure)
     }
     test("sizeBatchProcessing") {
       val c = SWDiscoveryConfiguration
