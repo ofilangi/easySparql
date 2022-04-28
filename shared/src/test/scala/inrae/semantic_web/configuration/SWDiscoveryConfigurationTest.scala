@@ -63,7 +63,7 @@ object SWDiscoveryConfigurationTest extends TestSuite {
       val mimetype = "application/sparql-query"
 
       val configDbpediaBasic: SWDiscoveryConfiguration = SWDiscoveryConfiguration(
-        Seq(Source(id=dbname, path=url, mimetype=mimetype)))
+        sources=Seq(Source(id=dbname, path=url, mimetype=mimetype)))
       val source = configDbpediaBasic.source("dbpedia")
 
       assert(source.id == dbname)
@@ -72,11 +72,11 @@ object SWDiscoveryConfigurationTest extends TestSuite {
     }
 
     test("unknown mimetype") {
-      assert(Try(SWDiscoveryConfiguration(Seq(Source(id="dbpedia", path="http://test", mimetype="-")))).isFailure)
+      assert(Try(SWDiscoveryConfiguration(sources=Seq(Source(id="dbpedia", path="http://test", mimetype="-")))).isFailure)
     }
 
     test("unknown method") {
-      assert(Try(SWDiscoveryConfiguration(
+      assert(Try(SWDiscoveryConfiguration(sources=
         Seq(Source(id="dbpedia", path="http://test", mimetype="application/sparql-query",method=Some("-"))))).isFailure)
     }
 

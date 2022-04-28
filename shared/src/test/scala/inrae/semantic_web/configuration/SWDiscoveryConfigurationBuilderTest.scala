@@ -5,28 +5,28 @@ import wvlet.log.LogLevel
 
 import scala.util.Try
 
-object SWConfigurationBuilderTest extends TestSuite {
+object SWDiscoveryConfigurationBuilderTest extends TestSuite {
   def tests: Tests = Tests {
     test("default") {
-      assert(Try(SWConfigurationBuilder()).isSuccess)
+      assert(Try(SWDiscoveryConfiguration()).isSuccess)
     }
 
     test("urlfile") {
-      val s = SWConfigurationBuilder().urlFile("http://localhost:8080/animals.ttl")
+      val s = SWDiscoveryConfiguration().urlFile("http://localhost:8080/animals.ttl")
       assert(s.sources.length == 1)
       assert(s.sources.last.path == "http://localhost:8080/animals.ttl")
       assert(s.sources.last.mimetype == "text/turtle")
     }
 
     test("sparqlEndpoint") {
-      val s = SWConfigurationBuilder().sparqlEndpoint("http://localhost/sparql")
+      val s = SWDiscoveryConfiguration().sparqlEndpoint("http://localhost/sparql")
       assert(s.sources.length == 1)
       assert(s.sources.last.path == "http://localhost/sparql")
       assert(s.sources.last.mimetype == "application/sparql-query")
     }
 
     test("localFile") {
-      val s = SWConfigurationBuilder().localFile("/localhost/animals.ttl")
+      val s = SWDiscoveryConfiguration().localFile("/localhost/animals.ttl")
       assert(s.sources.length == 1)
       assert(s.sources.last.path == "/localhost/animals.ttl")
       assert(s.sources.last.mimetype == "text/turtle")
@@ -34,7 +34,7 @@ object SWConfigurationBuilderTest extends TestSuite {
 
     test("rdfContent") {
       val content= ":some :some2 :some3."
-      val s = SWConfigurationBuilder().rdfContent(content)
+      val s = SWDiscoveryConfiguration().rdfContent(content)
       assert(s.sources.length == 1)
       assert(s.sources.last.path == content)
       assert(s.sources.last.mimetype == "text/turtle")
@@ -43,7 +43,7 @@ object SWConfigurationBuilderTest extends TestSuite {
     test("federation") {
       val content= ":some :some2 :some3."
 
-      val s = SWConfigurationBuilder()
+      val s = SWDiscoveryConfiguration()
         .urlFile("http://localhost:8080/animals.ttl")
         .sparqlEndpoint("http://localhost/sparql")
         .localFile("/localhost/animals.ttl")
@@ -53,27 +53,27 @@ object SWConfigurationBuilderTest extends TestSuite {
       assert(s.sources.last.path == content)
     }
 
-    test("setPageSize") {
-      val s = SWConfigurationBuilder().setPageSize(3)
-      assert(s.settings.pageSize == 3)
+    test("getSourcesSize") {
+      assert(SWDiscoveryConfiguration().localFile("/localhost/animals.ttl").sourcesSize == 1)
     }
 
-    test("setSizeBatchProcessing") {
-      val s = SWConfigurationBuilder().setSizeBatchProcessing(3)
-      assert(s.settings.sizeBatchProcessing == 3)
+    test("setPageSize/getPageSize") {
+      assert(SWDiscoveryConfiguration().setPageSize(3).pageSize == 3)
     }
 
-    test("setLogLevel") {
-      val s = SWConfigurationBuilder().setLogLevel("info")
-      assert(s.settings.logLevel == "info")
-      assert(s.settings._logLevel == LogLevel.INFO)
-
-      assert(SWConfigurationBuilder().setLogLevel("some").settings._logLevel == LogLevel.WARN)
+    test("setSizeBatchProcessing/getSizeBatchProcessing") {
+      assert(SWDiscoveryConfiguration().setSizeBatchProcessing(3).sizeBatchProcessing == 3)
     }
 
-    test("setCache") {
-      assert(!SWConfigurationBuilder().setCache(false).settings.cache)
-      assert(SWConfigurationBuilder().setCache(true).settings.cache)
+    test("setLogLevel/getLogLevel") {
+      assert(SWDiscoveryConfiguration().setLogLevel("debug").logLevel == "debug")
+      assert(SWDiscoveryConfiguration().setLogLevel("info").settings._logLevel == LogLevel.INFO)
+      assert(SWDiscoveryConfiguration().setLogLevel("some").settings._logLevel == LogLevel.WARN)
+    }
+
+    test("setCache/getCache") {
+      assert(!SWDiscoveryConfiguration().setCache(false).cache)
+      assert(SWDiscoveryConfiguration().setCache(true).cache)
     }
 
   }
