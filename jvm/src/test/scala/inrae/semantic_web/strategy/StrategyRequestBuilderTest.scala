@@ -7,7 +7,7 @@ import scala.util.{Failure, Success, Try}
 
 object StrategyRequestBuilderTest extends TestSuite {
 
-  def tests = Tests {
+  def tests: Tests = Tests {
 
     test("none source should fail") {
       Try(StrategyRequestBuilder.build(

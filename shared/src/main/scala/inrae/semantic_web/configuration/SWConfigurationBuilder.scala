@@ -3,10 +3,11 @@ package inrae.semantic_web.configuration
 import scala.collection.Seq
 import scala.scalajs.js.annotation.JSExportTopLevel
 
-@JSExportTopLevel(name="SWConfigurationBuilder")
-case class SWConfigurationBuilder(settings : GeneralSetting, sources : Seq[Source] = Seq()) {
 
-  def _url(
+@JSExportTopLevel(name="SWConfigurationBuilder")
+case class SWConfigurationBuilder(settings : GeneralSetting=GeneralSetting(), sources : Seq[Source] = Seq()) {
+
+  private[this] def _url(
                 path : String ,
                 mimetype : String = "",
                 method: String    = "POST",
@@ -59,7 +60,7 @@ case class SWConfigurationBuilder(settings : GeneralSetting, sources : Seq[Sourc
 
   def localFile(
             filename : String ,
-            mimetype : String = "") : SWConfigurationBuilder =
+            mimetype : String = "text/turtle") : SWConfigurationBuilder =
     SWConfigurationBuilder(
       settings,
       sources :+ Source(
