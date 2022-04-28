@@ -1,7 +1,9 @@
 package inrae.semantic_web.driver
 
 import com.github.p2m2.facade._
-import inrae.semantic_web.SWDiscoveryException
+import inrae.semantic_web.configuration.SourcePath
+import inrae.semantic_web.configuration.SourcePath.SourcePath
+import inrae.semantic_web.exception.SWDiscoveryException
 import inrae.semantic_web.driver.ComunicaRequestDriver.SourceComunica
 import inrae.semantic_web.sparql.QueryResult
 
@@ -99,19 +101,18 @@ object ComunicaRequestDriver {
 }
 
 case class ComunicaRequestDriver(idName : String,
-                                 url: String,
-                                 content: String,
+                                 path: String,
+                                 sourcePath : SourcePath,
                                  mimetype: String,
-                                 login : String,
-                                 password: String,
-                                 sourceType : String) extends RequestDriver {
+                                 login : Option[String] = None ,
+                                 password: Option[String] = None ) extends RequestDriver {
 
 
 
   def requestOnSWDB(query: String): Future[QueryResult] = {
-    (url.length>0 match {
-        case true => Future { ComunicaRequestDriver.sourceFromUrl(url, mimetype) }
-        case false => ComunicaRequestDriver.sourceFromContent(content, mimetype)
+    (sourcePath match {
+        case SourcePath.UrlPath => Future { ComunicaRequestDriver.sourceFromUrl(path, mimetype) }
+        case SourcePath.Content => ComunicaRequestDriver.sourceFromContent(path, mimetype)
       }).asInstanceOf[Future[SourceComunica]]
       .flatMap( source => ComunicaRequestDriver.requestOnSWDBWithSources(query,List(source)) )
   }

@@ -2,6 +2,7 @@ package inrae.semantic_web
 
 import inrae.data.DataTestFactory
 import inrae.semantic_web.rdf._
+import inrae.semantic_web.configuration._
 import utest._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,12 +36,13 @@ object SWDiscoverySelectIterable extends TestSuite {
   val nblock = (nbValues / pageSize) + 1
 
 
-  val config: StatementConfiguration = StatementConfiguration.setConfigString(
+  val config: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     s"""
         {
          "sources" : [{
            "id"       : "local",
-           "url"      : "${DataTestFactory.urlEndpoint}"
+           "path"      : "${DataTestFactory.urlEndpoint}",
+           "mimetype" : "application/sparql-query"
          }],
          "settings" : {
             "logLevel" : "info",

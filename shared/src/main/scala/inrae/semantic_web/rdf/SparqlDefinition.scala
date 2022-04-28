@@ -1,8 +1,6 @@
 package inrae.semantic_web.rdf
-import inrae.semantic_web.SWDiscoveryException
-//import upickle.default.{macroRW, ReadWriter => RW, Reader => R, Writer => W}
-import upickle.default.{macroRW, ReadWriter => RW}
-
+import inrae.semantic_web.configuration.OptionPickler
+import inrae.semantic_web.exception._
 import scala.language.implicitConversions
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.util.{Failure, Success, Try}
@@ -44,7 +42,7 @@ object SparqlDefinition {
 
   implicit def fromLiteralDouble(s: Literal[Double]): Literal[String] = Literal(s.value.toString,URI("double","xsd"))
 
-  implicit val rw: RW[SparqlDefinition] = RW.merge(
+  implicit val rw: OptionPickler.ReadWriter[SparqlDefinition] = OptionPickler.ReadWriter.merge(
     IRI.rw,
     URI.rw,
     Anonymous.rw,
@@ -65,7 +63,7 @@ object SparqlDefinition {
 object IRI {
 
   implicit def fromString(s: String): IRI = IRI(s)
-  implicit val rw: RW[IRI] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[IRI] = OptionPickler.macroRW
 }
 
 @JSExportTopLevel(name="IRI")
@@ -81,7 +79,7 @@ case class IRI (var iri : String) extends SparqlDefinition {
 }
 
 object URI {
-  implicit val rw: RW[URI] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[URI] = OptionPickler.macroRW
 
   implicit def fromString(s: String): URI = URI(s)
 
@@ -122,7 +120,7 @@ case class URI (localNameUser : String,nameSpaceUser : String = "") extends Spar
 
 object Anonymous {
 
-  implicit val rw: RW[Anonymous] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Anonymous] = OptionPickler.macroRW
 
   implicit def fromString(s: String): Anonymous = Anonymous(s)
 }
@@ -151,14 +149,14 @@ case class PropertyPath(var value : String) extends SparqlDefinition {
 
 object PropertyPath {
 
-  implicit val rw: RW[PropertyPath] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[PropertyPath] = OptionPickler.macroRW
 
   implicit def fromString(s: String): PropertyPath = PropertyPath(s)
 }
 
 
 object Literal {
-  implicit val rw: RW[Literal[String]] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[Literal[String]] = OptionPickler.macroRW
 }
 
 @JSExportTopLevel(name="Literal")
@@ -191,7 +189,7 @@ case class Literal[T](value : T,datatype : URI = URI.empty,ta : String="") exten
 
 
 object QueryVariable {
-implicit val rw: RW[QueryVariable] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[QueryVariable] = OptionPickler.macroRW
 }
 
 @JSExportTopLevel(name="QueryVariable")

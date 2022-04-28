@@ -2,61 +2,68 @@ package inrae.semantic_web.driver
 
 import inrae.data.DataTestFactory
 import inrae.semantic_web.rdf.{SparqlBuilder, URI}
-import inrae.semantic_web.{SWDiscovery, StatementConfiguration}
+import inrae.semantic_web.configuration._
+import inrae.semantic_web._
 import utest.{TestSuite, Tests, test}
+
+import scala.concurrent.Future
 
 object RequestsTest extends TestSuite {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  val insertData = DataTestFactory.insertVirtuoso1(
+  val insertData: Future[Any] = DataTestFactory.insertVirtuoso1(
     """
       <http://aaaaaa> <http://bbbbbb> <http://cc> .
       """.stripMargin, this.getClass.getSimpleName)
   val logLevel = "off"
 
-  val config: StatementConfiguration = StatementConfiguration.setConfigString(
+  val config: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     s"""
         {
          "sources" : [{
            "id"       : "local_sparql",
-           "url"      : "${DataTestFactory.urlEndpoint}"
+           "path"      : "${DataTestFactory.urlEndpoint}",
+           "mimetype" : "application/sparql-query"
          }],
          "settings" : {
-            "logLevel" : "${logLevel}",
+            "logLevel" : "$logLevel",
             "sizeBatchProcessing" : 100
           }
          }
         """.stripMargin)
 
-  val config2: StatementConfiguration = StatementConfiguration.setConfigString(
+  val config2: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     s"""
         {
          "sources" : [{
            "id"       : "local_content",
-           "content"  : "<http://iiaaaaaa> <http://iibbbbbb2> <http://iicc2> .",
-           "mimetype" : "text/turtle"
+           "path"  : "<http://iiaaaaaa> <http://iibbbbbb2> <http://iicc2> .",
+           "mimetype" : "text/turtle",
+           "sourcePath" : "Content"
          }],
          "settings" : {
-            "logLevel" : "${logLevel}",
+            "logLevel" : "$logLevel",
             "sizeBatchProcessing" : 100
           }
          }
         """.stripMargin)
 
-  val config3: StatementConfiguration = StatementConfiguration.setConfigString(
+  val config3: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     s"""
         {
          "sources" : [{
            "id"       : "local_content",
-           "content"  : "<http://aaaaaa> <http://bbbbbb2> <http://cc2> .",
-           "mimetype" : "text/turtle"
+           "path"  : "<http://aaaaaa> <http://bbbbbb2> <http://cc2> .",
+           "mimetype" : "text/turtle",
+           "sourcePath" : "Content"
          },{
            "id"       : "local_content2",
-           "content"  : "<http://aaaaaa> <http://bbbbbb2> <http://cc3> .",
-           "mimetype" : "text/turtle"
+           "path"  : "<http://aaaaaa> <http://bbbbbb2> <http://cc3> .",
+           "mimetype" : "text/turtle",
+           "sourcePath" : "Content"
          }],
          "settings" : {
-            "logLevel" : "${logLevel}",
+            "logLevel" : "$logLevel",
             "sizeBatchProcessing" : 100
           }
          }
@@ -77,12 +84,13 @@ object RequestsTest extends TestSuite {
                               |  </rdf:Description>
                               |</rdf:RDF>""".stripMargin.replace("\"","\\\"").replace("\n","")
 
-  val config4: StatementConfiguration = StatementConfiguration.setConfigString(
+  val config4: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     s"""
         {
          "sources" : [{
            "id"       : "local_content",
-           "content"  :"${contentXml}",
+           "path"     : "$contentXml",
+           "sourcePath" : "Content",
            "mimetype" : "text/rdf-xml"
          }],
          "settings" : {
@@ -92,21 +100,57 @@ object RequestsTest extends TestSuite {
          }
         """.stripMargin)
 
-  val mixconfig: StatementConfiguration = StatementConfiguration.setConfigString(
+  val contentN3 : String = """@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+                             |@prefix ns0: <http://www.some-ficticious-zoo.com/rdf#> .
+                             |
+                             |ns0:something1 a rdf:Seq ;
+                             |  rdf:_1 [
+                             |    ns0:name "Lion" ;
+                             |    ns0:species "Panthera leo" ;
+                             |    ns0:class "Mammal"
+                             |  ] ;
+                             |  rdf:_2 [
+                             |    ns0:name "Tarantula" ;
+                             |    ns0:species "Avicularia avicularia" ;
+                             |    ns0:class "Arachnid"
+                             |  ] ;
+                             |  rdf:_3 [
+                             |    ns0:name "Hippopotamus" ;
+                             |    ns0:species "Hippopotamus amphibius" ;
+                             |    ns0:class "Mammal"
+                             |  ] .
+                             |  """.stripMargin.replace("\"","\\\"").replace("\n","")
+  val config5: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
+    s"""{
+         "sources" : [{
+           "id"       : "local_content",
+           "path"     : "$contentN3",
+           "sourcePath" : "Content",
+           "mimetype" : "text/n3"
+         }],
+         "settings" : {
+            "logLevel" : "off",
+            "sizeBatchProcessing" : 100
+          }
+         }
+        """.stripMargin)
+
+  val mixconfig: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     s"""
         {
          "sources" : [
          {
            "id"       : "local_sparql",
-           "url"      : "${DataTestFactory.urlEndpoint}"
+           "path"      : "${DataTestFactory.urlEndpoint}",
+           "mimetype" : "application/sparql-query"
          },
          {
            "id"       : "local_content",
-           "content"  : "<http://aaaaaa> <http://bbbbbb> <http://cc2> .",
+           "path"     : "<http://aaaaaa> <http://bbbbbb> <http://cc2> .",
            "mimetype" : "text/turtle"
          }],
          "settings" : {
-            "logLevel" : "${logLevel}",
+            "logLevel" : "$logLevel",
             "sizeBatchProcessing" : 100
           }
          }
@@ -178,6 +222,22 @@ object RequestsTest extends TestSuite {
           })
       }).flatten
     }
+
+    test("inline n3") {
+      insertData.map(_ => {
+        SWDiscovery(config5)
+          .prefix("ns0","http://www.some-ficticious-zoo.com/rdf#")
+          .something("h1")
+          .isSubjectOf(URI("ns0:name"), "v")
+          .select(List("v"))
+          .commit()
+          .raw
+          .map(result => {
+            assert(result("results")("bindings").arr.length == 3)
+          })
+      }).flatten
+    }
+
   }
 
 }

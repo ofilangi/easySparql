@@ -3,12 +3,12 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 /* scala libs */
 lazy val utestVersion = "0.7.11"
-lazy val upickleVersion  = "1.5.0"
+lazy val upickleVersion  = "1.6.0"
 lazy val airframeLogVersion = "21.12.1"
 lazy val sttpClient3Version = "3.4.1"
 lazy val scalaStubVersion = "1.1.0"
 lazy val scalatagVersion = "0.11.1"
-lazy val rdf4jVersion = "3.7.7"
+lazy val rdf4jVersion = "4.0.0"
 lazy val slf4j_version = "1.7.36"
 lazy val scalaUriVersion = "3.6.0"
 lazy val scalajsDom = "1.2.0"
@@ -19,7 +19,7 @@ lazy val data_model_rdfjs_version = "1.0.1"
 lazy val n3js_facade_version = "1.13.0"
 lazy val rdfxml_streaming_parser_version = "1.5.0"
 lazy val axios_version = "0.26.1"
-lazy val scalaJsMacrotaskExecutor = "1.0.0"
+//lazy val scalaJsMacrotaskExecutor = "1.0.0"
 
 /* npm libs */
 lazy val npm_qs_version = "6.10.3"
@@ -118,13 +118,14 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
     testFrameworks += new TestFramework("utest.runner.Framework"),
     scalacOptions ++= Seq("-deprecation", "-feature"),
     classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.AllLibraryJars,
-    coverageMinimumStmtTotal := 86,
+    coverageMinimumStmtTotal := 92,
     coverageFailOnMinimum := false,
     coverageHighlighting := true,
     Test / parallelExecution := false
   )
   .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
   .jsSettings(
+    scalacOptions ++= Seq("-P:scalajs:nowarnGlobalExecutionContext"),
     libraryDependencies ++= Seq(
      // "org.scala-js"    %%% "scala-js-macrotask-executor" % scalaJsMacrotaskExecutor,
       "com.github.p2m2" %%% "comunica-actor-init-sparql-rdfjs" % comunica_actor_init_sparql_rdfjs_version ,

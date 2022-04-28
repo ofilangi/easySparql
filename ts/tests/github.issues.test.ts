@@ -5,7 +5,8 @@ describe('-- GITHUB ISSUES -- ', () => {
   const json : string  =  `{
          "sources" : [{
               "id"  : "local_endpoint",
-              "url" : "http://localhost:8890/sparql"
+              "path" : "http://localhost:8890/sparql",
+              "mimetype" : "application/sparql-query"
            }],
            "settings" : {
              "cache" : true,
@@ -25,7 +26,8 @@ describe('-- GITHUB ISSUES -- ', () => {
       const conf = SWDiscoveryConfiguration.setConfigString(`{
                "sources" : [{
                     "id"  : "triplydb",
-                    "url" : "https://api.triplydb.com/datasets/gr/gr/services/gr/sparql"
+                    "path" : "https://api.triplydb.com/datasets/gr/gr/services/gr/sparql",
+                    "mimetype" : "application/sparql-query"
                  }],
                  "settings" : {
                    "cache" : true,

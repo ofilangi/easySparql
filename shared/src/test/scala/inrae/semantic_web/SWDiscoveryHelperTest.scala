@@ -1,6 +1,7 @@
 package inrae.semantic_web
 import inrae.data.DataTestFactory
 import inrae.semantic_web.rdf._
+import inrae.semantic_web.configuration._
 import utest._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -27,7 +28,7 @@ object SWDiscoveryHelperTest  extends TestSuite  {
       <http://OwlClass> a owl:Class .
       """.stripMargin, this.getClass.getSimpleName)
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
 
   def tests = Tests {

@@ -1,6 +1,6 @@
 package inrae.data
 
-import inrae.semantic_web.StatementConfiguration
+import inrae.semantic_web.configuration._
 
 import scala.concurrent.Future
 
@@ -56,13 +56,14 @@ object DataTestFactory  {
                       url_endpoint : String=urlEndpoint) = delete(graph2(classname),url_endpoint)
 
 
-  def getConfigVirtuoso1() : StatementConfiguration = {
-    StatementConfiguration.setConfigString(
+  def getConfigVirtuoso1() : SWDiscoveryConfiguration = {
+    SWDiscoveryConfiguration.setConfigString(
       s"""
         {
          "sources" : [{
            "id"       : "configVirtuoso1",
-           "url"      : "${DataTestFactory.urlEndpoint}"
+           "path"      : "${DataTestFactory.urlEndpoint}",
+           "mimetype" : "application/sparql-query"
          }],
          "settings" : {
             "logLevel" : "off",
@@ -72,13 +73,14 @@ object DataTestFactory  {
         """.stripMargin)
   }
 
-  def getConfigVirtuoso2() : StatementConfiguration = {
-    StatementConfiguration.setConfigString(
+  def getConfigVirtuoso2() : SWDiscoveryConfiguration = {
+    SWDiscoveryConfiguration.setConfigString(
       s"""
         {
          "sources" : [{
            "id"       : "configVirtuoso2",
-           "url"      : "${DataTestFactory.urlEndpoint}"
+           "path"      : "${DataTestFactory.urlEndpoint}",
+           "mimetype" : "application/sparql-query"
          }],
          "settings" : {
             "logLevel" : "off",
@@ -92,7 +94,8 @@ object DataTestFactory  {
             {
              "sources" : [{
                "id"  : "dbpedia",
-               "url" : "https://dbpedia.org/sparql"
+               "path" : "https://dbpedia.org/sparql",
+               "mimetype" : "application/sparql-query"
              }],
             "settings" : {
               "driver" : "inrae.semantic_web.driver.JenaRequestDriver",
@@ -103,8 +106,8 @@ object DataTestFactory  {
             }
             """.stripMargin.stripMargin
 
-  def getDbpediaConfig() : StatementConfiguration = {
-    StatementConfiguration.setConfigString(dbpedia_config_string)
+  def getDbpediaConfig() : SWDiscoveryConfiguration = {
+    SWDiscoveryConfiguration.setConfigString(dbpedia_config_string)
   }
   //   "driver" : "inrae.semantic_web.driver.JenaRequestDriver",
 }

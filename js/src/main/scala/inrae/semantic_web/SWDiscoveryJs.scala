@@ -2,17 +2,18 @@ package inrae.semantic_web
 
 import inrae.semantic_web.node.Node
 import inrae.semantic_web.rdf.{IRI, SparqlDefinition, URI}
+import inrae.semantic_web.configuration._
+import inrae.semantic_web.exception._
 import inrae.semantic_web.view.HtmlView
 
 import scala.scalajs._
 import scala.scalajs.js.{Dynamic, JSON}
 import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
-import upickle.default.write
 
 @JSExportTopLevel(name="SWDiscovery")
 case class SWDiscoveryJs(
-                          config: StatementConfiguration=StatementConfiguration(),
+                          config: SWDiscoveryConfiguration=SWDiscoveryConfiguration(),
                           swArg: SWDiscovery = null
                         ) {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
@@ -48,10 +49,10 @@ case class SWDiscoveryJs(
   def finder :SWDiscoveryHelperJs = SWDiscoveryHelperJs(sw)
 
   @JSExport
-  def setConfig(newConfig : StatementConfiguration) : SWDiscoveryJs = SWDiscoveryJs(newConfig,sw.setConfig(newConfig))
+  def setConfig(newConfig : SWDiscoveryConfiguration) : SWDiscoveryJs = SWDiscoveryJs(newConfig,sw.setConfig(newConfig))
 
   @JSExport
-  def getConfig() : StatementConfiguration = sw.getConfig
+  def getConfig() : SWDiscoveryConfiguration = sw.getConfig
 
   @JSExport
   def focus(ref : String) : SWDiscoveryJs = SWDiscoveryJs(config,sw.focus(ref))
@@ -131,7 +132,7 @@ case class SWDiscoveryJs(
   @JSExport
   def browse[A](visitor : js.Function2[Dynamic, Integer,A] ) : js.Array[A] = {
     val visitor2 : (Node, Integer) => A = (n, p) => {
-      visitor(JSON.parse(write(n)),p)
+      visitor(JSON.parse(OptionPickler.write(n)),p)
     }
     sw.browse(visitor2).toJSArray
   }

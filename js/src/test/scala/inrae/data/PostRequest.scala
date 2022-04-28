@@ -2,7 +2,7 @@ package inrae.data
 
 import facade.npm.{qs}
 import com.github.p2m2.facade.Axios
-import inrae.semantic_web.SWDiscoveryException
+import inrae.semantic_web.exception.SWDiscoveryException
 
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic

@@ -2,6 +2,7 @@ package inrae.semantic_web
 import scala.scalajs.js.JSConverters._
 import inrae.data.DataTestFactory
 import utest.{TestSuite, Tests, test}
+import inrae.semantic_web.configuration._
 
 object SWDiscoveryJsTest extends TestSuite{
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
@@ -13,7 +14,7 @@ object SWDiscoveryJsTest extends TestSuite{
        <dd> <datatype_prop> "1" .
       """.stripMargin, this.getClass.getSimpleName)
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
   override def utestAfterAll(): Unit = {
     DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
@@ -118,8 +119,8 @@ object SWDiscoveryJsTest extends TestSuite{
     }
 
     test("setConfig") {
-      assert(startRequest.setConfig(DataTestFactory.getConfigVirtuoso2()).getConfig().conf.sources.head.id ==
-        DataTestFactory.getConfigVirtuoso2().conf.sources.head.id)
+      assert(startRequest.setConfig(DataTestFactory.getConfigVirtuoso2()).getConfig().sources.head.id ==
+        DataTestFactory.getConfigVirtuoso2().sources.head.id)
     }
 
   }

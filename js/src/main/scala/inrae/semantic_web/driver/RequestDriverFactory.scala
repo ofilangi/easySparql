@@ -1,21 +1,23 @@
 package inrae.semantic_web.driver
 
-import inrae.semantic_web.ConfigurationObject.Source
-import inrae.semantic_web.SWDiscoveryException
+import inrae.semantic_web.configuration._
+import inrae.semantic_web.exception.SWDiscoveryException
 
-object RequestDriverFactory  {
+object RequestDriverFactory {
+  def build() : RequestDriverFactory = {
+    RequestDriverFactory()
+  }
+}
 
+case class RequestDriverFactory(lCon : Seq[(RequestDriver, Unit)] = Seq())  {
 
-  def build( source : Source ) : RequestDriver = {
-
-    val graph = "fr:inrae:semantic_web:discovery:"+source.id
-
-    source.mimetype match {
-      case "application/sparql-query" if source.url != "" =>
+  def addRepositoryConnection( source : Source ) : RequestDriverFactory = {
+    val rq : RequestDriver = source.mimetype match {
+      case "application/sparql-query"  =>
         AxiosRequestDriver(
           source.id,
-          source.method,
-          source.url,
+          source.method.getOrElse("POST"),
+          source.path,
           source.login,
           source.password,
           source.token,
@@ -35,15 +37,16 @@ object RequestDriverFactory  {
         "application/xml" =>
           ComunicaRequestDriver(
             source.id,
-            source.url,
-            source.content,
+            source.path,
+            source.sourcePath,
             source.mimetype,
             source.login,
-            source.password,
-            sourceType = "file")
+            source.password)
       case _ =>
         throw SWDiscoveryException("Bad definition of source configuration :"+source.toString)
     }
+
+    RequestDriverFactory(Seq( (rq,()) ))
   }
 
 }

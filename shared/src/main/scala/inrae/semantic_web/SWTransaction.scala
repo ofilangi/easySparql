@@ -1,11 +1,12 @@
 package inrae.semantic_web
 
+import inrae.semantic_web.configuration.OptionPickler
+import inrae.semantic_web.exception._
 import inrae.semantic_web.event._
 import inrae.semantic_web.node._
 import inrae.semantic_web.rdf.{QueryVariable, SparqlDefinition, URI}
 import inrae.semantic_web.sparql.QueryResult
 import inrae.semantic_web.strategy._
-import upickle.default.{macroRW, read, write, ReadWriter => RW}
 import wvlet.log.Logger.rootLogger.{debug, trace}
 
 import scala.concurrent.{Future, Promise}
@@ -13,7 +14,7 @@ import scala.util.{Failure, Success, Try}
 
 
 object SWTransaction {
-  implicit val rw: RW[SWTransaction] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[SWTransaction] = OptionPickler.macroRW
 }
 
 case class SWTransaction(sw : SWDiscovery = SWDiscovery())
@@ -73,7 +74,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
     debug(" -- process_datatypes --")
     val labelProperty = datatypeNode.property.reference()
 
-    lUris.grouped(sw.config.conf.settings.sizeBatchProcessing).toList.map(
+    lUris.grouped(sw.config.settings.sizeBatchProcessing).toList.map(
       f = lSubUris => {
         trace(" datatypes:" + lSubUris.toString)
         /* request using api */
@@ -124,7 +125,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
       case Failure(e) => _prom_raw failure (e)
       case Success(driver) => {
         driver.subscribe(this.asInstanceOf[Subscriber[DiscoveryRequestEvent,Publisher[DiscoveryRequestEvent]]])
-          driver.execute(this)
+        driver.execute(this)
           /* manage datatype decoration */
           .map((qr: QueryResult) => {
             notify(DiscoveryRequestEvent(DiscoveryStateRequestEvent.DATATYPE_BUILD))
@@ -234,8 +235,8 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
     sw.root.focusManagement(OrderByDesc(lRef.map(QueryVariable(_)),sw.getUniqueRef()), false).transaction
   }
 
-  def getSerializedString : String = write(this)
-  def setSerializedString(query : String) : SWTransaction = read[SWTransaction](query)
+  def getSerializedString : String = OptionPickler.write(this)
+  def setSerializedString(query : String) : SWTransaction = OptionPickler.read[SWTransaction](query)
 
   def console : SWTransaction = sw.console.transaction
 }

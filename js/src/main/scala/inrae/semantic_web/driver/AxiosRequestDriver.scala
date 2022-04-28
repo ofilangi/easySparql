@@ -2,7 +2,7 @@ package inrae.semantic_web.driver
 
 import facade.npm.{qs}
 import com.github.p2m2.facade.Axios
-import inrae.semantic_web.SWDiscoveryException
+import inrae.semantic_web.exception.SWDiscoveryException
 import inrae.semantic_web.event.{DiscoveryRequestEvent, DiscoveryStateRequestEvent}
 import inrae.semantic_web.sparql.QueryResult
 import wvlet.log.Logger.rootLogger.debug
@@ -16,10 +16,10 @@ case class AxiosRequestDriver(
                                idName : String,
                                method : String,
                                url: String,
-                               login : String,
-                               password: String,
-                               token : String,
-                               auth : String)
+                               login : Option[String] = None ,
+                               password: Option[String] = None ,
+                               token : Option[String] = None ,
+                               auth : Option[String] = None )
   extends HttpRequestDriver {
 
   def requestOnSWDB(query: String): Future[QueryResult] = {

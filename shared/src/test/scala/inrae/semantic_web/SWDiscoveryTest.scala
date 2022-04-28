@@ -3,6 +3,7 @@ package inrae.semantic_web
 import inrae.data.DataTestFactory
 import inrae.semantic_web.node.{Node, Root}
 import inrae.semantic_web.rdf._
+import inrae.semantic_web.configuration._
 import utest._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -30,7 +31,7 @@ object SWDiscoveryTest extends TestSuite {
       <http://OwlClass> a owl:Class .
       """.stripMargin, this.getClass.getSimpleName)
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
   override def utestAfterAll(): Unit = {
     DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
@@ -44,7 +45,7 @@ object SWDiscoveryTest extends TestSuite {
   def tests = Tests {
     test("No sources definition") {
       insertData.map(_ => {
-        val config: StatementConfiguration = StatementConfiguration.setConfigString(""" { "sources" : [] } """)
+        val config: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(""" { "sources" : [] } """)
         SWDiscovery(config)
           .something("h1")
           .select(List("h1"))
@@ -143,56 +144,28 @@ object SWDiscoveryTest extends TestSuite {
     test("focus on the root using focus method") {
       val disco = SWDiscovery(config)
       val f = disco.focus()
-
-      Try(disco.focus(f)) match {
-        case Success(_) => assert(true)
-        case Failure(_) => assert(false)
-      }
-
-      Try(disco.something("h1").focus(f)) match {
-        case Success(_) => assert(true)
-        case Failure(_) => assert(false)
-      }
-
+      assert(Try(disco.focus(f)).isSuccess)
+      assert(Try(disco.something("h1").focus(f)).isSuccess)
     }
 
     test("bad focus") {
-      Try(startRequest
-        .focus("h2")) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
+      assert(Try(startRequest.focus("h2")).isFailure)
     }
 
     test("use named graph") {
-      Try( startRequest
-          .isSubjectOf(URI("http://bb2"))) match {
-        case Success(_) => assert(true)
-        case Failure(_) => assert(false)
-      }
+      assert(Try(startRequest.isSubjectOf(URI("http://bb2"))).isSuccess)
     }
 
     test("test console") {
-      Try( startRequest
-        .isSubjectOf(URI("http://bb2"))
-        .console) match {
-        case Success(_) => assert(true)
-        case Failure(_) => assert(false)
-      }
+      assert(Try(startRequest.isSubjectOf(URI("http://bb2")).console).isSuccess)
     }
 
     test("refExist") {
-      Try(startRequest.refExist("h1")) match {
-        case Success(_) => assert(true)
-        case Failure(_) => assert(false)
-      }
+      assert(Try(startRequest.refExist("h1")).isSuccess)
     }
 
     test("refExist2") {
-      Try(startRequest.refExist("h2")) match {
-        case Success(_) => assert(false)
-        case Failure(_) => assert(true)
-      }
+      assert(Try(startRequest.refExist("h2")).isFailure)
     }
 
     test("remove Something h1") {
@@ -275,10 +248,10 @@ object SWDiscoveryTest extends TestSuite {
     }
 
     test("setConfig/getConfig") {
-      assert(startRequest.getConfig.conf.sources.head.id == DataTestFactory.getConfigVirtuoso1().conf.sources.head.id)
+      assert(startRequest.getConfig.sources.head.id == DataTestFactory.getConfigVirtuoso1().sources.head.id)
 
-      assert(startRequest.setConfig(DataTestFactory.getConfigVirtuoso2()).getConfig.conf.sources.head.id ==
-        DataTestFactory.getConfigVirtuoso2().conf.sources.head.id)
+      assert(startRequest.setConfig(DataTestFactory.getConfigVirtuoso2()).getConfig.sources.head.id ==
+        DataTestFactory.getConfigVirtuoso2().sources.head.id)
     }
 
     test("setConfig/getConfig during query build") {
@@ -286,7 +259,7 @@ object SWDiscoveryTest extends TestSuite {
         startRequest
         .setConfig(DataTestFactory.getConfigVirtuoso2())
          .isObjectOf("http://test11")
-          .getConfig.conf.sources.head.id == DataTestFactory.getConfigVirtuoso2().conf.sources.head.id )
+          .getConfig.sources.head.id == DataTestFactory.getConfigVirtuoso2().sources.head.id )
     }
 
   }

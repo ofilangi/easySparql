@@ -1,6 +1,7 @@
 package inrae.semantic_web
 
 import inrae.semantic_web.node.Root
+import inrae.semantic_web.configuration._
 import utest.{TestSuite, Tests, test}
 
 object SparqlQueryBuilderTest extends TestSuite {

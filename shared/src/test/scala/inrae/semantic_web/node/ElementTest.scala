@@ -1,8 +1,8 @@
 package inrae.semantic_web.node
 
 import inrae.data.ApplyAllNode
+import inrae.semantic_web.configuration.OptionPickler
 import inrae.semantic_web.rdf._
-import upickle.default.{read, write}
 import utest._
 
 import scala.util.{Failure, Success, Try}
@@ -49,9 +49,11 @@ object ElementTest extends TestSuite {
     }
 
     test("all") {
-      ApplyAllNode.listNodes.map(n => {
-        write(n)
-      }).map( n => read[Node](n) )
+      assert(ApplyAllNode.listNodes.map(n => {
+        OptionPickler.write(n)
+      }).map( n => OptionPickler.read[Node](n) ).map(
+        n => n.copy()
+      ) == ApplyAllNode.listNodes)
     }
   }
 }

@@ -3,13 +3,14 @@ package inrae.semantic_web
 import inrae.data.DataTestFactory
 import inrae.semantic_web.node.{Node, Root}
 import inrae.semantic_web.rdf.URI
+import inrae.semantic_web.configuration._
 import utest._
 
 import scala.language.postfixOps
 
 object SWDiscoveryDecorationTest extends TestSuite {
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
   override def utestAfterAll(): Unit = {
     DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)

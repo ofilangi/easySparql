@@ -1,4 +1,7 @@
 package inrae.semantic_web
+
+import inrae.semantic_web.configuration._
+import inrae.semantic_web.exception._
 import inrae.semantic_web.node._
 import inrae.semantic_web.node.pm.{NodeVisitor, RemoveNode}
 import inrae.semantic_web.rdf._
@@ -8,17 +11,13 @@ import wvlet.log.Logger.rootLogger._
 
 import java.util.UUID.randomUUID
 import scala.concurrent.Future
-import upickle.default.{macroRW, read, write, ReadWriter => RW}
 import io.lemonlabs.uri.{QueryString, Url}
-
-final case class SWDiscoveryException(private val message: String = "",
-                                      private val cause: Throwable = None.orNull) extends Exception(message,cause)
 
 object SWDiscovery {
 
   private val version : String = SWDiscoveryVersionAtBuildTime.version
 
-  implicit val rw: RW[SWDiscovery] = macroRW
+  implicit val rw: OptionPickler.ReadWriter[SWDiscovery] = OptionPickler.macroRW
 
   info(" --------------------------------------------------" )
   info(" ---- Discovery :"+ SWDiscovery.version + "         -----------" )
@@ -27,7 +26,7 @@ object SWDiscovery {
 }
 
 case class SWDiscovery(
-                        config: StatementConfiguration=StatementConfiguration(),
+                        config: SWDiscoveryConfiguration=SWDiscoveryConfiguration(),
                         rootNode : Root = Root(),
                         fn : Option[String] = None)
 {
@@ -93,7 +92,7 @@ case class SWDiscovery(
 
   //private val logger = Logger.of[SWDiscovery]
   // Set the root logger's log level
-  Logger.setDefaultLogLevel(config.conf.settings.getLogLevel)
+  Logger.setDefaultLogLevel(config.settings._logLevel)
 
   /* set focus on root */
   def root: SWDiscovery  = SWDiscovery(config,rootNode,Some(rootNode.reference()))
@@ -101,10 +100,10 @@ case class SWDiscovery(
   def finder : SWDiscoveryHelper = SWDiscoveryHelper(this)
 
   /* configuration */
-  def setConfig(newConfig : StatementConfiguration) : SWDiscovery =
+  def setConfig(newConfig : SWDiscoveryConfiguration) : SWDiscovery =
     SWDiscovery(newConfig,rootNode,Some(focusNode))
 
-  def getConfig : StatementConfiguration = config
+  def getConfig : SWDiscoveryConfiguration = config
 
   /* get current focus */
   def focus() : String = focusNode
@@ -252,9 +251,9 @@ case class SWDiscovery(
           case _ => rootNode.idRef
         }))
 
-  def getSerializedString : String = write(this)
+  def getSerializedString : String = OptionPickler.write(this)
 
-  def setSerializedString(query : String) : SWDiscovery = read[SWDiscovery](query)
+  def setSerializedString(query : String) : SWDiscovery = OptionPickler.read[SWDiscovery](query)
 
 
   def console : SWDiscovery = {
@@ -262,12 +261,12 @@ case class SWDiscovery(
     println("USER REQUEST\n" +
       pm.SimpleConsole().get(rootNode) + "\n" +
       "FOCUS NODE:"+ focusNode +
-      "\nENDPOINT:"+config.sources().map(v => println(v.url)).mkString(",") +"\n\n" +
+      "\nSOURCE:"+config.sources.map(v => println(v.path)).mkString(",") +"\n\n" +  {
       "\n--------------------------------------------------------------------\n -- HTTP GET -- \n\n" +
       sparql_get +
       "\n--------------------------------------------------------------------\n -- HTTP CURL -- \n\n" +
       sparql_curl+
-      "\n--------------------------------------------------------------------\n"
+      "\n--------------------------------------------------------------------\n" }
        )
       //"QUERY PLANNER\n"+
       //"todo....")
@@ -277,8 +276,8 @@ case class SWDiscovery(
   def sparql: String = SparqlQueryBuilder.selectQueryString(rootNode).trim
 
   def sparql_get : String =
-    (config.sources().length match {
-      case 1 => config.sources()(0).url
+    (config.sources.length match {
+      case 1 => config.sources(0).path
       case _ => ""
     }) + Url(path="", query=QueryString.fromPairs(
       "query"-> sparql,
@@ -286,8 +285,8 @@ case class SWDiscovery(
     )
 
   def sparql_curl : String =
-    "curl -H \"Accept: application/json\" -G " +  (config.sources().length match {
-        case 1 => config.sources()(0).url
+    "curl -H \"Accept: application/json\" -G " +  (config.sources.length match {
+        case 1 => config.sources(0).path
         case _ => ""
       }) + " --data-urlencode query='" + sparql + "'"
 
@@ -320,10 +319,10 @@ case class SWDiscovery(
     SWDiscoveryHelper(this).count(lRef.filter( ! lDatatypeRef.contains(_)) ).map {
       case nSolutions if nSolutions == 0 => (nSolutions, Seq())
       case nSolutions =>
-        val nit : Int = nSolutions / config.conf.settings.pageSize
+        val nit : Int = nSolutions / config.settings.pageSize
         (nSolutions,(0 to nit).map( p =>{
-          val limit = config.conf.settings.pageSize
-          val offset = p*config.conf.settings.pageSize
+          val limit = config.settings.pageSize
+          val offset = p*config.settings.pageSize
           select(lRef,limit,offset)
         }))
       }
@@ -341,10 +340,10 @@ case class SWDiscovery(
     SWDiscoveryHelper(this).count(lRef.filter(!lDatatypeRef.contains(_)), true).map {
       case nSolutions if nSolutions == 0 => (nSolutions, Seq())
       case nSolutions =>
-        val nit: Int = nSolutions / config.conf.settings.pageSize
+        val nit: Int = nSolutions / config.settings.pageSize
         (nSolutions, (0 to nit).map(p => {
-          val limit = config.conf.settings.pageSize
-          val offset = p * config.conf.settings.pageSize
+          val limit = config.settings.pageSize
+          val offset = p * config.settings.pageSize
           select(lRef, limit, offset).distinct
         }))
     }

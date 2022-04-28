@@ -2,6 +2,7 @@ package inrae.semantic_web
 
 import inrae.data.DataTestFactory
 import inrae.semantic_web.rdf.{IRI, SparqlBuilder, URI}
+import inrae.semantic_web.configuration._
 import utest.{TestSuite, Tests, test}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,7 +18,7 @@ object OrderByTest extends TestSuite {
       <http://aa> <http://bb> 10 .
       """.stripMargin, this.getClass.getSimpleName)
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
   def tests = Tests {
     test("order by") {

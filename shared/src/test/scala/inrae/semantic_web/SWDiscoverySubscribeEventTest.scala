@@ -2,6 +2,7 @@ package inrae.semantic_web
 
 import inrae.data.DataTestFactory
 import inrae.semantic_web.rdf._
+import inrae.semantic_web.configuration._
 import utest._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,7 +18,7 @@ object SWDiscoverySubscribeEventTest extends TestSuite {
       <http://aa> <http://datatype> "testdatatype" .
       """.stripMargin, this.getClass.getSimpleName)
 
-  val config: StatementConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
   def stepDiscoveryExecutor(unsubscribe : Boolean = false) = {
     var stepDiscovery : Map[String,Boolean] = Map(
@@ -71,11 +72,12 @@ object SWDiscoverySubscribeEventTest extends TestSuite {
     }
 
     test("DiscoveryRequestEvent ERROR_HTTP_REQUEST") {
-      val config: StatementConfiguration =
-      StatementConfiguration.setConfigString(""" {
+      val config: SWDiscoveryConfiguration =
+        SWDiscoveryConfiguration.setConfigString(""" {
                                |         "sources" : [{
                                |           "id"       : "badtps",
-                               |           "url"      : "http://bidon"
+                               |           "path"      : "http://bidon",
+                               |           "mimetype" : "application/sparql-query"
                                |         }]} """.stripMargin)
 
       var stepDiscovery : Map[String,Boolean] = Map(

@@ -1,6 +1,7 @@
 package inrae.semantic_web.driver
 
 import inrae.data.DataTestFactory
+import inrae.semantic_web.configuration.SourcePath
 import utest.{TestRunner, TestSuite, Tests, test}
 import wvlet.log.{LogLevel, Logger}
 
@@ -24,7 +25,7 @@ object HttpRequestDriverTest extends TestSuite {
 
     test("AxiosRequestDriver get") {
       insertData.map(_ => {
-        AxiosRequestDriver(idName = "test", method = "get", url = DataTestFactory.urlEndpoint, login = "", password = "", token = "", auth = "")
+        AxiosRequestDriver(idName = "test", method = "get", url = DataTestFactory.urlEndpoint)
           .request(query)
           .map(qr => {
             assert(qr.json("results")("bindings").arr(0)("b")("value").value == "bb")
@@ -35,7 +36,7 @@ object HttpRequestDriverTest extends TestSuite {
 
     test("AxiosRequestDriver get bad request") {
       insertData.map(_ => {
-        AxiosRequestDriver(idName = "test", method = "get", url = DataTestFactory.urlEndpoint, login = "", password = "", token = "", auth = "")
+        AxiosRequestDriver(idName = "test", method = "get", url = DataTestFactory.urlEndpoint)
           .request("bad request")
           .map(_ => assert(false))
           .recover(_ => assert(true))
@@ -62,7 +63,7 @@ object HttpRequestDriverTest extends TestSuite {
 */
     test("AxiosRequestDriver post") {
       insertData.map(_ => {
-        AxiosRequestDriver(idName = "test", method = "post", url = DataTestFactory.urlEndpoint, login = "", password = "", token = "", auth = "")
+        AxiosRequestDriver(idName = "test", method = "post", url = DataTestFactory.urlEndpoint)
           .request(query)
           .map(qr => {
             assert(qr.json("results")("bindings").arr(0)("b")("value").value == "bb")
@@ -73,7 +74,7 @@ object HttpRequestDriverTest extends TestSuite {
 
     test("AxiosRequestDriver post bad request") {
       insertData.map(_ => {
-        AxiosRequestDriver(idName = "test", method = "post", url = DataTestFactory.urlEndpoint, login = "", password = "", token = "", auth = "")
+        AxiosRequestDriver(idName = "test", method = "post", url = DataTestFactory.urlEndpoint)
           .request("bad request")
           .map(_ => assert(false))
           .recover(_ => assert(true))
@@ -110,7 +111,7 @@ object HttpRequestDriverTest extends TestSuite {
 
     test("ComunicaRequestDriver TTL") {
       val url_file = "http://localhost:8080/animals.ttl"
-      ComunicaRequestDriver(idName = "test", url = url_file, content="",mimetype="text/turtle",login = "", password = "", sourceType="file")
+      ComunicaRequestDriver(idName = "test", path = url_file, sourcePath =SourcePath.UrlPath,mimetype="text/turtle")
         .request("select * where { ?a ?b ?c . } limit 5")
         .map(qr => {
 
@@ -126,7 +127,7 @@ object HttpRequestDriverTest extends TestSuite {
 
     test("ComunicaRequestDriver JSON-LD") {
       val url_file = "http://localhost:8080/animals.jsonld"
-      ComunicaRequestDriver(idName = "test", url = url_file, content="",mimetype="application/json+ld", login = "", password = "", sourceType="file")
+      ComunicaRequestDriver(idName = "test", path = url_file, sourcePath=SourcePath.UrlPath,mimetype="application/json+ld")
         .request("select * where { ?a ?b ?c . } limit 5")
         .map(qr => {
           println(url_file + " --> " + qr.json("results")("bindings").arr.length)
@@ -139,7 +140,7 @@ object HttpRequestDriverTest extends TestSuite {
 
     test("ComunicaRequestDriver N3") {
       val url_file = "http://localhost:8080/animals.n3"
-      ComunicaRequestDriver(idName = "test", url = url_file, content="",mimetype="text/n3", login = "", password = "", sourceType="file")
+      ComunicaRequestDriver(idName = "test", path = url_file, sourcePath=SourcePath.UrlPath,mimetype="text/n3")
         .request("select * where { ?a ?b ?c . } limit 5")
         .map(qr => {
           println(url_file + " --> " + qr.json("results")("bindings").arr.length)
@@ -151,7 +152,5 @@ object HttpRequestDriverTest extends TestSuite {
     }
 
   }
-
-
   TestRunner.runAsync(tests).map { _ => DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName) }
 }
