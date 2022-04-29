@@ -1,6 +1,6 @@
-import { SWDiscoveryConfiguration , SWDiscovery } from '../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt'
+import { SWDiscoveryConfiguration , SWDiscovery } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt";
 
-describe('SWDiscovery', () => {
+describe("SWDiscovery", () => {
     
           
   const json : string  =  `{
@@ -14,18 +14,18 @@ describe('SWDiscovery', () => {
              "logLevel" : "info",
              "sizeBatchProcessing" : 10,
              "pageSize" : 10
-  }}`
+  }}`;
 
   const json2 : string  =  `{
            "sources" : [{
                 "id"  : "local_endpoint2",
                 "path" : "http://somethingelse:8890/sparql",
                 "mimetype" : "application/sparql-query"
-             }]}`
+             }]}`;
            
-  const localConf = SWDiscoveryConfiguration.setConfigString(json)
+  const localConf = SWDiscoveryConfiguration.setConfigString(json);
 
-  const localConf2 = SWDiscoveryConfiguration.setConfigString(json2)
+  const localConf2 = SWDiscoveryConfiguration.setConfigString(json2);
 
   beforeEach(() => {});
 
@@ -44,20 +44,14 @@ describe('SWDiscovery', () => {
     let numberOfPages : Number = Object.values(args)[0] as Number ;
     let lazyPage : Array<any> = Object.values(args)[1] as Array<any> ;
 
-		console.log("number of pages:"+numberOfPages)
-		console.log(" -- deuxieme page -- ")
-
-		const results = await lazyPage[0].commit().raw()
-      
-		console.log(JSON.stringify(results,null,2));
-
+	const results = await lazyPage[0].commit().raw()
     expect(results.head.vars).toStrictEqual(["h1"]);
   })
 
   test("selectByPage", async () => {
     const args =
       await SWDiscovery(localConf)
-      .something("h1").selectByPage(["h1"])
+      .something("h1").selectByPage(["h1"]);
 
     let numberOfPages : Number = Object.values(args)[0] as Number ;
     let lazyPage : Array<any> = Object.values(args)[1] as Array<any> ;
@@ -104,7 +98,7 @@ describe('SWDiscovery', () => {
                           .something("h1")
                             .isObjectOf("http://test11")
                              .setDecoration("k1","v1")
-                             .getDecoration("k1")).toStrictEqual("v1")
+                             .getDecoration("k1")).toStrictEqual("v1");
         })
 
        test("setConfig/getConfig", () => {
@@ -112,10 +106,9 @@ describe('SWDiscovery', () => {
                                    .something("h1")
                                     .setConfig(localConf2)
                                      .isObjectOf("http://test11")
-                                       .getConfig()
-             console.log("**************************************")
+                                       .getConfig();
             for(let k in conf) {
-                console.log(k)
+                expect(k).not.toBeNull();
             }
 
 

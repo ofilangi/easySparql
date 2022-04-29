@@ -23,7 +23,7 @@ case class Rdf4jSparqlRequestDriver(idName: String,
     throw SWDiscoveryException("login [$login] /password [$password] must be defined")
   if (login.isDefined && password.isDefined) repo.setUsernameAndPassword(login.getOrElse(""),password.getOrElse(""))
 
-  val con = repo.getConnection()
+  val con = repo.getConnection
 
   def requestOnSWDB(query: String): Future[QueryResult] = requestConnexionRepository(con,query)
 

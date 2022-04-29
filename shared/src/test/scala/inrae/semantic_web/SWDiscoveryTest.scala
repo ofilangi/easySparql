@@ -203,7 +203,7 @@ object SWDiscoveryTest extends TestSuite {
               case _ : Root => assert(true)
               case _ => assert(n.idRef.startsWith("d"))
             }
-          } )
+          })
     }
 
     test("browse") {
@@ -260,6 +260,33 @@ object SWDiscoveryTest extends TestSuite {
         .setConfig(DataTestFactory.getConfigVirtuoso2())
          .isObjectOf("http://test11")
           .getConfig.sources.head.id == DataTestFactory.getConfigVirtuoso2().sources.head.id )
+    }
+
+    test("namedGraph") {
+      assert(Try(startRequest.namedGraph(DataTestFactory.graph1(this.getClass.getSimpleName))).isSuccess)
+    }
+
+    test("directive") {
+      assert(Try(startRequest.directive("something directive")
+        .toString.startsWith("something directive")).isSuccess)
+    }
+
+    test("decoration") {
+      assert(SWDiscovery(config).something("h").setDecoration("test","something").getDecoration("test")
+        == "something")
+    }
+
+    test("bad decoration") {
+      assert(Try(SWDiscovery(config,rootNode = Root(),fn =  Some("idNotExistInRootNode"))
+        .setDecoration("bad declaration because not node is defined","something")).isFailure)
+    }
+
+    test("get unknown decoration") {
+      assert(SWDiscovery(config).something("h").getDecoration("test") == "")
+    }
+
+    test("sparql_get without configuration sources definition") {
+      assert(Try(SWDiscovery(SWDiscoveryConfiguration.init()).sparql_get).isSuccess)
     }
 
   }

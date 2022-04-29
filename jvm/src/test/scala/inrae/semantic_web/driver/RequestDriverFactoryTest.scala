@@ -32,7 +32,7 @@ object RequestDriverFactoryTest extends TestSuite {
       }
     }
 
-    val startRequestDriverFactoryInst: RequestDriverFactory = RequestDriverFactory.build
+    val startRequestDriverFactoryInst: RequestDriverFactory = RequestDriverFactory.build()
 
     test("url application/sparql-query should instantiate Rdf4jSparqlRequestDriver") {
       val source : Source = Source(id="test",path="http://test",mimetype="application/sparql-query",method=Some("POST"))
