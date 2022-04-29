@@ -1,6 +1,6 @@
-import { SWDiscoveryConfiguration , SWDiscovery, URI } from '../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt'
+import { SWDiscoveryConfiguration , SWDiscovery, URI } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt"
 
-describe('-- GITHUB ISSUES -- ', () => {
+describe("-- GITHUB ISSUES -- ", () => {
           
   const json : string  =  `{
          "sources" : [{
@@ -17,12 +17,12 @@ describe('-- GITHUB ISSUES -- ', () => {
            
   const localConf = SWDiscoveryConfiguration.setConfigString(json)
   
-  test('#101', async () => {
+  test("#101", async () => {
     const str : string = SWDiscovery(localConf).something("hello").getSerializedString()
     const t = SWDiscovery(localConf).setSerializedString(str)
   })
 
-  test('#144', async () => {
+  test("#144", async () => {
       const conf = SWDiscoveryConfiguration.setConfigString(`{
                "sources" : [{
                     "id"  : "triplydb",

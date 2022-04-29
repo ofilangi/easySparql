@@ -1,6 +1,6 @@
-import { SWDiscoveryConfiguration , SWDiscovery } from '../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt'
+import { SWDiscoveryConfiguration , SWDiscovery } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt"
 
-describe('SWDiscovery', () => {
+describe("SWDiscovery", () => {
 
   const config = SWDiscoveryConfiguration
                  .init()
@@ -41,18 +41,17 @@ describe('SWDiscovery', () => {
   afterAll(() => {});
 
   test("accessors", async () => {
-    console.log(config)
-    console.log("nb sources : " + config.sourcesSize);
-    console.log("getPageSize : " + config.pageSize);
-    console.log("getSizeBatchProcessing : " + config.sizeBatchProcessing);
-    console.log("getLogLevel : " + config.logLevel);
-    console.log("getCache : " + config.cache);
+    expect(config).not.toBeNull();
+    expect(config.sourcesSize).not.toBeNull();
+    expect(config.pageSize).not.toBeNull();
+    expect(config.sizeBatchProcessing).not.toBeNull();
+    expect(config.logLevel).not.toBeNull();
+    expect(config.cache).not.toBeNull();
   })
 
   test("something", async () => {
       const results = await SWDiscovery(config).something("h1").select("h1").commit().raw();
       expect(results.head.vars).toStrictEqual(["h1"]);
-      console.log(config)
   })
 
   test("configTurtleContent", async () => {

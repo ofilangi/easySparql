@@ -1,6 +1,6 @@
-import { SWDiscoveryConfiguration , SWDiscovery } from '../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt'
+import { SWDiscoveryConfiguration , SWDiscovery } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt"
 
-describe('SWDiscovery', () => {
+describe("SWDiscovery", () => {
     
           
   const json : string  =  `{
@@ -44,13 +44,7 @@ describe('SWDiscovery', () => {
     let numberOfPages : Number = Object.values(args)[0] as Number ;
     let lazyPage : Array<any> = Object.values(args)[1] as Array<any> ;
 
-		console.log("number of pages:"+numberOfPages)
-		console.log(" -- deuxieme page -- ")
-
-		const results = await lazyPage[0].commit().raw()
-      
-		console.log(JSON.stringify(results,null,2));
-
+	const results = await lazyPage[0].commit().raw()
     expect(results.head.vars).toStrictEqual(["h1"]);
   })
 
@@ -113,9 +107,8 @@ describe('SWDiscovery', () => {
                                     .setConfig(localConf2)
                                      .isObjectOf("http://test11")
                                        .getConfig()
-             console.log("**************************************")
             for(let k in conf) {
-                console.log(k)
+                expect(k).not.toBeNull();
             }
 
 
