@@ -68,7 +68,6 @@ describe("SWDiscovery", () => {
     expect(results.head.vars).toStrictEqual(["h1"]);
   })
 
-
   test("browse", () => {
     const results = SWDiscovery(localConf)
                       .something("h1")
@@ -113,6 +112,4 @@ describe("SWDiscovery", () => {
 
 
        })
-
-
 });

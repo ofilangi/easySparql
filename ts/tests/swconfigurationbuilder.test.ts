@@ -1,4 +1,4 @@
-import { SWDiscoveryConfiguration , SWDiscovery } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt";
+import { SWDiscoveryConfiguration , SWDiscovery , URI } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt";
 
 describe("SWDiscovery", () => {
 
@@ -64,6 +64,17 @@ describe("SWDiscovery", () => {
         expect(results.results.bindings.length).toEqual(3)
     })
 
+   test("prefix with datatype", async () => {
+
+        const results =
+            await SWDiscovery(configTurtleContent)
+                                           .prefix("ns0","http://www.some-ficticious-zoo.com/rdf#")
+                                           .something("h1")
+                                           .datatype("ns0:name","name")
+                                            .select("h1","name").commit().raw();
+
+        console.log("results:"+JSON.stringify(results.results.datatypes.name));
+      })
     /**
   const localFileConfig = SWDiscoveryConfiguration
                    .init()
