@@ -5,10 +5,11 @@ import inrae.semantic_web.configuration._
 import utest._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object SWDiscoveryHelperTest  extends TestSuite  {
 
-  val insertData = DataTestFactory.insertVirtuoso1(
+  val insertData: Future[Any] = DataTestFactory.insertVirtuoso1(
     """
       <http://aa> <http://bb> <http://cc> .
       <http://aa> <http://bb2> <http://cc2> .
@@ -31,7 +32,7 @@ object SWDiscoveryHelperTest  extends TestSuite  {
   val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
 
-  def tests = Tests {
+  def tests: Tests = Tests {
     test("count") {
      insertData.map(_ => {
         SWDiscovery(config)
@@ -51,7 +52,7 @@ object SWDiscoveryHelperTest  extends TestSuite  {
           .something("h1") //http://rdf.ebi.ac.uk/terms/chembl#BioComponent
           .isSubjectOf(URI("http://bb2"))
           .finder
-          .count(Seq("h1"),true)
+          .count(Seq("h1"),distinct = true)
           .map(count => assert(count == 1))
       }).flatten
     }
@@ -83,7 +84,7 @@ object SWDiscoveryHelperTest  extends TestSuite  {
 
       insertData.map(_ => {
         query.classes("", "", 1)
-          .map(types => assert(types.length == 0))
+          .map(types => assert(types.isEmpty))
       }).flatten
 
       insertData.map(_ => {
@@ -93,7 +94,7 @@ object SWDiscoveryHelperTest  extends TestSuite  {
 
       insertData.map(_ => {
         query.classes("^(eaf)")
-          .map(types => assert(types.length == 0))
+          .map(types => assert(types.isEmpty))
       }).flatten
 
     }
@@ -111,7 +112,7 @@ object SWDiscoveryHelperTest  extends TestSuite  {
       }).flatten
 
       insertData.map(_ => {
-        query.classes("")
+        query.classes(regex="")
           .map(types => assert(types.length == 1))
       }).flatten
 
@@ -127,12 +128,12 @@ object SWDiscoveryHelperTest  extends TestSuite  {
 
       insertData.map(_ => {
         query.classes("eafTyp", URI("Class", "owl"))
-          .map(types => assert(types.length == 0))
+          .map(types => assert(types.isEmpty))
       }).flatten
 
       insertData.map(_ => {
         query.classes("OwlClass", URI("Class", "owl"), 1)
-          .map(types => assert(types.length == 0))
+          .map(types => assert(types.isEmpty))
       }).flatten
     }
 
@@ -159,7 +160,7 @@ object SWDiscoveryHelperTest  extends TestSuite  {
 
       insertData.map(_ => {
         query.objectProperties("bb", "", 1)
-          .map(response => assert(response.length == 0))
+          .map(response => assert(response.isEmpty))
       }).flatten
     }
 
@@ -180,7 +181,7 @@ object SWDiscoveryHelperTest  extends TestSuite  {
 
       insertData.map(_ => {
         query.objectProperties("bb", URI("ObjectProperty", "owl"), 1)
-          .map(response => assert(response.length == 0))
+          .map(response => assert(response.isEmpty))
       }).flatten
     }
 
@@ -206,7 +207,7 @@ object SWDiscoveryHelperTest  extends TestSuite  {
 
       insertData.map(_ => {
         query.datatypeProperties("propDatatype", "", 1)
-          .map(response => assert(response.length == 0))
+          .map(response => assert(response.isEmpty))
       }).flatten
     }
 
@@ -231,8 +232,13 @@ object SWDiscoveryHelperTest  extends TestSuite  {
       }).flatten
 
       insertData.map(_ => {
+        query.subjectProperties("bb", URI(":anything"))
+          .map(response => assert(response.isEmpty))
+      }).flatten
+
+      insertData.map(_ => {
         query.subjectProperties("bb", "", 1)
-          .map(response => assert(response.length == 0))
+          .map(response => assert(response.isEmpty))
       }).flatten
     }
   }

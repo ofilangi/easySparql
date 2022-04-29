@@ -26,6 +26,10 @@ object SWDiscoveryConfigurationTest extends TestSuite {
 
   def tests: Tests = Tests {
 
+    test("init") {
+      SWDiscoveryConfiguration.init()
+    }
+
     test("Create a simple source with string configuration") {
       SWDiscoveryConfiguration.setConfigString(configBase)
     }
