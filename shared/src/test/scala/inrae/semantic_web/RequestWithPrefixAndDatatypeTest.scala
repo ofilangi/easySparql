@@ -1,6 +1,7 @@
 package inrae.semantic_web
 
 import inrae.semantic_web.configuration.SWDiscoveryConfiguration
+import inrae.semantic_web.rdf.URI
 import utest.{TestSuite, Tests, assert, test}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -41,13 +42,15 @@ object RequestWithPrefixAndDatatypeTest  extends TestSuite  {
       SWDiscovery(configTurtleContent)
         .prefix("ns0","http://www.some-ficticious-zoo.com/rdf#")
         .something("h1")
-        .datatype("ns0:name","name")
+          .datatype("ns0:name","name")
+          .isSubjectOf(URI("ns0:class"))
+           .set("Mammal")
         .select(List("h1","name"))
         .distinct
         .commit()
         .raw
           .map(result => {
-            assert(result("results")("datatypes")("name").obj.size == 3)
+            assert(result("results")("datatypes")("name").obj.size == 2)
           })
     }
   }

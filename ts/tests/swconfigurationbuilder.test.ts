@@ -73,7 +73,7 @@ describe("SWDiscovery", () => {
                                            .datatype("ns0:name","name")
                                             .select("h1","name").commit().raw();
 
-        console.log("results:"+JSON.stringify(results.results.datatypes.name));
+        expect(results.results.datatypes.name).not.toBeNull();
       })
     /**
   const localFileConfig = SWDiscoveryConfiguration
