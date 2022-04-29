@@ -1,4 +1,4 @@
-import { SWDiscoveryConfiguration , SWDiscovery } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt"
+import { SWDiscoveryConfiguration , SWDiscovery } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt";
 
 describe("SWDiscovery", () => {
     
@@ -14,18 +14,18 @@ describe("SWDiscovery", () => {
              "logLevel" : "info",
              "sizeBatchProcessing" : 10,
              "pageSize" : 10
-  }}`
+  }}`;
 
   const json2 : string  =  `{
            "sources" : [{
                 "id"  : "local_endpoint2",
                 "path" : "http://somethingelse:8890/sparql",
                 "mimetype" : "application/sparql-query"
-             }]}`
+             }]}`;
            
-  const localConf = SWDiscoveryConfiguration.setConfigString(json)
+  const localConf = SWDiscoveryConfiguration.setConfigString(json);
 
-  const localConf2 = SWDiscoveryConfiguration.setConfigString(json2)
+  const localConf2 = SWDiscoveryConfiguration.setConfigString(json2);
 
   beforeEach(() => {});
 
@@ -51,7 +51,7 @@ describe("SWDiscovery", () => {
   test("selectByPage", async () => {
     const args =
       await SWDiscovery(localConf)
-      .something("h1").selectByPage(["h1"])
+      .something("h1").selectByPage(["h1"]);
 
     let numberOfPages : Number = Object.values(args)[0] as Number ;
     let lazyPage : Array<any> = Object.values(args)[1] as Array<any> ;
@@ -98,7 +98,7 @@ describe("SWDiscovery", () => {
                           .something("h1")
                             .isObjectOf("http://test11")
                              .setDecoration("k1","v1")
-                             .getDecoration("k1")).toStrictEqual("v1")
+                             .getDecoration("k1")).toStrictEqual("v1");
         })
 
        test("setConfig/getConfig", () => {
@@ -106,7 +106,7 @@ describe("SWDiscovery", () => {
                                    .something("h1")
                                     .setConfig(localConf2)
                                      .isObjectOf("http://test11")
-                                       .getConfig()
+                                       .getConfig();
             for(let k in conf) {
                 expect(k).not.toBeNull();
             }

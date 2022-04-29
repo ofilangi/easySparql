@@ -285,5 +285,9 @@ object SWDiscoveryTest extends TestSuite {
       assert(SWDiscovery(config).something("h").getDecoration("test") == "")
     }
 
+    test("sparql_get without configuration sources definition") {
+      assert(Try(SWDiscovery(SWDiscoveryConfiguration.init()).sparql_get).isSuccess)
+    }
+
   }
 }

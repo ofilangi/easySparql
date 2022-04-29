@@ -1,4 +1,4 @@
-import { SWDiscoveryConfiguration , SWDiscovery } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt"
+import { SWDiscoveryConfiguration , SWDiscovery } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt";
 
 describe("SWDiscovery", () => {
 
@@ -8,7 +8,7 @@ describe("SWDiscovery", () => {
                  .setPageSize(5)
                  .setSizeBatchProcessing(10)
                  .setLogLevel("debug")
-                 .setCache(false)
+                 .setCache(false);
 
   var turtleContent = `@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
                                             @prefix ns0: <http://www.some-ficticious-zoo.com/rdf#> .
@@ -32,7 +32,7 @@ describe("SWDiscovery", () => {
                  .setPageSize(5)
                  .setSizeBatchProcessing(10)
                  .setLogLevel("debug")
-                 .setCache(false)
+                 .setCache(false);
 
   beforeEach(() => {});
 
