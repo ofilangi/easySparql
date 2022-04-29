@@ -11,12 +11,10 @@ import inrae.semantic_web.configuration._
 object StrategyRequestBuilder {
 
   def build(config: SWDiscoveryConfiguration): StrategyRequest = {
-    println("=================================================")
-    println(config)
     config.sources.length match {
       case 0 => throw SWDiscoveryException("No sources specified")
-      case _ if ! config.settings.proxy.isEmpty => ProxyStrategyRequest(config.settings.proxy)
-      case 1 => DiscoveryStrategyRequest(config.sources(0))
+      case _ if config.settings.proxy.nonEmpty => ProxyStrategyRequest(config.settings.proxy)
+      case 1 => DiscoveryStrategyRequest(config.sources.head)
       case _ => Rdf4jFederatedStrategy(config.sources)
     }
   }

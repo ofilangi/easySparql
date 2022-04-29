@@ -14,11 +14,11 @@ import scala.util.{Failure, Success, Try}
 
 object RequestDriverFactory {
 
-  val dataDir: File = Files.createTempDirectory("rdf4j-discovery").toFile
-  val repository : Repository  = new SailRepository(new NativeStore(dataDir))
-  repository.init()
-
   def build() : RequestDriverFactory = {
+
+    val dataDir = Files.createTempDirectory("rdf4j-discovery").toFile
+    val repository = new SailRepository(new NativeStore(dataDir))
+
     RequestDriverFactory(Some(repository),dataDir, Seq())
   }
 

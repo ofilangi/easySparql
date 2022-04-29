@@ -6,12 +6,13 @@ import inrae.semantic_web.configuration._
 import utest._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.language.postfixOps
 
 object SWDiscoveryFilterTest extends TestSuite {
 
 
-  val insertData = DataTestFactory.insertVirtuoso1(
+  val insertData: Future[Any] = DataTestFactory.insertVirtuoso1(
     """
       <http://aaSWFilterTest> <http://propUri> <http://cc> .
       <http://aaSWFilterTest> <http://propLiteral> "test" .
@@ -42,7 +43,7 @@ object SWDiscoveryFilterTest extends TestSuite {
 
   val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
-  def tests = Tests {
+  def tests: Tests = Tests {
 
     test("SW Filter isLiteral") {
       insertData.map(_ => {
