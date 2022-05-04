@@ -4,8 +4,10 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 /* scala libs */
 lazy val utestVersion = "0.7.11"
 lazy val upickleVersion  = "1.6.0"
+lazy val caskVersion = "0.8.2"
+lazy val requestsVersion = "0.7.0"
 lazy val airframeLogVersion = "21.12.1"
-lazy val sttpClient3Version = "3.4.1"
+lazy val sttpClient3Version = "3.5.2"
 lazy val scalaStubVersion = "1.1.0"
 lazy val scalatagVersion = "0.11.1"
 lazy val rdf4jVersion = "4.0.0"
@@ -38,7 +40,7 @@ val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_
 val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
 
 
-val buildSWDiscoveryVersionAtBuildTimeFile =
+val buildSWDiscoveryVersionAtBuildTimeFile: Unit =
   if ( ! reflect.io.File(SWDiscoveryVersionAtBuildTimeFile).exists)
     reflect.io.File(SWDiscoveryVersionAtBuildTimeFile).writeAll(
       Predef.augmentString(
@@ -132,7 +134,7 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
       "com.github.p2m2" %%% "data-model-rdfjs" % data_model_rdfjs_version ,
       "com.github.p2m2" %%% "n3js" % n3js_facade_version ,
       "com.github.p2m2" %%% "rdfxml-streaming-parser" % rdfxml_streaming_parser_version,
-      "com.github.p2m2" %%% "axios" % axios_version,
+      "com.github.p2m2" %%% "axios" % axios_version
     ),
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
     Compile / npmDependencies  ++= Seq(
@@ -158,6 +160,8 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
+      "com.lihaoyi" %% "cask" % caskVersion,
+      "com.lihaoyi" %% "requests" % requestsVersion % Test,
       "org.scala-js" %% "scalajs-stubs" % scalaStubVersion % "provided",
       "org.slf4j" % "slf4j-api" % slf4j_version,
       "org.slf4j" % "slf4j-simple" % slf4j_version,
@@ -174,19 +178,19 @@ lazy val npmPackageJson = taskKey[Unit]("Build the discovery package.json")
 
 npmPackageJson := {
 
-  val scalaJsBundlerPackageJsonFile = IO.readLines(new File("js/target/scala-2.13/scalajs-bundler/main/package.json")).filter(_.length>0)
+  val scalaJsBundlerPackageJsonFile = IO.readLines(new File("js/target/scala-2.13/scalajs-bundler/main/package.json")).filter(_.nonEmpty)
   val indexStartDependencies = scalaJsBundlerPackageJsonFile.zipWithIndex.map {
-     case (v,i) if v.contains("dependencies") => i
-     case _ => -1
-   }.filter( _ > 0)(0)
+    case (v, i) if v.contains("dependencies") => i
+    case _ => -1
+  }.filter(_ > 0).head
 
   val indexEndDependencies =  scalaJsBundlerPackageJsonFile.zipWithIndex.map {
-    case (v,i) if (v.contains("}") && i > indexStartDependencies) => i
+    case (v, i) if v.contains("}") && i > indexStartDependencies => i
     case _ => -1
-  }.filter( _ > 0)(0)
+  }.filter(_ > 0).head
 
   val dependencies = scalaJsBundlerPackageJsonFile.zipWithIndex.collect{
-    case (x,idx) if ( (idx > indexStartDependencies) && (idx < indexEndDependencies) ) => x
+    case (x,idx) if (idx > indexStartDependencies) && (idx < indexEndDependencies) => x
   }
 
   reflect.io.File("./package.json").writeAll(
