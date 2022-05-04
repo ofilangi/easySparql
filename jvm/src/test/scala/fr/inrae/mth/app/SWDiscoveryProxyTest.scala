@@ -8,6 +8,8 @@ import io.undertow.Undertow
 import ujson.Arr
 import utest.{TestSuite, Tests, test}
 
+import scala.concurrent.Future
+
 object SWDiscoveryProxyTest extends TestSuite {
 
   def withServer[T](example: cask.main.Main)(f: String => T): T = {
@@ -22,7 +24,7 @@ object SWDiscoveryProxyTest extends TestSuite {
     res
   }
 
-  val insertData = DataTestFactory.insertVirtuoso1(
+  val insertData: Future[Any] = DataTestFactory.insertVirtuoso1(
     """<http://aa> <http://bb> <http://cc> .""".stripMargin, this.getClass.getSimpleName)
 
   val varName : String = "h1"

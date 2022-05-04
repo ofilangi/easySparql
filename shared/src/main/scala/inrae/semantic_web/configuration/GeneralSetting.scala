@@ -16,7 +16,6 @@ object GeneralSetting {
  * @param logLevel level definition (trace, debug, info, warn, error, all, off)
  * @param sizeBatchProcessing size of number of element inside a sparql request
  * @param pageSize number of result by page when a lazy request is used
- * @param proxy url discovery proxy
  */
 
 
@@ -24,8 +23,7 @@ case class GeneralSetting(
                            cache : Boolean = true,
                            logLevel : String = "warn"          , // trace, debug, info, warn, error, all, off
                            sizeBatchProcessing : Int = 150,
-                           pageSize : Int = 10,
-                           proxy : String = "" ,  // send request to a discovery proxy http://discovery-*****/proxy
+                           pageSize : Int = 10
                          ) {
 
   override def toString: String = {
@@ -33,8 +31,7 @@ case class GeneralSetting(
       s" - **cache** :$cache \n" +
       s" - **logLevel** :$logLevel \n" +
       s" - **sizeBatchProcessing** :$sizeBatchProcessing \n" +
-      s" - **pageSize** :$pageSize \n" +
-      s" - **proxy**: $proxy \n"
+      s" - **pageSize** :$pageSize \n"
   }
 
   val _logLevel : LogLevel = logLevel.toLowerCase() match {

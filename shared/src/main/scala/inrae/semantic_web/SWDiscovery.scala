@@ -26,7 +26,7 @@ object SWDiscovery {
 }
 
 case class SWDiscovery(
-                        config: SWDiscoveryConfiguration=SWDiscoveryConfiguration(),
+                        config: SWDiscoveryConfiguration=SWDiscoveryConfiguration.init(),
                         rootNode : Root = Root(),
                         fn : Option[String] = None)
 {

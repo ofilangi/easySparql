@@ -161,7 +161,7 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
   .jvmSettings(
     libraryDependencies ++= Seq(
       "com.lihaoyi" %% "cask" % caskVersion,
-      "com.lihaoyi" %% "requests" % requestsVersion % Test,
+      "com.lihaoyi" %% "requests" % requestsVersion,
       "org.scala-js" %% "scalajs-stubs" % scalaStubVersion % "provided",
       "org.slf4j" % "slf4j-api" % slf4j_version,
       "org.slf4j" % "slf4j-simple" % slf4j_version,
