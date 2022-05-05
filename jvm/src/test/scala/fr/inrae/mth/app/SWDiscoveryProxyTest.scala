@@ -61,6 +61,8 @@ object SWDiscoveryProxyTest extends TestSuite {
     test("POST") - withServer(SWDiscoveryProxy){ host =>
       testResponse(requests.post(s"$host/post",data=Map("transaction"->transactionTest.getSerializedString)))
     }
+
+    test("Empty close connexion")
   }
 
 }

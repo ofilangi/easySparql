@@ -2,7 +2,7 @@ package inrae.semantic_web.strategy
 
 import com.github.p2m2.facade.Axios
 import facade.npm.qs
-import inrae.semantic_web.SWTransaction
+import inrae.semantic_web.{SWTransaction, sparql}
 import inrae.semantic_web.event.{DiscoveryRequestEvent, DiscoveryStateRequestEvent}
 import inrae.semantic_web.exception.SWDiscoveryException
 import inrae.semantic_web.sparql.QueryResult
@@ -21,11 +21,7 @@ case class ProxyStrategyRequest(urlProxy: String, method: String = "post") exten
     }
 
 
-  def request(query: String): Future[QueryResult] =
-    method match {
-      case "post" => post("query",query)
-      case "get" => get("query",query)
-  }
+  def request(query: String): Future[QueryResult] = { Future { QueryResult("Not yet implemented !") } }
 
   def get(key: String, value: String): Future[QueryResult] = {
     publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.PROCESS_HTTP_REQUEST))

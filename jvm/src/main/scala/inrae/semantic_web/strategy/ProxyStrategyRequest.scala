@@ -26,23 +26,6 @@ case class ProxyStrategyRequest(urlProxy: String, method: String = "post") exten
     }
   }
 
-  def request(query: String): Future[QueryResult] = {
-    Future {
-      QueryResult(requests.get(s"$urlProxy", params = Map("query" -> query)).text())
-    }
-    publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.PROCESS_HTTP_REQUEST))
-
-    Future {
-      val qr = method match {
-        case "post" => QueryResult(requests.post(s"$urlProxy/post",
-          data = Map("query" -> query)).text())
-        case "get" =>
-          QueryResult(requests.get(s"$urlProxy/get",
-            params = Map("query" -> query)).text())
-      }
-      publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.FINISHED_HTTP_REQUEST))
-      qr
-    }
-  }
+  def request(query: String): Future[QueryResult] = ???
 
 }

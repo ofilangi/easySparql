@@ -93,9 +93,12 @@ object SWDiscoveryProxy extends cask.MainRoutes{
 
   }
 
-  def closeService() : Unit = _server match {
-    case Some(s) => s.stop()
-    case _ =>
+  def closeService() : Unit =  {
+    _server match {
+      case Some(s) => s.stop()
+      case _ =>
+    }
+    this.executionContext.shutdown()
   }
 
 

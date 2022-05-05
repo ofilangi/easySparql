@@ -15,7 +15,7 @@ object ProxyStrategyRequestTest extends TestSuite {
   import scala.concurrent.ExecutionContext.Implicits.global
 
   val host: String = "http://localhost:8082"
-  SWDiscoveryProxy.main(Array("--port","8082","--host","localhost"))
+  SWDiscoveryProxy.main(Array("--port","8082","--host","localhost","--verbose"))
 
   val insertData: Future[Any] = DataTestFactory.insertVirtuoso1(
     """<http://aa> <http://bb> <http://cc> .""".stripMargin, this.getClass.getSimpleName)
@@ -25,14 +25,8 @@ object ProxyStrategyRequestTest extends TestSuite {
     DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
   }
 
-  def tests: Tests = Tests {
-    test("proxy request test") {
-
-      val config: SWDiscoveryConfiguration =
-        SWDiscoveryConfiguration
-          .proxy(s"$host", method = "post")
-          .sparqlEndpoint(DataTestFactory.urlEndpoint)
-      insertData.map(_ => {
+  def request(config : SWDiscoveryConfiguration) = {
+    insertData.map(_ => {
       SWDiscovery(config)
         .something("h1")
         .isSubjectOf(URI("http://bb"))
@@ -45,7 +39,21 @@ object ProxyStrategyRequestTest extends TestSuite {
           println(f.getMessage);
           assert(false)
         })
-      }).flatten
+    }).flatten
+  }
+
+  def tests: Tests = Tests {
+    test("proxy post") {
+      request(SWDiscoveryConfiguration
+        .proxy(s"$host", method = "post")
+        .sparqlEndpoint(DataTestFactory.urlEndpoint))
     }
+
+    test("proxy get") {
+      request(SWDiscoveryConfiguration
+        .proxy(s"$host", method = "get")
+        .sparqlEndpoint(DataTestFactory.urlEndpoint))
+    }
+
   }
 }
