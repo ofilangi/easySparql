@@ -44,10 +44,10 @@ object SWDiscoveryProxy extends cask.MainRoutes{
         .text(s"hostname. default [$host]."),
       opt[Unit]("verbose")
         .action((_, c) => c.copy(verbose = true))
-        .text(s"verbose flag."),
+        .text("verbose flag."),
       opt[Unit]("background")
         .action((_, c) => c.copy(background = true))
-        .text(s"background flag."),
+        .text("background flag."),
 
       help("help").text("prints this usage text"),
       note("some notes." + sys.props("line.separator")),
