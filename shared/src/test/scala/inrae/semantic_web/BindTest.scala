@@ -18,6 +18,10 @@ object BindTest extends TestSuite {
 
   val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
+  override def utestAfterAll(): Unit = {
+    DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
+  }
+
   def tests: Tests = Tests {
     val regexv = "defg"
 

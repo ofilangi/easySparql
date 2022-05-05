@@ -3,7 +3,9 @@ package inrae.semantic_web.strategy
 import fr.inrae.mth.app.SWDiscoveryProxy
 import inrae.data.DataTestFactory
 import inrae.semantic_web.SWDiscovery
+import inrae.semantic_web.SWDiscoverySelectIterable.insertData
 import inrae.semantic_web.configuration.SWDiscoveryConfiguration
+import inrae.semantic_web.rdf.URI
 import io.undertow.Undertow
 import utest.{TestSuite, Tests, test}
 
@@ -11,43 +13,39 @@ import scala.concurrent.Future
 
 object ProxyStrategyRequestTest extends TestSuite {
   import scala.concurrent.ExecutionContext.Implicits.global
-  def withServer[T](example: cask.main.Main)(f: String => T): T = {
-    val server = Undertow.builder
-      .addHttpListener(8081, "localhost")
-      .setHandler(example.defaultHandler)
-      .build
-    server.start()
-    val res =
-      try f("http://localhost:8081")
-      finally server.stop()
-    res
-  }
+
+  val host: String = "http://localhost:8082"
+  SWDiscoveryProxy.main(Array("--port","8082","--host","localhost"))
 
   val insertData: Future[Any] = DataTestFactory.insertVirtuoso1(
     """<http://aa> <http://bb> <http://cc> .""".stripMargin, this.getClass.getSimpleName)
 
   override def utestAfterAll(): Unit = {
+    SWDiscoveryProxy.closeService()
     DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
   }
 
   def tests: Tests = Tests {
-    test("proxy request test") - withServer(SWDiscoveryProxy) { host =>
-      println(host)
-      val config : SWDiscoveryConfiguration =
-        SWDiscoveryConfiguration
-        .proxy(s"$host")
-          .sparqlEndpoint(DataTestFactory.urlEndpoint)
+    test("proxy request test") {
 
+      val config: SWDiscoveryConfiguration =
+        SWDiscoveryConfiguration
+          .proxy(s"$host", method = "post")
+          .sparqlEndpoint(DataTestFactory.urlEndpoint)
       insertData.map(_ => {
       SWDiscovery(config)
         .something("h1")
+        .isSubjectOf(URI("http://bb"))
         .select(List("h1"))
+        .distinct
         .commit()
         .raw
-        .map(_ => assert(true))
-        .recover(f => { println(f.getMessage);assert(false) })
+        .map(r => assert(r("results")("bindings").arr.length == 1) )
+        .recover(f => {
+          println(f.getMessage);
+          assert(false)
+        })
       }).flatten
     }
-
   }
 }

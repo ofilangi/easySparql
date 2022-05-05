@@ -6,7 +6,7 @@ import utest.{TestSuite, Tests, test}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object FixLimitOrderbyDescTest extends TestSuite {
+object FixLimitOrderByDescTest extends TestSuite {
   val config: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     """
         {
@@ -22,7 +22,7 @@ object FixLimitOrderbyDescTest extends TestSuite {
          }
         """.stripMargin)
 
-  def tests = Tests {
+  def tests: Tests = Tests {
     test("order by asc") {
         SWDiscovery(config)
           .prefix("ns0","http://www.some-ficticious-zoo.com/rdf#")
@@ -35,7 +35,7 @@ object FixLimitOrderbyDescTest extends TestSuite {
           .commit()
           .raw.map(response => {
             println(response("results")("bindings"))
-            println(response("results")("datatypes"))
+            println(response("results")("datatype"))
           }
         )
     }
@@ -52,7 +52,7 @@ object FixLimitOrderbyDescTest extends TestSuite {
         .commit()
         .raw.map(response => {
         println(response("results")("bindings"))
-        println(response("results")("datatypes"))
+        println(response("results")("datatype"))
       }
       )
     }

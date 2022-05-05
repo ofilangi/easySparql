@@ -5,6 +5,7 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 lazy val utestVersion = "0.7.11"
 lazy val upickleVersion  = "1.6.0"
 lazy val caskVersion = "0.8.2"
+lazy val scoptVersion = "4.0.1"
 lazy val requestsVersion = "0.7.0"
 lazy val airframeLogVersion = "21.12.1"
 lazy val sttpClient3Version = "3.5.2"
@@ -55,7 +56,7 @@ ThisBuild / name := "discovery"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / name := "discovery"
 ThisBuild / version :=  version_build
-ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / scalaVersion := "2.13.8" // val scala212 = "2.12.14", val scala3 = "3.0.0"
 ThisBuild / organization := "com.github.p2m2"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / organizationHomepage := Some(url("https://www6.inrae.fr/p2m2"))
@@ -159,7 +160,9 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
     )
   )
   .jvmSettings(
+    //run / fork := true,
     libraryDependencies ++= Seq(
+      "com.github.scopt" %% "scopt" % scoptVersion,
       "com.lihaoyi" %% "cask" % caskVersion,
       "com.lihaoyi" %% "requests" % requestsVersion,
       "org.scala-js" %% "scalajs-stubs" % scalaStubVersion % "provided",
@@ -243,11 +246,12 @@ ${dependencies.mkString("\n")}
  }
  """).stripMargin)
 }
-
+/*
 assembly / assemblyMergeStrategy := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case x => MergeStrategy.first
-}
+ // case PathList("httpclient-osgi-4.5.13.jar", xs @ _*) => MergeStrategy.last
+  case _ => MergeStrategy.last
+}*/
 
 assembly / target := file("assembly")
 assembly / assemblyJarName := s"discovery-$version_build.jar"

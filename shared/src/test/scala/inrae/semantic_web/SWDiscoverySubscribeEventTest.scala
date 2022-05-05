@@ -20,6 +20,10 @@ object SWDiscoverySubscribeEventTest extends TestSuite {
 
   val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
+  override def utestAfterAll(): Unit = {
+    DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
+  }
+
   def stepDiscoveryExecutor(unsubscribe : Boolean = false) = {
     var stepDiscovery : Map[String,Boolean] = Map(
       "QUERY_BUILD" -> false,
@@ -61,7 +65,7 @@ object SWDiscoverySubscribeEventTest extends TestSuite {
         })
     }
 
-  def tests = Tests {
+  def tests: Tests = Tests {
 
     test("DiscoveryRequestEvent steps") {
       stepDiscoveryExecutor(false)

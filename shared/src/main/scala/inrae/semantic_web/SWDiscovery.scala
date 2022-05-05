@@ -105,6 +105,12 @@ case class SWDiscovery(
 
   def getConfig : SWDiscoveryConfiguration = config
 
+  /**
+   * Disable Proxy configuration
+   * @return SWDiscovery
+   */
+  def removeProxyConfiguration : SWDiscovery = SWDiscovery(SWDiscoveryConfiguration(config.settings,config.sources,None),rootNode,fn)
+
   /* get current focus */
   def focus() : String = focusNode
 

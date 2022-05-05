@@ -6,9 +6,10 @@ import inrae.semantic_web.configuration._
 import utest.{TestSuite, Tests, test}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object BindSubStrTest extends TestSuite {
-  val insertData = DataTestFactory.insertVirtuoso1(
+  val insertData: Future[Any] = DataTestFactory.insertVirtuoso1(
     """
       <http://aa1> <http://bb> "abcdef" .
       <http://aa2> <http://bb> "abcdefghij" .
@@ -17,6 +18,10 @@ object BindSubStrTest extends TestSuite {
       """.stripMargin, this.getClass.getSimpleName)
 
   val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
+
+  override def utestAfterAll(): Unit = {
+    DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
+  }
 
   def tests: Tests = Tests {
     test("bind subStr") {

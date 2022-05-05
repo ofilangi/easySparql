@@ -44,6 +44,9 @@ sbt discoveryJS/fullOptJS
 sbt discoveryJS/fastOptJS::webpack
 sbt discoveryJS/fullOptJS::webpack
 sbt discoveryJVM/testOnly inrae.semantic_web.QueryPlannerTest
+
+discoveryJVM/runMain fr.inrae.mth.app.SWDiscoveryProxy
+java -jar ./jvm/target/scala-2.13/discovery-assembly-X.X.X.jar --port 8083
 ```
 
 ## local publication -> .ivy2
