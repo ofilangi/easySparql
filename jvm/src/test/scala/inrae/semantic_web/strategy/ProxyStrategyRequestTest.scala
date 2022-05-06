@@ -3,10 +3,8 @@ package inrae.semantic_web.strategy
 import fr.inrae.mth.app.SWDiscoveryProxy
 import inrae.data.DataTestFactory
 import inrae.semantic_web.SWDiscovery
-import inrae.semantic_web.SWDiscoverySelectIterable.insertData
 import inrae.semantic_web.configuration.SWDiscoveryConfiguration
 import inrae.semantic_web.rdf.URI
-import io.undertow.Undertow
 import utest.{TestSuite, Tests, test}
 
 import scala.concurrent.Future
@@ -21,7 +19,6 @@ object ProxyStrategyRequestTest extends TestSuite {
     """<http://aa> <http://bb> <http://cc> .""".stripMargin, this.getClass.getSimpleName)
 
   override def utestAfterAll(): Unit = {
-    SWDiscoveryProxy.closeService()
     DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
   }
 
@@ -38,7 +35,7 @@ object ProxyStrategyRequestTest extends TestSuite {
         .recover(f => {
           println(f.getMessage);
           assert(false)
-        })
+        }).map( _ => SWDiscoveryProxy.closeService() )
     }).flatten
   }
 
