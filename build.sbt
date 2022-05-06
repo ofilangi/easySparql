@@ -36,7 +36,7 @@ lazy val tsjest = "27.1.3"
 
 releaseIgnoreUntrackedFiles := true
 
-val static_version_build = "0.3.2d"
+val static_version_build = "0.4.0"
 val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build )
 val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
 
@@ -162,8 +162,6 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
   .jvmSettings(
     //run / fork := true,
     libraryDependencies ++= Seq(
-      "com.github.scopt" %% "scopt" % scoptVersion,
-      "com.lihaoyi" %% "cask" % caskVersion,
       "com.lihaoyi" %% "requests" % requestsVersion,
       "org.scala-js" %% "scalajs-stubs" % scalaStubVersion % "provided",
       "org.slf4j" % "slf4j-api" % slf4j_version,

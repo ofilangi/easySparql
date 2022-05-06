@@ -111,6 +111,7 @@ object SWDiscoveryProxy extends cask.MainRoutes{
   }
 
   def apply(transaction : String): Value = {
+    println(transaction)
     val future : Future[ujson.Value] = SWTransaction().setSerializedString(transaction).commit().raw
     Await.result(future, Duration.Inf)
   }

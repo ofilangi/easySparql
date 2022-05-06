@@ -15,11 +15,18 @@ case class ProxyStrategyRequest(urlProxy: String, method: String = "post") exten
 
     Future {
       val qr = method match {
-        case "post" => QueryResult(requests.post(s"$urlProxy/post",
-          data = Map("transaction" -> transaction.removeProxyConfiguration.getSerializedString)).text())
-        case "get" =>
+        case "post" =>
+          QueryResult(requests.post(s"$urlProxy/post",
+            data = Map("transaction" -> transaction.removeProxyConfiguration.getSerializedString)).text())
+
+        case "get" => {
+          val l = transaction.removeProxyConfiguration.getSerializedString
+          println(l)
+
           QueryResult(requests.get(s"$urlProxy/get",
             params = Map("transaction" -> transaction.removeProxyConfiguration.getSerializedString)).text())
+        }
+
       }
       publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.FINISHED_HTTP_REQUEST))
       qr

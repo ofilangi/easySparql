@@ -1,6 +1,5 @@
 package fr.inrae.mth.app
 
-import inrae.data.DataTestFactory
 import inrae.semantic_web.configuration.SWDiscoveryConfiguration
 import inrae.semantic_web.sparql.QueryResult
 import inrae.semantic_web.{SWDiscovery, SWTransaction}
@@ -24,9 +23,6 @@ object SWDiscoveryProxyTest extends TestSuite {
     res
   }
 
-  val insertData: Future[Any] = DataTestFactory.insertVirtuoso1(
-    """<http://aa> <http://bb> <http://cc> .""".stripMargin, this.getClass.getSimpleName)
-
   val varName : String = "h1"
 
   val bindingsResult: Arr = ujson.Arr(
@@ -35,15 +31,9 @@ object SWDiscoveryProxyTest extends TestSuite {
     ujson.Obj(varName -> ujson.Obj("type" -> "uri","value"->"http://cc")),
   )
 
-  override def utestAfterAll(): Unit = {
-    DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
-  }
-
-
-  val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
+  val config: SWDiscoveryConfiguration = SWDiscoveryConfiguration.init().rdfContent("""<http://aa> <http://bb> <http://cc> .""")
 
   val transactionTest: SWTransaction = SWDiscovery(config)
-    .graph(DataTestFactory.graph1(this.getClass.getSimpleName))
     .something(varName)
     .select(Seq(varName))
 

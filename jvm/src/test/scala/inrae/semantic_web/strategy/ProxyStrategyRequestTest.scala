@@ -1,6 +1,5 @@
 package inrae.semantic_web.strategy
 
-import fr.inrae.mth.app.SWDiscoveryProxy
 import inrae.data.DataTestFactory
 import inrae.semantic_web.SWDiscovery
 import inrae.semantic_web.configuration.SWDiscoveryConfiguration
@@ -12,6 +11,8 @@ import scala.concurrent.Future
 object ProxyStrategyRequestTest extends TestSuite {
   import scala.concurrent.ExecutionContext.Implicits.global
 
+  val proxy_host: String = "http://localhost:8082"
+
   val insertData: Future[Any] = DataTestFactory.insertVirtuoso1(
     """<http://aa> <http://bb> <http://cc> .""".stripMargin, this.getClass.getSimpleName)
 
@@ -20,9 +21,12 @@ object ProxyStrategyRequestTest extends TestSuite {
   }
 
   def request(config : SWDiscoveryConfiguration) = {
-
+    val config2 = SWDiscoveryConfiguration.proxy("http://localhost:8082").setLogLevel("debug").rdfContent(
+      """
+        <http://aa> <http://bb> <http://cc> .
+        """.stripMargin)
     insertData.map(_ => {
-      SWDiscovery(config)
+      SWDiscovery(config2)
         .something("h1")
         .isSubjectOf(URI("http://bb"))
         .select(List("h1"))
@@ -33,34 +37,27 @@ object ProxyStrategyRequestTest extends TestSuite {
         .recover(f => {
           println(f.getMessage);
           assert(false)
-        }).map( _ => SWDiscoveryProxy.closeService() )
+        })
     }).flatten
   }
 
   def tests: Tests = Tests {
 
-    val host: String = "http://localhost:8082"
+
 
 
     test("proxy post") {
 
-      SWDiscoveryProxy.main(Array("--port","8082","--host","localhost","--verbose"))
-
       request(SWDiscoveryConfiguration
-        .proxy(s"$host")
+        .proxy(s"$proxy_host")
         .sparqlEndpoint(DataTestFactory.urlEndpoint))
 
-      SWDiscoveryProxy.closeService()
     }
 
     test("proxy get") {
-      SWDiscoveryProxy.main(Array("--port","8082","--host","localhost","--verbose"))
-
       request(SWDiscoveryConfiguration
-        .proxy(s"$host", method = "get")
+        .proxy(s"$proxy_host", method = "get")
         .sparqlEndpoint(DataTestFactory.urlEndpoint))
-
-      SWDiscoveryProxy.closeService()
     }
 
   }
