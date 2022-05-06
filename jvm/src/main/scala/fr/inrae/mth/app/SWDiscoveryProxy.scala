@@ -8,7 +8,6 @@ import wvlet.log.Logger.rootLogger.info
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
-import scala.util.{Failure, Success, Try}
 
 object SWDiscoveryProxy extends cask.MainRoutes{
 
@@ -101,14 +100,13 @@ object SWDiscoveryProxy extends cask.MainRoutes{
     this.executionContext.shutdown()
   }
 
-
   @cask.get("/get")
-  def transaction(transaction: String) : Value = {
+  def transaction_get(transaction: String) : Value = {
     apply(transaction)
   }
 
   @cask.postForm("/post")
-  def test2(transaction: String): Value = {
+  def transaction_post(transaction: String): Value = {
     apply(transaction)
   }
 

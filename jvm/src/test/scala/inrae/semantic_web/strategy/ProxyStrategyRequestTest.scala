@@ -12,9 +12,6 @@ import scala.concurrent.Future
 object ProxyStrategyRequestTest extends TestSuite {
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  val host: String = "http://localhost:8082"
-  SWDiscoveryProxy.main(Array("--port","8082","--host","localhost","--verbose"))
-
   val insertData: Future[Any] = DataTestFactory.insertVirtuoso1(
     """<http://aa> <http://bb> <http://cc> .""".stripMargin, this.getClass.getSimpleName)
 
@@ -23,6 +20,7 @@ object ProxyStrategyRequestTest extends TestSuite {
   }
 
   def request(config : SWDiscoveryConfiguration) = {
+
     insertData.map(_ => {
       SWDiscovery(config)
         .something("h1")
@@ -40,16 +38,29 @@ object ProxyStrategyRequestTest extends TestSuite {
   }
 
   def tests: Tests = Tests {
+
+    val host: String = "http://localhost:8082"
+
+
     test("proxy post") {
+
+      SWDiscoveryProxy.main(Array("--port","8082","--host","localhost","--verbose"))
+
       request(SWDiscoveryConfiguration
-        .proxy(s"$host", method = "post")
+        .proxy(s"$host")
         .sparqlEndpoint(DataTestFactory.urlEndpoint))
+
+      SWDiscoveryProxy.closeService()
     }
 
     test("proxy get") {
+      SWDiscoveryProxy.main(Array("--port","8082","--host","localhost","--verbose"))
+
       request(SWDiscoveryConfiguration
         .proxy(s"$host", method = "get")
         .sparqlEndpoint(DataTestFactory.urlEndpoint))
+
+      SWDiscoveryProxy.closeService()
     }
 
   }
