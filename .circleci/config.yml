@@ -4,7 +4,8 @@
 #  - publish JVM Sonatype Snapshot for branches : master/develop
 #  - publish JVM Sonatype Stagge/Release (wait approval) for tags release
 #
-#  DOCKER_CONTEXT is a context global env variable for all application github p2m2 organization
+#  DOCKER_CONTEXT is a context global env variable for
+#  all application github p2m2 organization
 #   - DOCKER_USER          -> login
 #   - DOCKER_PASS          -> password
 #   - ORGANIZATION_NAME    -> organization register on dockerhub
@@ -49,7 +50,7 @@ workflows:
           context:
             - DOCKER_CONTEXT
           environment:
-              - MILL_VERSION: 0.10.4
+            - MILL_VERSION: 0.10.4
       # only develop is build and push on dockerhub !
       - docker_build_proxy_discovery_branch:
           context:
@@ -57,9 +58,9 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-  #          branches:
-  #            only:
-  #              - develop
+            branches:
+              only:
+                - develop
 
       # all tags are build and push on dockerhub !
       - docker_build_proxy_discovery_tag_latest:
@@ -143,45 +144,45 @@ workflows:
 executors:
 
   openjdk:
-      working_directory: ~/repo
-      docker:
-        - image: cimg/openjdk:17.0.2
-          auth:
-            username: ${DOCKER_USER}
-            password: ${DOCKER_PASS}
+    working_directory: ~/repo
+    docker:
+      - image: cimg/openjdk:17.0.2
+        auth:
+          username: ${DOCKER_USER}
+          password: ${DOCKER_PASS}
 
   virtuoso_environment_executor:
-      working_directory: ~/repo
-      docker:
-        - image: cimg/openjdk:17.0.2
-          auth:
-            username: ${DOCKER_USER}
-            password: ${DOCKER_PASS}
+    working_directory: ~/repo
+    docker:
+      - image: cimg/openjdk:17.0.2
+        auth:
+          username: ${DOCKER_USER}
+          password: ${DOCKER_PASS}
 
-        - image: tenforce/virtuoso:virtuoso7.2.5
-          auth:
-            username: ${DOCKER_USER}
-            password: ${DOCKER_PASS}
-          environment:
-            VIRT_Parameters_NumberOfBuffers: 51000
-            VIRT_Parameters_MaxDirtyBuffers: 37500
-            VIRT_Parameters_TN_MAX_memory: 4000000
-            VIRT_Parameters_TransactionAfterImageLimit: 500000
-            VIRT_SPARQL_ResultSetMaxRows: 1000
-            VIRT_SPARQL_MaxDataSourceSize: 10000
-            VIRT_SPARQL_MaxQueryCostEstimationTime: 0
-            VIRT_SPARQL_MaxQueryExecutionTime: 0
-            DBA_PASSWORD: dba
-            SPARQL_UPDATE: true
-            DEFAULT_GRAPH: "graph:test:discovery:default:"
+      - image: tenforce/virtuoso:virtuoso7.2.5
+        auth:
+          username: ${DOCKER_USER}
+          password: ${DOCKER_PASS}
+        environment:
+          VIRT_Parameters_NumberOfBuffers: 51000
+          VIRT_Parameters_MaxDirtyBuffers: 37500
+          VIRT_Parameters_TN_MAX_memory: 4000000
+          VIRT_Parameters_TransactionAfterImageLimit: 500000
+          VIRT_SPARQL_ResultSetMaxRows: 1000
+          VIRT_SPARQL_MaxDataSourceSize: 10000
+          VIRT_SPARQL_MaxQueryCostEstimationTime: 0
+          VIRT_SPARQL_MaxQueryExecutionTime: 0
+          DBA_PASSWORD: dba
+          SPARQL_UPDATE: true
+          DEFAULT_GRAPH: "graph:test:discovery:default:"
 
-        - image: inraep2m2/service-static-file-server:latest
-          auth:
-            username: ${DOCKER_USER}
-            password: ${DOCKER_PASS}
-          environment:
-            CORS: "true"
-            DEBUG: "true"
+      - image: inraep2m2/service-static-file-server:latest
+        auth:
+          username: ${DOCKER_USER}
+          password: ${DOCKER_PASS}
+        environment:
+          CORS: "true"
+          DEBUG: "true"
 
   docker-publisher:
     docker:
@@ -229,7 +230,8 @@ jobs:
       - run:
           name: Test JVM env and Coverage
           command: |
-            cat /dev/null | sbt clean coverage discoveryJVM/Test/test discoveryJVM/coverageReport
+            cat /dev/null | sbt clean coverage \
+            discoveryJVM/Test/test discoveryJVM/coverageReport
             bash <(curl -s https://codecov.io/bash)
             bash <(curl -Ls https://coverage.codacy.com/get.sh) report
       - store_artifacts:
@@ -257,7 +259,6 @@ jobs:
           # publication of <application>:<application_branch>
           command: |
             IMAGE_NAME=service-discovery-proxy:${CIRCLE_BRANCH}
-            
             docker build -t ${ORGANIZATION_NAME}/${IMAGE_NAME} .
             echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
             docker push ${ORGANIZATION_NAME}/${IMAGE_NAME}
@@ -282,27 +283,27 @@ jobs:
             docker push ${ORGANIZATION_NAME}/${IMAGE_NAME_LATEST}
 
   test_js:
-      executor: virtuoso_environment_executor
-      environment:
-        JVM_OPTS: -Xmx3200m
-        TERM: dumb
-      steps:
-        - checkout
-        - setup_remote_docker
-        - node/install:
-            node-version: '18.1'
-        - run:
-            name: Test ScalaJs/JavaScript
-            command: sbt discoveryJS/test
-        - run:
-            name: Test TypeScript
-            command: |
-              ## bug with Node 17 -> https://github.com/webpack/webpack/issues/14532
-              export NODE_OPTIONS=--openssl-legacy-provider
-              sbt discoveryJS/fastOptJS/webpack
-              sbt npmPackageJson
-              npm i
-              npm test
+    executor: virtuoso_environment_executor
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+      - checkout
+      - setup_remote_docker
+      - node/install:
+          node-version: '18.1'
+      - run:
+          name: Test ScalaJs/JavaScript
+          command: sbt discoveryJS/test
+      - run:
+          name: Test TypeScript
+          command: |
+            ## bug with Node 17 -> https://github.com/webpack/webpack/issues/14532
+            export NODE_OPTIONS=--openssl-legacy-provider
+            sbt discoveryJS/fastOptJS/webpack
+            sbt npmPackageJson
+            npm i
+            npm test
 
   publish_snapshot:
     executor: openjdk
@@ -351,7 +352,6 @@ jobs:
             cp $(find ./js -name discovery-fastopt-bundle.js)  ./dist/discovery-web-dev.js
             cp $(find ./js -name discovery-fastopt-bundle.js.map)  ./dist/discovery-web-dev.js.map
             cp $(find ./js -name discovery-opt-bundle.js)  ./dist/discovery-web.js
-            
             if [[ ! -z "$(git status -s | grep -v -E "^\?\?")" ]]; then
               git commit dist -m"[ci skip] - Javascript librairies publication"
               git push -q https://${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $BRANCH

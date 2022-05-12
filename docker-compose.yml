@@ -28,10 +28,10 @@ services:
       login: dba
       passwd: dba
       chrome_container: chrome
-    depends_on: [ chrome, virtuoso ]
-
+    depends_on: [chrome, virtuoso]
     command: >
-      bash -c 'sleep 15s && echo " **** configure CORS / Virtuoso  ****" && node virtuoso_cors.js'
+      bash -c 'sleep 15s &&\
+      echo " **** configure CORS / Virtuoso  ****" && node virtuoso_cors.js'
 
   ## -------------------------------------------------
   ## Chrome / Selenium
@@ -53,4 +53,3 @@ services:
       DEBUG: "true"
     ports:
       - 8080:8080
-
