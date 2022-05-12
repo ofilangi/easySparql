@@ -43,6 +43,12 @@ workflows:
           context:
             - DOCKER_CONTEXT
 
+      - proxy_discovery_test:
+          requires:
+            - test_and_coverage_jvm
+          context:
+            - DOCKER_CONTEXT
+
       - publish_snapshot:
           requires:
             - test_and_coverage_jvm
@@ -199,6 +205,16 @@ jobs:
       - store_artifacts:
           path: discovery/jvm/target/test-reports
 
+  proxy_discovery_test:
+    executor: openjdk
+    steps:
+      - checkout
+      - run:
+          name: Test JVM env and Coverage
+          command: |
+            cd service-discovery-proxy
+            curl -L https://github.com/com-lihaoyi/mill/releases/download/0.10.4/0.10.4 > mill && chmod +x mill
+            mill app.test
   test_js:
       executor: virtuoso_environment_executor
       environment:
