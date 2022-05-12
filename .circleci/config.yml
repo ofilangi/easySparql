@@ -37,7 +37,7 @@ workflows:
           context:
             - DOCKER_CONTEXT
           environment:
-            - NODE_VERSION: 18.1
+            - NODE_VERSION: "18.1"
 
       - test_and_coverage_jvm:
           requires:
