@@ -44,8 +44,8 @@ workflows:
             - DOCKER_CONTEXT
 
       - proxy_discovery_test:
-          requires:
-            - test_and_coverage_jvm
+#          requires:
+#            - test_and_coverage_jvm
           context:
             - DOCKER_CONTEXT
 
@@ -214,7 +214,7 @@ jobs:
           command: |
             cd service-discovery-proxy
             curl -L https://github.com/com-lihaoyi/mill/releases/download/0.10.4/0.10.4 > mill && chmod +x mill
-            mill app.test
+            ./mill app.test
   test_js:
       executor: virtuoso_environment_executor
       environment:
@@ -296,7 +296,7 @@ jobs:
     steps:
       - checkout
       - node/install:
-          node-version: '17.9'
+          node-version: '18.1'
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
@@ -318,7 +318,7 @@ jobs:
     steps:
       - checkout
       - node/install:
-          node-version: '17.9'
+          node-version: '18.1'
       - run:
           name: Release Assembly
           command: |
