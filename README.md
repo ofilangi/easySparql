@@ -7,8 +7,9 @@
 [![javadoc](https://javadoc.io/badge2/com.github.p2m2/discovery_2.13/javadoc.svg)](https://javadoc.io/doc/com.github.p2m2/discovery_2.13)
 [![Npm package version](https://shields.io/npm/v/@p2m2/discovery)](https://www.npmjs.com/package/@p2m2/discovery)
 [![Docker Image Version (tag latest semver)](https://img.shields.io/docker/automated/inraep2m2/service-discovery-proxy)](https://hub.docker.com/repository/docker/inraep2m2/service-discovery-proxy)
+![Maven Central](https://img.shields.io/maven-central/v/com.github.p2m2/discovery_2.13)
 
-# What is discovery
+## What is discovery
 
 discovery is a software library which aims to ease the development of decision support tools
 exploiting [omics](https://en.wikipedia.org/wiki/Multiomics) RDF databases.
