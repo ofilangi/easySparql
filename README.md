@@ -60,13 +60,14 @@ further information and documentation, visit https://p2m2.github.io/discovery/
 
 ## Import discovery with SBT
 
-``` 
+```sbt
 libraryDependencies += "com.github.p2m2" %%% "discovery" % "0.4.0"
 ```
 
 ## Running docker proxy image
 
 ### docker command
+
 ```bash
 docker run -d --network host -t service-discovery-proxy:latest
 ```
