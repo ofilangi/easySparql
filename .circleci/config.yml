@@ -36,8 +36,6 @@ workflows:
             - compile
           context:
             - DOCKER_CONTEXT
-          environment:
-            - NODE_VERSION: "18.1"
 
       - test_and_coverage_jvm:
           requires:
@@ -59,9 +57,9 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-            branches:
-              only:
-                - develop
+  #          branches:
+  #            only:
+  #              - develop
 
       # all tags are build and push on dockerhub !
       - docker_build_proxy_discovery_tag_latest:
@@ -292,7 +290,7 @@ jobs:
         - checkout
         - setup_remote_docker
         - node/install:
-            node-version: $NODE_VERSION
+            node-version: '18.1'
         - run:
             name: Test ScalaJs/JavaScript
             command: sbt discoveryJS/test
@@ -335,7 +333,7 @@ jobs:
     steps:
       - checkout
       - node/install:
-          node-version: '17.9'
+          node-version: '18.1'
       - run:
           name: Release Assembly
           command: |

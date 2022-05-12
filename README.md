@@ -85,12 +85,19 @@ further information and documentation, visit https://p2m2.github.io/discovery/
 libraryDependencies += "com.github.p2m2" %%% "discovery" % "0.4.0"
 ```
 
-## Docker proxy image
+## Running docker proxy image
 
 ```bash
-docker build . -t service-discovery-proxy:latest
+docker run -d --network host -t service-discovery-proxy:latest
 ```
 
-```bash
-docker run -d -p 8082:8082 -t service-discovery-proxy:latest
+```yaml
+version: '3.9'
+services:
+  service-discovery-proxy:
+    image: inraep2m2/service-discovery-proxy:latest
+    command: ./mill -w app.runBackground --port 8085 --verbose
+    network_mode: "host"
+    restart: on-failure
 ```
+
