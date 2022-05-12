@@ -1,7 +1,7 @@
-package fr.inrae.mth.app
+package fr.inrae.metabohub.app
 
 import cask.main.Main
-import inrae.semantic_web.{SWDiscoveryVersionAtBuildTime, SWTransaction}
+import fr.inrae.metabohub.semantic_web.{SWDiscoveryVersionAtBuildTime, SWTransaction}
 import io.undertow.Undertow
 import ujson.Value
 import wvlet.log.Logger.rootLogger.info

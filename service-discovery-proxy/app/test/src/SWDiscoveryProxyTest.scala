@@ -1,8 +1,8 @@
-package fr.inrae.mth.app
+package fr.inrae.metabohub.app
 
-import inrae.semantic_web.configuration.SWDiscoveryConfiguration
-import inrae.semantic_web.sparql.QueryResult
-import inrae.semantic_web.{SWDiscovery, SWTransaction}
+import fr.inrae.metabohub.semantic_web.configuration.SWDiscoveryConfiguration
+import fr.inrae.metabohub.semantic_web.sparql.QueryResult
+import fr.inrae.metabohub.semantic_web.{SWDiscovery, SWTransaction}
 import io.undertow.Undertow
 import ujson.Arr
 import utest.{TestSuite, Tests, test}
