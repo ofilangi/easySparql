@@ -37,7 +37,7 @@ lazy val tsjest = "27.1.3"
 releaseIgnoreUntrackedFiles := true
 
 val static_version_build = "0.4.0"
-val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build )
+val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build)
 val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
 
 
@@ -130,7 +130,7 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
   .jsSettings(
     scalacOptions ++= Seq("-P:scalajs:nowarnGlobalExecutionContext"),
     libraryDependencies ++= Seq(
-     // "org.scala-js"    %%% "scala-js-macrotask-executor" % scalaJsMacrotaskExecutor,
+      ("org.scala-js" %%% "scalajs-java-securerandom" % "1.0.0").cross(CrossVersion.for3Use2_13),
       "com.github.p2m2" %%% "comunica-actor-init-sparql-rdfjs" % comunica_actor_init_sparql_rdfjs_version ,
       "com.github.p2m2" %%% "data-model-rdfjs" % data_model_rdfjs_version ,
       "com.github.p2m2" %%% "n3js" % n3js_facade_version ,
