@@ -49,8 +49,6 @@ workflows:
             - test_and_coverage_jvm
           context:
             - DOCKER_CONTEXT
-          environment:
-            - MILL_VERSION: 0.10.4
       # only develop is build and push on dockerhub !
       - docker_build_proxy_discovery_branch:
           context:
@@ -239,6 +237,8 @@ jobs:
 
   proxy_discovery_test:
     executor: openjdk
+    environment:
+      MILL_VERSION: '0.10.4'
     steps:
       - checkout
       - run:
