@@ -1,12 +1,12 @@
+# service-discovery-proxy
 
-mill clean
-mill -w app.runBackground
+## test
 
 mill app.test
 
-sbt discoveryJVM/assembly
-java -jar ./out/app/upstreamAssembly.dest/out.jar --verbose
-kill $(ps -ef | grep DiscoveryProxy | awk '{print $2}')
+## run proxy 
+
+mill -w app.runBackground
 
 ## mill app --help
 

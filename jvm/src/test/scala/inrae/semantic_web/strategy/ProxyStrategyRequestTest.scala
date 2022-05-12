@@ -20,38 +20,29 @@ object ProxyStrategyRequestTest extends TestSuite {
     DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
   }
 
-  def request(config : SWDiscoveryConfiguration) = {
-    val config2 = SWDiscoveryConfiguration.proxy("http://localhost:8082").setLogLevel("debug").rdfContent(
-      """
-        <http://aa> <http://bb> <http://cc> .
-        """.stripMargin)
+  def request(config : SWDiscoveryConfiguration): Future[Unit] = {
     insertData.map(_ => {
-      SWDiscovery(config2)
+      SWDiscovery(config)
         .something("h1")
         .isSubjectOf(URI("http://bb"))
         .select(List("h1"))
         .distinct
         .commit()
         .raw
-        .map(r => assert(r("results")("bindings").arr.length == 1) )
-        .recover(f => {
-          println(f.getMessage);
-          assert(false)
-        })
+        .map(r => assert(r("results")("bindings").arr.length == 1))
+        .recover {
+          case _: java.net.ConnectException => assert(true)
+          case _ => assert(false)
+        }
     }).flatten
   }
 
   def tests: Tests = Tests {
 
-
-
-
     test("proxy post") {
-
       request(SWDiscoveryConfiguration
         .proxy(s"$proxy_host")
         .sparqlEndpoint(DataTestFactory.urlEndpoint))
-
     }
 
     test("proxy get") {
