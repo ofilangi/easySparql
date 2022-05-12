@@ -22,13 +22,13 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
 {
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  def notify(pub: StrategyRequest, event: DiscoveryRequestEvent) = {
+  def notify(pub: StrategyRequest, event: DiscoveryRequestEvent): Unit = {
     notify(event)
   }
 
   private val _prom_raw: Promise[ujson.Value] = Promise[ujson.Value]()
   val raw: Future[ujson.Value] =  _prom_raw.future
-  var currentRequestEvent: String = DiscoveryStateRequestEvent.START.toString()
+  var currentRequestEvent: String = DiscoveryStateRequestEvent.START.toString
 
   private var countEvent: Int = 1
 
@@ -47,7 +47,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
   }
 
   def notify(event: DiscoveryRequestEvent): Unit = {
-    currentRequestEvent = event.state.toString()
+    currentRequestEvent = event.state.toString
     countEvent = countEvent + 1
 
     _progressionCallBack.foreach (f => f(DiscoveryStateRequestEvent.getPercentProgression(event.state)))
@@ -61,22 +61,22 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
       http request should be cancelled
     * SWResults should be a publish[DiscoveryCancelEvent] => SW/QueryManager/HttpRequest => Subscriber[DiscoveryCancelEvent,SWResults]
     */
-    currentRequestEvent = DiscoveryStateRequestEvent.ABORTED_BY_THE_USER.toString()
+    currentRequestEvent = DiscoveryStateRequestEvent.ABORTED_BY_THE_USER.toString
 
-    _prom_raw failure(SWDiscoveryException("aborted by the user."))
+    _prom_raw failure SWDiscoveryException("aborted by the user.")
   }
 
 
-  def process_datatypes(root: Root,
-                        qr : QueryResult,
-                        datatypeNode : DatatypeNode,
-                        lUris : Seq[SparqlDefinition]) = {
-    debug(" -- process_datatypes --")
+  def process_datatype(root: Root,
+                       qr : QueryResult,
+                       datatypeNode : DatatypeNode,
+                       lUris : Seq[SparqlDefinition]): Seq[Future[Unit]] = {
+    debug(" -- process_datatype --")
     val labelProperty = datatypeNode.property.reference()
 
     lUris.grouped(sw.config.settings.sizeBatchProcessing).toList.map(
       f = lSubUris => {
-        trace(" datatypes:" + lSubUris.toString)
+        trace(" datatype:" + lSubUris.toString)
         /* request using api */
         SWDiscovery(sw.config)
           .prefixes(root.getPrefixes)
@@ -87,7 +87,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
               case _ => None
             }
           ))
-          .focusManagement(datatypeNode.property, false)
+          .focusManagement(datatypeNode.property, forward = false)
           .select(List("val_uri", labelProperty))
           .commit()
           .raw
@@ -104,17 +104,16 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
 
     val lSelectedVariable : Seq[QueryVariable] = sw.rootNode.getChild(Projection(List(),"")).lastOption match {
       case Some(proj) => proj.variables.distinct
-      case None => {
+      case None =>
         notify(DiscoveryRequestEvent(DiscoveryStateRequestEvent.ERROR_REQUEST_DEFINITION))
         throw SWDiscoveryException("projection/selected required variables are not defined.")
-      }
     }
 
     val lDatatype: Seq[DatatypeNode] =
       sw.rootNode.getChild[DatatypeNode](DatatypeNode("",SubjectOf("",URI("")),"unk"))
         .filter(ld => lSelectedVariable.map(_.name).contains(ld.property.reference()))
 
-    if ( lDatatype.filter( datatypeNode => lSelectedVariable.map(_.name).contains(datatypeNode.refNode) ).length != lDatatype.length )
+    if ( lDatatype.count(datatypeNode => lSelectedVariable.map(_.name).contains(datatypeNode.refNode)) != lDatatype.length )
       {
         notify(DiscoveryRequestEvent(DiscoveryStateRequestEvent.ERROR_REQUEST_DEFINITION))
         throw SWDiscoveryException("The user have to select node of interest before setup a desired datatype ["+lDatatype.map( d=>d.idRef + "->"+d.refNode).mkString(" ,")+"]")
@@ -122,15 +121,15 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
 
 
     Try(StrategyRequestBuilder.build(sw.config)) match {
-      case Failure(e) => _prom_raw failure (e)
-      case Success(driver) => {
+      case Failure(e) => _prom_raw failure e
+      case Success(driver) =>
         driver.subscribe(this.asInstanceOf[Subscriber[DiscoveryRequestEvent,Publisher[DiscoveryRequestEvent]]])
         driver.execute(this)
           /* manage datatype decoration */
           .map((qr: QueryResult) => {
             notify(DiscoveryRequestEvent(DiscoveryStateRequestEvent.DATATYPE_BUILD))
-            /* create an empty set of datatypes */
-            qr.json("results").update("datatypes", ujson.Obj())
+            /* create an empty set of datatype */
+            qr.json("results").update("datatype", ujson.Obj())
             trace(qr.json)
             /* manage datatype */
             trace("  lDatatype ====> " + lDatatype.toString())
@@ -139,37 +138,29 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
               trace("datatype node:" + datatypeNode)
 
               sw.rootNode.getRdfNode(datatypeNode.refNode) match {
-                case Some(_) => {
+                case Some(_) =>
 
                   /* find uris value inside results to decorate */
                   val lUris: Seq[SparqlDefinition] =
                     try {
                       qr.getValues(datatypeNode.refNode)
                     } catch {
-                      case _: Throwable => {
-                        List()
-                      }
+                      case _: Throwable => List()
                     }
-                  Future.sequence(process_datatypes(sw.rootNode,qr, datatypeNode, lUris))
-                }
-                case None => {
-                  Future {}
-                }
+                  Future.sequence(process_datatype(sw.rootNode,qr, datatypeNode, lUris))
+                case None => Future {}
               }
             })) onComplete {
-              case Success(_) => {
+              case Success(_) =>
                 notify(DiscoveryRequestEvent(DiscoveryStateRequestEvent.DATATYPE_DONE))
                 _prom_raw success qr.json
                 notify(DiscoveryRequestEvent(DiscoveryStateRequestEvent.REQUEST_DONE))
-              }
-              case Failure(e) => {
-                _prom_raw failure (e)
-              }
+              case Failure(e) =>
+                _prom_raw failure e
             }
           }).recover(exception => {
-          _prom_raw failure (exception)
+          _prom_raw failure exception
         })
-      }
     }
     this
   }
@@ -178,7 +169,7 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
 
     def manage(n:AggregateNode,forward : Boolean = false) : SWTransaction = {
       sw.focusManagement(
-        ProjectionExpression(QueryVariable(v),n,sw.getUniqueRef()),false).transaction
+        ProjectionExpression(QueryVariable(v),n,sw.getUniqueRef()),forward=forward).transaction
     }
 
     def count(lRef : Seq[String],distinct: Boolean=false) : SWTransaction = manage(Count(lRef.map(QueryVariable(_)),distinct,sw.getUniqueRef()))
@@ -198,45 +189,43 @@ case class SWTransaction(sw : SWDiscovery = SWDiscovery())
   def projection( lRef: Seq[String] )  : SWTransaction = {
 
     sw.rootNode.getChild(Projection(Seq(),"")).lastOption match {
-      case Some(p) => {
+      case Some(p) =>
         val listVariable : Seq[QueryVariable] = p.variables ++  lRef.map(QueryVariable(_))
         sw.root.focusManagement(
           Projection(listVariable,p.idRef,p.children))
           .focus(p.idRef).transaction
-      }
-      case None => {
+      case None =>
         sw.root.focusManagement(Projection(lRef.map(QueryVariable(_)),sw.getUniqueRef())).transaction
-      }
     }
 
   }
 
-  def distinct : SWTransaction = sw.root.focusManagement(Distinct(sw.getUniqueRef()), false).transaction
+  def distinct : SWTransaction = sw.root.focusManagement(Distinct(sw.getUniqueRef()), forward=false).transaction
 
-  def reduced : SWTransaction = sw.root.focusManagement(Reduced(sw.getUniqueRef()), false).transaction
+  def reduced : SWTransaction = sw.root.focusManagement(Reduced(sw.getUniqueRef()), forward=false).transaction
 
-  def limit( value : Int ) : SWTransaction = sw.root.focusManagement(Limit(value,sw.getUniqueRef()), false).transaction
+  def limit( value : Int ) : SWTransaction = sw.root.focusManagement(Limit(value,sw.getUniqueRef()), forward=false).transaction
 
-  def offset( value : Int ) : SWTransaction = sw.root.focusManagement(Offset(value,sw.getUniqueRef()), false).transaction
+  def offset( value : Int ) : SWTransaction = sw.root.focusManagement(Offset(value,sw.getUniqueRef()), forward=false).transaction
 
   def orderByAsc( ref: String ) : SWTransaction =
-    sw.refExist(ref).root.focusManagement(OrderByAsc(Seq(QueryVariable(ref)),sw.getUniqueRef()), false).transaction
+    sw.refExist(ref).root.focusManagement(OrderByAsc(Seq(QueryVariable(ref)),sw.getUniqueRef()), forward=false).transaction
 
   def orderByAsc( lRef: Seq[String] ) : SWTransaction = {
-    lRef.foreach( sw.refExist(_) )
-    sw.root.focusManagement(OrderByAsc(lRef.map(QueryVariable(_)),sw.getUniqueRef()), false).transaction
+    lRef.foreach( sw.refExist )
+    sw.root.focusManagement(OrderByAsc(lRef.map(QueryVariable(_)),sw.getUniqueRef()), forward=false).transaction
   }
 
   def orderByDesc( ref: String ) : SWTransaction =
-    sw.refExist(ref).root.focusManagement(OrderByDesc(Seq(QueryVariable(ref)),sw.getUniqueRef()), false).transaction
+    sw.refExist(ref).root.focusManagement(OrderByDesc(Seq(QueryVariable(ref)),sw.getUniqueRef()), forward=false).transaction
 
   def orderByDesc( lRef: Seq[String] ) : SWTransaction = {
-    lRef.foreach( sw.refExist(_) )
-    sw.root.focusManagement(OrderByDesc(lRef.map(QueryVariable(_)),sw.getUniqueRef()), false).transaction
+    lRef.foreach( sw.refExist )
+    sw.root.focusManagement(OrderByDesc(lRef.map(QueryVariable(_)),sw.getUniqueRef()), forward=false).transaction
   }
-
   def getSerializedString : String = OptionPickler.write(this)
   def setSerializedString(query : String) : SWTransaction = OptionPickler.read[SWTransaction](query)
-
   def console : SWTransaction = sw.console.transaction
+  def removeProxyConfiguration : SWTransaction = SWTransaction(sw.removeProxyConfiguration)
+
 }

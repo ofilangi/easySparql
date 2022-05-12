@@ -20,9 +20,32 @@ object SWDiscoveryConfigurationTest extends TestSuite {
                "logLevel" : "info",
                "sizeBatchProcessing" : 10,
                "pageSize" : 10
+             },
+             "proxy" : null
+            }
+            """.stripMargin
+
+  val configBaseProxy: String = """
+            {
+             "sources" : [{
+               "id"  : "dbpedia",
+               "path" : "https://dbpedia.org/sparql",
+               "mimetype" : "application/sparql-query",
+               "method" : "POST"
+             }],
+             "settings" : {
+               "cache" : true,
+               "logLevel" : "info",
+               "sizeBatchProcessing" : 10,
+               "pageSize" : 10
+             },
+             "proxy" : {
+                "url"    : "http://localhost:8081",
+                "method" : "post"
              }
             }
             """.stripMargin
+
 
   def tests: Tests = Tests {
 
@@ -30,8 +53,16 @@ object SWDiscoveryConfigurationTest extends TestSuite {
       SWDiscoveryConfiguration.init()
     }
 
+    test("proxy") {
+      SWDiscoveryConfiguration.proxy("http://something")
+    }
+
     test("Create a simple source with string configuration") {
       SWDiscoveryConfiguration.setConfigString(configBase)
+    }
+
+    test("Create a string proxy configuration") {
+      SWDiscoveryConfiguration.setConfigString(configBaseProxy)
     }
 
     test("Get message error") {
@@ -66,8 +97,11 @@ object SWDiscoveryConfigurationTest extends TestSuite {
       val url = "http://test"
       val mimetype = "application/sparql-query"
 
-      val configDbpediaBasic: SWDiscoveryConfiguration = SWDiscoveryConfiguration(
-        sources=Seq(Source(id=dbname, path=url, mimetype=mimetype)))
+      val configDbpediaBasic: SWDiscoveryConfiguration =
+        SWDiscoveryConfiguration(
+          settings = GeneralSetting(),
+          sources=Seq(Source(id=dbname, path=url, mimetype=mimetype)),
+          proxy = None)
       val source = configDbpediaBasic.source("dbpedia")
 
       assert(source.id == dbname)
@@ -75,18 +109,39 @@ object SWDiscoveryConfigurationTest extends TestSuite {
       assert(source.mimetype == mimetype)
     }
 
+    test("create a proxy with default method") {
+      assert(Try(SWDiscoveryConfiguration(
+        settings = GeneralSetting(),
+        sources=Seq(),
+        proxy = Some(ProxyConfiguration("http://something")))).isSuccess)
+    }
+
+    test("create a proxy with unknown method") {
+      assert(Try(SWDiscoveryConfiguration(
+        settings = GeneralSetting(),
+        sources=Seq(),
+        proxy = Some(ProxyConfiguration("http://something","other")))).isFailure)
+    }
+
     test("unknown mimetype") {
-      assert(Try(SWDiscoveryConfiguration(sources=Seq(Source(id="dbpedia", path="http://test", mimetype="-")))).isFailure)
+      assert(Try(SWDiscoveryConfiguration(
+        settings = GeneralSetting(),
+        sources=Seq(Source(id="dbpedia", path="http://test", mimetype="-")),
+        proxy = None)).isFailure)
     }
 
     test("unknown method") {
-      assert(Try(SWDiscoveryConfiguration(sources=
-        Seq(Source(id="dbpedia", path="http://test", mimetype="application/sparql-query",method=Some("-"))))).isFailure)
+      assert(Try(SWDiscoveryConfiguration(
+        settings = GeneralSetting(),
+        sources=
+        Seq(Source(id="dbpedia", path="http://test", mimetype="application/sparql-query",method=Some("-"))),
+        proxy = None)).isFailure)
     }
 
     test("Create a request config with an unknown log level ") {
       assert(SWDiscoveryConfiguration
-        .setConfigString(configBase.replace("\"info\"",
+        .setConfigString(
+          configBase.replace("\"info\"",
           "\"hello.world\"")).settings._logLevel == LogLevel.WARN)
     }
 

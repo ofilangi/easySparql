@@ -29,12 +29,26 @@ object SWDiscoveryConfiguration {
   }
 
   @JSExport
-  def init() : SWDiscoveryConfiguration = SWDiscoveryConfiguration()
+  def init() : SWDiscoveryConfiguration = SWDiscoveryConfiguration(
+    settings = GeneralSetting(),
+    sources = Seq(),
+    proxy = None
+  )
+
+  @JSExport
+  def proxy(urlProxy : String , method : String = "post" ) : SWDiscoveryConfiguration = {
+    SWDiscoveryConfiguration(
+      settings = GeneralSetting(),
+      sources = Seq(),
+      proxy = Some(ProxyConfiguration(urlProxy,method))
+    )
+  }
 }
 
 case class SWDiscoveryConfiguration(
                                      settings : GeneralSetting = new GeneralSetting(),
                                      sources : Seq[Source] = Seq(),
+                                     proxy : Option[ProxyConfiguration] = None
                                    ) {
 
   @JSExport
@@ -76,7 +90,8 @@ case class SWDiscoveryConfiguration(
         path=filename,
         sourcePath=SourcePath.LocalFile,
         mimetype = mimetype
-      )
+      ),
+      proxy
     )
 
   @JSExport
@@ -90,7 +105,8 @@ case class SWDiscoveryConfiguration(
         path=content,
         sourcePath=SourcePath.Content,
         mimetype = mimetype
-      )
+      ),
+      proxy
     )
 
   @JSExport
@@ -99,7 +115,7 @@ case class SWDiscoveryConfiguration(
   @JSExport
   def setPageSize(pageSize : Int) : SWDiscoveryConfiguration = SWDiscoveryConfiguration(
     settings.copy(pageSize=pageSize),
-    sources)
+    sources,proxy)
 
   @JSExport
   def pageSize: Int  = settings.pageSize
@@ -107,7 +123,7 @@ case class SWDiscoveryConfiguration(
   @JSExport
   def setSizeBatchProcessing(sizeBatchProcessing : Int)  : SWDiscoveryConfiguration = SWDiscoveryConfiguration(
     settings.copy(sizeBatchProcessing=sizeBatchProcessing),
-    sources)
+    sources,proxy)
 
   @JSExport
   def sizeBatchProcessing: Int  = settings.sizeBatchProcessing
@@ -115,7 +131,7 @@ case class SWDiscoveryConfiguration(
   @JSExport
   def setLogLevel(logLevel : String) : SWDiscoveryConfiguration = SWDiscoveryConfiguration(
     settings.copy(logLevel=logLevel),
-    sources)
+    sources,proxy)
 
   @JSExport
   def logLevel: String = settings.logLevel
@@ -123,7 +139,7 @@ case class SWDiscoveryConfiguration(
   @JSExport
   def setCache(cache : Boolean) : SWDiscoveryConfiguration = SWDiscoveryConfiguration(
     settings.copy(cache=cache),
-    sources)
+    sources,proxy)
 
   @JSExport
   def cache: Boolean = settings.cache
@@ -159,6 +175,6 @@ case class SWDiscoveryConfiguration(
         token= token match {
           case "" => None
           case v => Some(v)
-        })
+        }),proxy
     )
 }

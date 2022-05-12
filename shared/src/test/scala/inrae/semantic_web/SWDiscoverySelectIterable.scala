@@ -35,7 +35,6 @@ object SWDiscoverySelectIterable extends TestSuite {
 
   val nblock = (nbValues / pageSize) + 1
 
-
   val config: SWDiscoveryConfiguration = SWDiscoveryConfiguration.setConfigString(
     s"""
         {
@@ -52,7 +51,11 @@ object SWDiscoverySelectIterable extends TestSuite {
          }
         """.stripMargin)
 
-  def tests = Tests {
+  override def utestAfterAll(): Unit = {
+    DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
+  }
+
+  def tests: Tests = Tests {
 
     test("something") {
       insertData.map(_ => {

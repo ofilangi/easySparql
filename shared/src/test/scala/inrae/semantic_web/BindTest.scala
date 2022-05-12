@@ -1,13 +1,13 @@
 package inrae.semantic_web
 
 import inrae.data.DataTestFactory
+import inrae.semantic_web.configuration.SWDiscoveryConfiguration
 import inrae.semantic_web.rdf.{IRI, Literal, SparqlBuilder, URI}
-import inrae.semantic_web.configuration._
 import utest.{TestSuite, Tests, test}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 object BindTest extends TestSuite {
+  implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+
   val insertData = DataTestFactory.insertVirtuoso1(
     """
       <http://aa1> <http://bb> "abcdef" .
@@ -18,6 +18,10 @@ object BindTest extends TestSuite {
 
   val config: SWDiscoveryConfiguration = DataTestFactory.getConfigVirtuoso1()
 
+  override def utestAfterAll(): Unit = {
+    DataTestFactory.deleteVirtuoso1(this.getClass.getSimpleName)
+  }
+
   def tests: Tests = Tests {
     val regexv = "defg"
 
@@ -26,9 +30,9 @@ object BindTest extends TestSuite {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()
-          .isSubjectOf(URI("http://bb"),"r")
+          .isSubjectOf(URI("http://bb"), "r")
           .filter.regex(regexv)
-          .select(Seq("r","reg"))
+          .select(Seq("r", "reg"))
           .distinct
           .commit()
           .raw.map(r => {
@@ -39,12 +43,12 @@ object BindTest extends TestSuite {
 
     test("bind replace") {
       val pat = "defg"
-      val repl ="aaaaa"
+      val repl = "aaaaa"
       val req = SWDiscovery(config)
         .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
         .something()
-        .isSubjectOf(URI("http://bb"),"r")
-        .bind("rep").replace(pat,repl)
+        .isSubjectOf(URI("http://bb"), "r")
+        .bind("rep").replace(pat, repl)
 
 
       insertData.map(_ => {
@@ -74,7 +78,7 @@ object BindTest extends TestSuite {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()
-          .set(Literal("-5.5","http://www.w3.org/2001/XMLSchema#decimal"))
+          .set(Literal("-5.5", "http://www.w3.org/2001/XMLSchema#decimal"))
           .bind("new_value").abs()
           .select(Seq("new_value"))
           .commit()
@@ -89,7 +93,7 @@ object BindTest extends TestSuite {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()
-          .set(Literal("-5.5","http://www.w3.org/2001/XMLSchema#decimal"))
+          .set(Literal("-5.5", "http://www.w3.org/2001/XMLSchema#decimal"))
           .bind("new_value").abs()
           .isObjectOf(URI("http://test"))
           .select(Seq("new_value"))
@@ -105,7 +109,7 @@ object BindTest extends TestSuite {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()
-          .set(Literal("-5.5","http://www.w3.org/2001/XMLSchema#decimal"))
+          .set(Literal("-5.5", "http://www.w3.org/2001/XMLSchema#decimal"))
           .bind("new_value").round()
           .select(Seq("new_value"))
           .commit()
@@ -119,7 +123,7 @@ object BindTest extends TestSuite {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()
-          .set(Literal("-5.5","http://www.w3.org/2001/XMLSchema#decimal"))
+          .set(Literal("-5.5", "http://www.w3.org/2001/XMLSchema#decimal"))
           .bind("new_value").ceil()
           .select(Seq("new_value"))
           .commit()
@@ -134,7 +138,7 @@ object BindTest extends TestSuite {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()
-          .set(Literal("-5.5","http://www.w3.org/2001/XMLSchema#decimal"))
+          .set(Literal("-5.5", "http://www.w3.org/2001/XMLSchema#decimal"))
           .bind("new_value").floor()
           .select(Seq("new_value"))
           .commit()
@@ -153,7 +157,7 @@ object BindTest extends TestSuite {
           .commit()
           .raw.map(r => {
           val v = SparqlBuilder.createLiteral(r("results")("bindings").arr(0)("new_value")).toDouble
-          assert( v<=1.0 && v >0.0)
+          assert(v <= 1.0 && v > 0.0)
         })
       }).flatten
     }
@@ -162,15 +166,15 @@ object BindTest extends TestSuite {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()
-          .isSubjectOf(URI("http://bb"),"r")
+          .isSubjectOf(URI("http://bb"), "r")
           .bind("dt").datatype()
           .select(Seq("dt"))
           .distinct
           .commit()
           .raw.map(r => {
-            assert(
-              SparqlBuilder.createLiteral(r("results")("bindings")(0)("dt")).naiveLabel == "http://www.w3.org/2001/XMLSchema#string"
-            )
+          assert(
+            SparqlBuilder.createLiteral(r("results")("bindings")(0)("dt")).naiveLabel == "http://www.w3.org/2001/XMLSchema#string"
+          )
         })
       }).flatten
     }
@@ -179,8 +183,8 @@ object BindTest extends TestSuite {
         SWDiscovery(config)
           .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .something()
-            .isObjectOf(URI("http://bb"),"r")
-            .bind("convert_str").str()
+          .isObjectOf(URI("http://bb"), "r")
+          .bind("convert_str").str()
           .select(Seq("convert_str"))
           .distinct
           .commit()

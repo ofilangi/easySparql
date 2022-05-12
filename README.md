@@ -4,6 +4,7 @@
 [![codecov](https://codecov.io/gh/p2m2/discovery/branch/develop/graph/badge.svg)](https://codecov.io/gh/p2m2/discovery)
 [![CodeFactor](https://www.codefactor.io/repository/github/p2m2/discovery/badge)](https://www.codefactor.io/repository/github/p2m2/discovery)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/8d8ecb66f9ff4963a22efab3c693b629)](https://www.codacy.com/gh/p2m2/discovery/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=p2m2/discovery&amp;utm_campaign=Badge_Grade)
+[![javadoc](https://javadoc.io/badge2/com.github.p2m2/discovery_2.13/javadoc.svg)](https://javadoc.io/doc/com.github.p2m2/discovery_2.13)
 
 - Use a simple editor with a web browser to request any RDF resource
 - display rich information on the web page or console 
@@ -81,7 +82,22 @@ further information and documentation, visit https://p2m2.github.io/discovery/
 ## Import discovery with SBT
 
 ``` 
-libraryDependencies += "com.github.p2m2" %%% "discovery" % "0.3.1"
+libraryDependencies += "com.github.p2m2" %%% "discovery" % "0.4.0"
 ```
 
+## Running docker proxy image
+
+```bash
+docker run -d --network host -t service-discovery-proxy:latest
+```
+
+```yaml
+version: '3.9'
+services:
+  service-discovery-proxy:
+    image: inraep2m2/service-discovery-proxy:latest
+    command: ./mill -w app.runBackground --port 8085 --verbose
+    network_mode: "host"
+    restart: on-failure
+```
 

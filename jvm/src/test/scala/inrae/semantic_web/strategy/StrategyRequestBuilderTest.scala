@@ -70,8 +70,8 @@ object StrategyRequestBuilderTest extends TestSuite {
                "path" : "https://dbpedia.org/sparql2",
                "mimetype" : "application/sparql-query"
              }],
-             "settings" : {
-               "proxy"   : "https://myproxy/sparql"
+             "proxy" : {
+               "url"   : "https://myproxy/sparql"
              }
            }""".stripMargin))) match {
         case Success(strategy : ProxyStrategyRequest) => assert(strategy.urlProxy == "https://myproxy/sparql")
