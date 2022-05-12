@@ -1,4 +1,4 @@
-FROM inraep2m2/scala-sbt:latest
+FROM inraep2m2/scala-sbt:1.0.1
 
 LABEL author="Olivier Filangi"
 LABEL mail="olivier.filangi@inrae.fr"
