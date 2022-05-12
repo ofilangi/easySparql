@@ -82,7 +82,15 @@ further information and documentation, visit https://p2m2.github.io/discovery/
 ## Import discovery with SBT
 
 ``` 
-libraryDependencies += "com.github.p2m2" %%% "discovery" % "0.3.1"
+libraryDependencies += "com.github.p2m2" %%% "discovery" % "0.4.0"
 ```
 
+## Docker proxy image
 
+```bash
+docker build . -t service-discovery-proxy:latest
+```
+
+```bash
+docker run -d -p 8082:8082 -t service-discovery-proxy:latest
+```
