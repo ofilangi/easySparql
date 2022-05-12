@@ -5,10 +5,18 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/p2m2/discovery/badge)](https://www.codefactor.io/repository/github/p2m2/discovery)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/8d8ecb66f9ff4963a22efab3c693b629)](https://www.codacy.com/gh/p2m2/discovery/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=p2m2/discovery&amp;utm_campaign=Badge_Grade)
 [![javadoc](https://javadoc.io/badge2/com.github.p2m2/discovery_2.13/javadoc.svg)](https://javadoc.io/doc/com.github.p2m2/discovery_2.13)
+[![Npm package version](https://shields.io/npm/v/@p2m2/discovery)](https://www.npmjs.com/package/@p2m2/discovery)
+[![Docker Image Version (tag latest semver)](https://img.shields.io/docker/automated/inraep2m2/service-discovery-proxy)](https://hub.docker.com/repository/docker/inraep2m2/service-discovery-proxy)
+![Maven Central](https://img.shields.io/maven-central/v/com.github.p2m2/discovery_2.13)
 
-- Use a simple editor with a web browser to request any RDF resource
-- display rich information on the web page or console 
-- offers building blocks system with atomic element to ease query construction
+## What is discovery
+
+discovery is a software library which aims to ease the development of decision support tools
+exploiting [omics](https://en.wikipedia.org/wiki/Multiomics) RDF databases.
+The library offers a dedicated query language that can be used in several runtime environments (Browser/JS, Node/JS, JVM/Scala).
+
+discovery is developed as part of the work package "Creating FAIR e-resources for knowledge mining" for [the
+national infrastructure for metabolomics and fluxomics - MetaboHUB](https://www.metabohub.fr/home.html)
 
 further information and documentation, visit https://p2m2.github.io/discovery/
 
@@ -19,77 +27,52 @@ further information and documentation, visit https://p2m2.github.io/discovery/
 ```html 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/p2m2/discovery@develop/dist/discovery-web.min.js"> </script> 
 <script>
-      let config = SWDiscoveryConfiguration.setConfigString(`
-          {
-          "sources" : [{
-          "id"  : "peakforest",
-          "url" : "https://peakforest.semantic-metabolomics.fr/sparql"
-           }]}
-          `)
-        let r = SWDiscovery(config)
-                     .prefix("peak_class","https://metabohub.peakforest.org/ontology/class#")
-                     .prefix("peak_prop","https://metabohub.peakforest.org/ontology/property#")
-                     .root()
-                      .something("i")
-                        .setList(18,19,20)
-                     .root()
-                       .something("m1")
-                         .isA("peak_class:Compound")
-                         .datatype("rdfs:label","label1")
-                         .isSubjectOf("peak_prop:InChIKey","inchikey1")
-                           .bind("block1").subStr(0,"?i")
-                     .root()
-                       .something("m2")
-                         .filter.notEqual("?m1")
-                         .isA("peak_class:Compound")
-                         .datatype("rdfs:label","label2")
-                         .isSubjectOf("peak_prop:InChIKey","inchikey2")
-                           .bind("block2").subStr(0,"?i")
-                           .filter.equal("?block1")
-                      .focus("m1")
-                        .console() // display information on the console
-                        .helper("metabo") // display information on the web page and propose new building block.
-                     .select("m1","m2","label1","label2","block1","block2")
-                     .limit(10);
-      
-       
-        r.commit().raw().then((response) => {
-          
-          for (let i=0;i<response.results.bindings.length;i++) {
-            let m1 =response.results.bindings[i]["m1"].value;
-            let m2 =response.results.bindings[i]["m2"].value;
-            /* decorations/datatype properties management */ 
-            let label1=response.results.datatypes["label1"][m1][0].value; // all studies with all languages, here we take the first one arbitrarily.
-            let label2=response.results.datatypes["label2"][m2][0].value;
-            
-            let b1 =response.results.bindings[i]["block1"].value;
-            let b2 =response.results.bindings[i]["block2"].value;
+      var config = SWDiscoveryConfiguration
+                    .init()
+                    .sparqlEndpoint("https://metabolights.semantic-metabolomics.fr/sparql");
 
-            console.log(label1 + "-" + label2 + " block1:"+b1 + " block2:"+b2 );
-          }
-
-        }).catch( (error) => {
-          console.error(" -- catch exception --")
-          console.error(error)
-        } );
-
-    </script>
+      SWDiscovery(config)
+          .prefix("obo","http://purl.obolibrary.org/obo/")
+          .prefix("metabolights","https://www.ebi.ac.uk/metabolights/property#")
+          .prefix("rdfs","http://www.w3.org/2000/01/rdf-schema#")
+          .something()
+            .set(URI("obo:CHEBI_4167"))
+              .isObjectOf(URI("metabolights:Xref"),"study")
+                .datatype(URI("rdfs:label"),"label")
+          .select("study","label")
+             .commit()
+             .raw()
+             .then((response) => {
+                  for (let i=0;i<response.results.bindings.length;i++) {
+                    let study=response.results.bindings[i]["study"].value;
+                    let label=response.results.datatypes["label"][study][0].value; 
+                    console.log(study+"-->"+label);
+                  }
+            }).catch( (error) => {
+              console.error(" -- catch exception --")
+              console.error(error)
+            } );
+ </script>
  ```
 
-[js fiddle example](https://jsfiddle.net/uoecqath/5/)
+[js fiddle example](https://jsfiddle.net/xv3d4Lte/1/)
 
 
 ## Import discovery with SBT
 
-``` 
+```sbt
 libraryDependencies += "com.github.p2m2" %%% "discovery" % "0.4.0"
 ```
 
 ## Running docker proxy image
 
+### docker command
+
 ```bash
 docker run -d --network host -t service-discovery-proxy:latest
 ```
+
+### docker-compose file
 
 ```yaml
 version: '3.9'
