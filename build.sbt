@@ -26,9 +26,13 @@ lazy val axios_version = "0.26.1"
 //lazy val scalaJsMacrotaskExecutor = "1.0.0"
 
 /* npm libs */
-lazy val npm_qs_version = "6.10.3"
-lazy val npm_showdown_version = "1.9.1"
+lazy val npm_axios_version = "0.27.2"
+lazy val npm_qs_version       = "6.10.3"
+lazy val npm_showdown_version = "2.1.0"
 lazy val npm_comunica_version_datasource = "1.22.2"
+lazy val npm_buffer_version = "6.0.3"
+lazy val npm_stream_version = "0.0.2"
+lazy val npm_util_version   = "0.12.4"
 
 lazy val types_jest = "27.4.0"
 lazy val type_sax = "1.2.4"
@@ -143,11 +147,14 @@ lazy val discovery=
     ),
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
     Compile / npmDependencies  ++= Seq(
-      "axios" -> axios_version,
+      "axios" -> npm_axios_version,
       "qs" -> npm_qs_version,
       "showdown" -> npm_showdown_version,
       "@comunica/utils-datasource" -> npm_comunica_version_datasource,
-      "@types/sax" -> type_sax
+      "@types/sax" -> type_sax,
+      "buffer" -> npm_buffer_version,
+      "stream" -> npm_stream_version,
+      "util" -> npm_util_version
     ),
 
     Compile / fastOptJS / scalaJSLinkerConfig ~= {
