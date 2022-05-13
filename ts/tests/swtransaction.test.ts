@@ -1,12 +1,13 @@
-import { SWDiscoveryConfiguration , SWDiscovery } from '../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt'
+import { SWDiscoveryConfiguration , SWDiscovery } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt"
 
-describe('SWDiscovery', () => {
+describe("SWDiscovery", () => {
     
           
   const json : string  =  `{
          "sources" : [{
               "id"  : "local_endpoint",
-              "url" : "http://localhost:8890/sparql"
+              "path" : "http://localhost:8890/sparql",
+              "mimetype" : "application/sparql-query"
            }],
            "settings" : {
              "cache" : true,
@@ -23,22 +24,22 @@ describe('SWDiscovery', () => {
   
   afterAll(() => {});
   
-  test('progression', async () => {
+  test("progression", async () => {
     const transaction = SWDiscovery(localConf).something("hello").isObjectOf("http://test").select("hello")
     
     transaction.progression( (percent : Number) => {
-        console.log("percent:"+percent)
+    expect(percent).not.toBeNull();
     })
 
     const results = await transaction.commit().raw()
     expect(results.head.vars).toStrictEqual(["hello"])
   })
 
-  test('progression', async () => {
+  test("progression", async () => {
     const transaction = SWDiscovery(localConf).something("hello").isObjectOf("http://test").select("hello")
     
     transaction.requestEvent( (event : string) => {
-        console.log("event:"+event)
+        expect(event).not.toBeNull();
     })
 
     const results = await transaction.commit().raw()

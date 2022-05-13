@@ -1,14 +1,18 @@
 import sbt.Keys.scalacOptions
+import sbt.file
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 /* scala libs */
 lazy val utestVersion = "0.7.11"
-lazy val upickleVersion  = "1.5.0"
+lazy val upickleVersion  = "1.6.0"
+lazy val caskVersion = "0.8.2"
+lazy val scoptVersion = "4.0.1"
+lazy val requestsVersion = "0.7.0"
 lazy val airframeLogVersion = "21.12.1"
-lazy val sttpClient3Version = "3.4.1"
+lazy val sttpClient3Version = "3.5.2"
 lazy val scalaStubVersion = "1.1.0"
 lazy val scalatagVersion = "0.11.1"
-lazy val rdf4jVersion = "3.7.7"
+lazy val rdf4jVersion = "4.0.0"
 lazy val slf4j_version = "1.7.36"
 lazy val scalaUriVersion = "3.6.0"
 lazy val scalajsDom = "1.2.0"
@@ -19,12 +23,16 @@ lazy val data_model_rdfjs_version = "1.0.1"
 lazy val n3js_facade_version = "1.13.0"
 lazy val rdfxml_streaming_parser_version = "1.5.0"
 lazy val axios_version = "0.26.1"
-lazy val scalaJsMacrotaskExecutor = "1.0.0"
+//lazy val scalaJsMacrotaskExecutor = "1.0.0"
 
 /* npm libs */
-lazy val npm_qs_version = "6.10.3"
-lazy val npm_showdown_version = "1.9.1"
+lazy val npm_axios_version = "0.27.2"
+lazy val npm_qs_version       = "6.10.3"
+lazy val npm_showdown_version = "2.1.0"
 lazy val npm_comunica_version_datasource = "1.22.2"
+lazy val npm_buffer_version = "6.0.3"
+lazy val npm_stream_version = "0.0.2"
+lazy val npm_util_version   = "0.12.4"
 
 lazy val types_jest = "27.4.0"
 lazy val type_sax = "1.2.4"
@@ -33,17 +41,18 @@ lazy val tsjest = "27.1.3"
 
 releaseIgnoreUntrackedFiles := true
 
-val static_version_build = "0.3.2d"
-val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build )
-val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
+val static_version_build = "0.4.0"
+val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build)
+val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/fr/inrae/metabohub" +
+  "/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
 
 
-val buildSWDiscoveryVersionAtBuildTimeFile =
+val buildSWDiscoveryVersionAtBuildTimeFile: Unit =
   if ( ! reflect.io.File(SWDiscoveryVersionAtBuildTimeFile).exists)
     reflect.io.File(SWDiscoveryVersionAtBuildTimeFile).writeAll(
       Predef.augmentString(
       s"""|
-      |package inrae.semantic_web
+      |package fr.inrae.metabohub.semantic_web
       |
       |object SWDiscoveryVersionAtBuildTime {
       |   val version : String = " build ${java.time.LocalDate.now.toString}"
@@ -53,7 +62,7 @@ ThisBuild / name := "discovery"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / name := "discovery"
 ThisBuild / version :=  version_build
-ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / scalaVersion := "2.13.8" // val scala212 = "2.12.14", val scala3 = "3.0.0"
 ThisBuild / organization := "com.github.p2m2"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / organizationHomepage := Some(url("https://www6.inrae.fr/p2m2"))
@@ -106,7 +115,9 @@ lazy val root = (project in file("."))
     publish / skip := true
   )
 
-lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
+lazy val discovery=
+  crossProject(JSPlatform,JVMPlatform)
+    .in(file("."))
   .settings(
     libraryDependencies ++= Seq(
       "com.softwaremill.sttp.client3" %% "core" % sttpClient3Version % Test,
@@ -118,28 +129,32 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
     testFrameworks += new TestFramework("utest.runner.Framework"),
     scalacOptions ++= Seq("-deprecation", "-feature"),
     classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.AllLibraryJars,
-    coverageMinimumStmtTotal := 86,
+    coverageMinimumStmtTotal := 93,
     coverageFailOnMinimum := false,
     coverageHighlighting := true,
     Test / parallelExecution := false
   )
   .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
   .jsSettings(
+    scalacOptions ++= Seq("-P:scalajs:nowarnGlobalExecutionContext"),
     libraryDependencies ++= Seq(
-     // "org.scala-js"    %%% "scala-js-macrotask-executor" % scalaJsMacrotaskExecutor,
+      ("org.scala-js" %%% "scalajs-java-securerandom" % "1.0.0").cross(CrossVersion.for3Use2_13),
       "com.github.p2m2" %%% "comunica-actor-init-sparql-rdfjs" % comunica_actor_init_sparql_rdfjs_version ,
       "com.github.p2m2" %%% "data-model-rdfjs" % data_model_rdfjs_version ,
       "com.github.p2m2" %%% "n3js" % n3js_facade_version ,
       "com.github.p2m2" %%% "rdfxml-streaming-parser" % rdfxml_streaming_parser_version,
-      "com.github.p2m2" %%% "axios" % axios_version,
+      "com.github.p2m2" %%% "axios" % axios_version
     ),
     webpackBundlingMode := BundlingMode.LibraryAndApplication(),
     Compile / npmDependencies  ++= Seq(
-      "axios" -> axios_version,
+      "axios" -> npm_axios_version,
       "qs" -> npm_qs_version,
       "showdown" -> npm_showdown_version,
       "@comunica/utils-datasource" -> npm_comunica_version_datasource,
-      "@types/sax" -> type_sax
+      "@types/sax" -> type_sax,
+   /*   "buffer" -> npm_buffer_version,
+      "stream" -> npm_stream_version,
+      "util" -> npm_util_version*/
     ),
 
     Compile / fastOptJS / scalaJSLinkerConfig ~= {
@@ -156,15 +171,28 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
     )
   )
   .jvmSettings(
+    //run / fork := true,
     libraryDependencies ++= Seq(
+      "com.lihaoyi" %% "requests" % requestsVersion,
       "org.scala-js" %% "scalajs-stubs" % scalaStubVersion % "provided",
       "org.slf4j" % "slf4j-api" % slf4j_version,
       "org.slf4j" % "slf4j-simple" % slf4j_version,
-      "org.eclipse.rdf4j" % "rdf4j-sail" % rdf4jVersion % "provided",
-      "org.eclipse.rdf4j" % "rdf4j-storage" % rdf4jVersion % "provided",
-      "org.eclipse.rdf4j" % "rdf4j-tools-federation" % rdf4jVersion % "provided"
-    ))
-
+      "org.eclipse.rdf4j" % "rdf4j-sail" % rdf4jVersion,
+      ("org.eclipse.rdf4j" % "rdf4j-storage" % rdf4jVersion)
+        .exclude("commons-codec","commons-codec"),
+      ("org.eclipse.rdf4j" % "rdf4j-tools-federation" % rdf4jVersion)
+        .exclude("commons-codec","commons-codec")
+    ),
+    assembly / assemblyJarName := s"discovery-$version_build.jar",
+    assembly / logLevel := Level.Info,
+    assembly / assemblyMergeStrategy := {
+      case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+      case "module-info.class"  => MergeStrategy.first
+      case x =>
+        val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+        oldStrategy(x)
+    }
+  )
 /**
  * Build package.json to publish on npm repository
  */
@@ -173,19 +201,19 @@ lazy val npmPackageJson = taskKey[Unit]("Build the discovery package.json")
 
 npmPackageJson := {
 
-  val scalaJsBundlerPackageJsonFile = IO.readLines(new File("js/target/scala-2.13/scalajs-bundler/main/package.json")).filter(_.length>0)
+  val scalaJsBundlerPackageJsonFile = IO.readLines(new File("js/target/scala-2.13/scalajs-bundler/main/package.json")).filter(_.nonEmpty)
   val indexStartDependencies = scalaJsBundlerPackageJsonFile.zipWithIndex.map {
-     case (v,i) if v.contains("dependencies") => i
-     case _ => -1
-   }.filter( _ > 0)(0)
+    case (v, i) if v.contains("dependencies") => i
+    case _ => -1
+  }.filter(_ > 0).head
 
   val indexEndDependencies =  scalaJsBundlerPackageJsonFile.zipWithIndex.map {
-    case (v,i) if (v.contains("}") && i > indexStartDependencies) => i
+    case (v, i) if v.contains("}") && i > indexStartDependencies => i
     case _ => -1
-  }.filter( _ > 0)(0)
+  }.filter(_ > 0).head
 
   val dependencies = scalaJsBundlerPackageJsonFile.zipWithIndex.collect{
-    case (x,idx) if ( (idx > indexStartDependencies) && (idx < indexEndDependencies) ) => x
+    case (x,idx) if (idx > indexStartDependencies) && (idx < indexEndDependencies) => x
   }
 
   reflect.io.File("./package.json").writeAll(
@@ -238,13 +266,5 @@ ${dependencies.mkString("\n")}
  }
  """).stripMargin)
 }
-
-assembly / assemblyMergeStrategy := {
-  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case x => MergeStrategy.first
-}
-
-assembly / target := file("assembly")
-assembly / assemblyJarName := s"discovery-$version_build.jar"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
