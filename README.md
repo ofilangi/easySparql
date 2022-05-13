@@ -11,18 +11,33 @@
 
 ## What is discovery
 
-discovery is a software library which aims to ease the development of decision support tools
-exploiting [omics](https://en.wikipedia.org/wiki/Multiomics) RDF databases.
+discovery is a software library which aims to ease the development of decision support tools exploiting [omics](https://en.wikipedia.org/wiki/Multiomics) RDF databases.
 The library offers a dedicated query language that can be used in several runtime environments (Browser/JS, Node/JS, JVM/Scala).
 
 discovery is developed as part of the work package "Creating FAIR e-resources for knowledge mining" for [the
 national infrastructure for metabolomics and fluxomics - MetaboHUB](https://www.metabohub.fr/home.html)
 
+## features
+
+- Programming/building request with immutables objects
+- Querying several RDF content (SPARQL Endpoint, RDF File, RDF content)
+- Federated Query
+- Handling lazy page results
+- Subscribe to SPARQL query status events
+- Stringify request and configuration to ease transport
+- Decorating the building nodes with additional information
+
+## Dependencies - RDF Software libraries
+
+this software development is based on [RDFJS (RDF JavaScript Libraries)](https://rdf.js.org/) and [RDF4J](https://rdf4j.org/)
+
+## Documentation
+
 further information and documentation, visit https://p2m2.github.io/discovery/
 
-### Html/Js example
+## Html/Js example
 
-#### Html import 
+### Html import 
 
 ```html 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/p2m2/discovery@develop/dist/discovery-web.min.js"> </script> 
@@ -57,19 +72,56 @@ further information and documentation, visit https://p2m2.github.io/discovery/
 
 [js fiddle example](https://jsfiddle.net/xv3d4Lte/1/)
 
+### FORUM
 
-## Import discovery with SBT
+
+```html 
+<script type="text/javascript" src="/media/olivier/hdd-local/workspace/INRAE/P2M2/DISCOVERY/discovery/dist/discovery-web-dev.js"> </script> 
+<script>
+      var config = SWDiscoveryConfiguration
+                    .proxy("http://localhost:8082")
+                    .sparqlEndpoint("https://forum.semantic-metabolomics.fr/sparql/")
+                    .sparqlEndpoint("https://query.wikidata.org/");
+
+      SWDiscovery(config)
+          .prefix("cito","http://purl.org/spar/cito/")
+          .prefix("compound","http://rdf.ncbi.nlm.nih.gov/pubchem/compound/")
+          .prefix("rdfs","http://www.w3.org/2000/01/rdf-schema#")
+          .something("compound")
+                 .set("compound:CID60823")
+                  .isSubjectOf(URI("skos:closeMatch"),"supp")
+                      .isSubjectOf(URI("http://www.wikidata.org/prop/P2175"),"medical_condition_treated")
+                  
+          .select("compound","supp","medical_condition_treated")
+             .commit()
+             .raw()
+             .then((response) => {
+		  console.log(JSON.stringify(response))
+                  for (let i=0;i<response.results.bindings.length;i++) {
+                    let study=response.results.bindings[i]["study"].value;
+                   // let label=response.results.datatypes["label"][study][0].value; 
+                     let label="*";
+                     console.log(study+"-->"+label);
+                  }
+            }).catch( (error) => {
+              console.error(" -- catch exception --")
+              console.error(error)
+            } );
+ </script>
+ ```
+
+### Import discovery with SBT
 
 ```sbt
 libraryDependencies += "com.github.p2m2" %%% "discovery" % "0.4.0"
 ```
 
-## Running docker proxy image
+### Running docker proxy image
 
 ### docker command
 
 ```bash
-docker run -d --network host -t service-discovery-proxy:latest
+docker run -d --network host -t inraep2m2/service-discovery-proxy:latest
 ```
 
 ### docker-compose file

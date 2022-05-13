@@ -35,7 +35,7 @@ npm install browserify
 
 ### memo
 
-```
+```bash
 sbt compile
 sbt discoveryJS/test
 sbt discoveryJVM/test
@@ -44,27 +44,30 @@ sbt discoveryJS/fullOptJS
 sbt discoveryJS/fastOptJS::webpack
 sbt discoveryJS/fullOptJS::webpack
 sbt discoveryJVM/testOnly inrae.semantic_web.QueryPlannerTest
+```
 
-discoveryJVM/runMain fr.inrae.mth.app.SWDiscoveryProxy
-java -jar ./jvm/target/scala-2.13/discovery-assembly-X.X.X.jar --port 8083
+#### d.ts generation test
+
+```bash
+npx -p typescript tsc ./js/target/scala-2.13/scalajs-bundler/main/discovery-opt.js --declaration --allowJs --emitDeclarationOnly --outDir types
 ```
 
 ## local publication -> .ivy2
 
-``` 
+```bash
 sbt publishLocal
 ``` 
 
 ## oss.sonatype maven central repository publication
 https://oss.sonatype.org/
 
-``` 
+```bash 
 sbt publish
 ```
 
 ### NPM publication
 
-``` 
+```bash
 sbt discoveryJS/fullOptJS/webpack
 sbt npmPackageJson => genere package.json
 npm view @p2m2/discovery version -> list published version

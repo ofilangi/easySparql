@@ -152,9 +152,9 @@ lazy val discovery=
       "showdown" -> npm_showdown_version,
       "@comunica/utils-datasource" -> npm_comunica_version_datasource,
       "@types/sax" -> type_sax,
-      "buffer" -> npm_buffer_version,
+   /*   "buffer" -> npm_buffer_version,
       "stream" -> npm_stream_version,
-      "util" -> npm_util_version
+      "util" -> npm_util_version*/
     ),
 
     Compile / fastOptJS / scalaJSLinkerConfig ~= {
