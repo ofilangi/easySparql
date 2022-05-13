@@ -1,4 +1,5 @@
 import sbt.Keys.scalacOptions
+import sbt.file
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 /* scala libs */
@@ -38,7 +39,8 @@ releaseIgnoreUntrackedFiles := true
 
 val static_version_build = "0.4.0"
 val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build)
-val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
+val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/fr/inrae/metabohub" +
+  "/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
 
 
 val buildSWDiscoveryVersionAtBuildTimeFile: Unit =
@@ -46,7 +48,7 @@ val buildSWDiscoveryVersionAtBuildTimeFile: Unit =
     reflect.io.File(SWDiscoveryVersionAtBuildTimeFile).writeAll(
       Predef.augmentString(
       s"""|
-      |package inrae.semantic_web
+      |package fr.inrae.metabohub.semantic_web
       |
       |object SWDiscoveryVersionAtBuildTime {
       |   val version : String = " build ${java.time.LocalDate.now.toString}"
@@ -109,7 +111,9 @@ lazy val root = (project in file("."))
     publish / skip := true
   )
 
-lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
+lazy val discovery=
+  crossProject(JSPlatform,JVMPlatform)
+    .in(file("."))
   .settings(
     libraryDependencies ++= Seq(
       "com.softwaremill.sttp.client3" %% "core" % sttpClient3Version % Test,
@@ -166,11 +170,22 @@ lazy val discovery=crossProject(JSPlatform, JVMPlatform).in(file("."))
       "org.scala-js" %% "scalajs-stubs" % scalaStubVersion % "provided",
       "org.slf4j" % "slf4j-api" % slf4j_version,
       "org.slf4j" % "slf4j-simple" % slf4j_version,
-      "org.eclipse.rdf4j" % "rdf4j-sail" % rdf4jVersion % "provided",
-      "org.eclipse.rdf4j" % "rdf4j-storage" % rdf4jVersion % "provided",
-      "org.eclipse.rdf4j" % "rdf4j-tools-federation" % rdf4jVersion % "provided"
-    ))
-
+      "org.eclipse.rdf4j" % "rdf4j-sail" % rdf4jVersion,
+      ("org.eclipse.rdf4j" % "rdf4j-storage" % rdf4jVersion)
+        .exclude("commons-codec","commons-codec"),
+      ("org.eclipse.rdf4j" % "rdf4j-tools-federation" % rdf4jVersion)
+        .exclude("commons-codec","commons-codec")
+    ),
+    assembly / assemblyJarName := s"discovery-$version_build.jar",
+    assembly / logLevel := Level.Info,
+    assembly / assemblyMergeStrategy := {
+      case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+      case "module-info.class"  => MergeStrategy.first
+      case x =>
+        val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+        oldStrategy(x)
+    }
+  )
 /**
  * Build package.json to publish on npm repository
  */
@@ -244,14 +259,5 @@ ${dependencies.mkString("\n")}
  }
  """).stripMargin)
 }
-/*
-assembly / assemblyMergeStrategy := {
-  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
- // case PathList("httpclient-osgi-4.5.13.jar", xs @ _*) => MergeStrategy.last
-  case _ => MergeStrategy.last
-}*/
-
-assembly / target := file("assembly")
-assembly / assemblyJarName := s"discovery-$version_build.jar"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
