@@ -76,9 +76,9 @@ describe("SWDiscovery", () => {
                           return n.$type + " : " + p;
                          });
     expect(results).toStrictEqual([
-      "inrae.semantic_web.node.Root : 0",
-      "inrae.semantic_web.node.Something : 1",
-      "inrae.semantic_web.node.ObjectOf : 2" ]);
+      "fr.inrae.metabohub.semantic_web.node.Root : 0",
+      "fr.inrae.metabohub.semantic_web.node.Something : 1",
+      "fr.inrae.metabohub.semantic_web.node.ObjectOf : 2" ]);
     })
 
      test("setDecoration/getDecoration", () => {
