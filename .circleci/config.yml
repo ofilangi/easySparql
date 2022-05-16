@@ -393,7 +393,7 @@ jobs:
             if [ "LAST_VERSION" != "VERSION" ]; then
               sbt discoveryJVM/assembly
               mkdir -p build
-              mv $(find . -name d*-assembly-*.jar) build/discovery-$VERSION.jar
+              mv ./jvm/target/scala-2.13/discovery-$VERSION.jar build/
               cp dist/discovery-web-dev.js build/discovery-web-dev-$VERSION.js
               cp dist/discovery-web-dev.js.map build/discovery-web-dev-$VERSION.js.map
               cp dist/discovery-web.js build/discovery-web-$VERSION.js
