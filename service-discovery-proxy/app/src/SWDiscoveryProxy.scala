@@ -3,6 +3,7 @@ package fr.inrae.metabohub.app
 import cask.main.Main
 import fr.inrae.metabohub.semantic_web.{SWDiscoveryVersionAtBuildTime, SWTransaction}
 import io.undertow.Undertow
+import io.undertow.server.handlers.BlockingHandler
 import ujson.Value
 import wvlet.log.Logger.rootLogger.info
 
@@ -12,6 +13,14 @@ import scala.concurrent.{Await, Future}
 object SWDiscoveryProxy extends cask.MainRoutes{
 
   var _server : Option[Undertow] = None
+
+  override def defaultHandler: BlockingHandler =
+    new BlockingHandler( CorsHandler(dispatchTrie,
+      mainDecorators,
+      debugMode = false,
+      handleNotFound,
+      handleMethodNotAllowed,
+      handleEndpointError) )
 
   import scopt.OParser
 
