@@ -31,18 +31,18 @@ trait Rdf4jRequestDriver extends RequestDriver {
           response
         case Failure(e : MalformedQueryException) =>
           publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.ERROR_HTTP_REQUEST))
-          throw SWDiscoveryException(s"** MalformedQueryException **\n"+query+"\n"+e.getMessage)
+          throw SWDiscoveryException(s"** MalformedQueryException **\n$query\n${e.getMessage}")
         case Failure(e : UnsupportedQueryLanguageException) =>
           publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.ERROR_HTTP_REQUEST))
-          throw SWDiscoveryException(s"** UnsupportedQueryLanguageException **\n"+e.getMessage)
+          throw SWDiscoveryException(s"** UnsupportedQueryLanguageException **\n${e.getMessage}")
         case Failure(e : UnsupportedOperationException) =>
           publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.ERROR_HTTP_REQUEST))
-          throw SWDiscoveryException(s"** UnsupportedOperationException **"+"\n"+e.getMessage)
+          throw SWDiscoveryException(s"** UnsupportedOperationException **\n${e.getMessage}")
         case Failure(e : RepositoryException) =>
           publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.ERROR_HTTP_REQUEST))
-          throw SWDiscoveryException(s"** RepositoryException **\ncon:$con"+"\n"+e.getMessage)
+          throw SWDiscoveryException(s"** RepositoryException **\ncon:$con\n${e.getMessage}")
         case Failure(e) =>
-          throw SWDiscoveryException(s"** Unknown error **"+"\n"+e.getMessage)
+          throw SWDiscoveryException(s"** Unknown error ** \n${e.getMessage}")
        }
     }
   }
