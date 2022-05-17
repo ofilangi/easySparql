@@ -8,8 +8,6 @@ import cask.router.EndpointMetadata
 import cask.router.Decorator
 import cask.model.Response
 import cask.router.Result
-import com.typesafe.config.ConfigFactory._
-//import com.typesafe.scalalogging.LazyLogging
 
 import io.undertow.Undertow
 import io.undertow.server.HttpServerExchange
