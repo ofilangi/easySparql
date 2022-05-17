@@ -42,6 +42,7 @@ trait Rdf4jRequestDriver extends RequestDriver {
           publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.ERROR_HTTP_REQUEST))
           throw SWDiscoveryException(s"** RepositoryException **\ncon:$con\n${e.getMessage}")
         case Failure(e) =>
+          publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.ERROR_HTTP_REQUEST))
           throw SWDiscoveryException(s"** Unknown error ** \n${e.getMessage}")
        }
     }
