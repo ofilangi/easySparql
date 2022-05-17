@@ -12,7 +12,7 @@ lazy val airframeLogVersion = "21.12.1"
 lazy val sttpClient3Version = "3.5.2"
 lazy val scalaStubVersion = "1.1.0"
 lazy val scalatagVersion = "0.11.1"
-lazy val rdf4jVersion = "4.0.0"
+lazy val rdf4jVersion = "4.0.1"
 lazy val slf4j_version = "1.7.36"
 lazy val scalaUriVersion = "3.6.0"
 lazy val scalajsDom = "1.2.0"
@@ -41,7 +41,7 @@ lazy val tsjest = "27.1.3"
 
 releaseIgnoreUntrackedFiles := true
 
-val static_version_build = "0.4.0"
+val static_version_build = "0.4.1"
 val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build)
 val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/fr/inrae/metabohub" +
   "/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
