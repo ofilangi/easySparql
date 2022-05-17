@@ -2,7 +2,7 @@ package fr.inrae.metabohub.semantic_web.strategy
 
 import com.github.p2m2.facade.Axios
 import facade.npm.qs
-import fr.inrae.metabohub.semantic_web.{SWTransaction, sparql}
+import fr.inrae.metabohub.semantic_web.SWTransaction
 import fr.inrae.metabohub.semantic_web.event.{DiscoveryRequestEvent, DiscoveryStateRequestEvent}
 import fr.inrae.metabohub.semantic_web.exception.SWDiscoveryException
 import fr.inrae.metabohub.semantic_web.sparql.QueryResult
@@ -32,7 +32,7 @@ case class ProxyStrategyRequest(urlProxy: String, method: String = "post") exten
       )
     )
 
-    Axios.get(urlProxy+s"?$key="+URIUtils.encodeURIComponent(value),configAxios).toFuture.map(response => {
+    Axios.get(s"$urlProxy/get?$key="+URIUtils.encodeURIComponent(value),configAxios).toFuture.map(response => {
       publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.FINISHED_HTTP_REQUEST))
       QueryResult(JSON.stringify(response.data))
     }).recover(
@@ -44,9 +44,9 @@ case class ProxyStrategyRequest(urlProxy: String, method: String = "post") exten
 
   def post(key: String, value: String): Future[QueryResult] = {
     publish(DiscoveryRequestEvent(DiscoveryStateRequestEvent.PROCESS_HTTP_REQUEST))
-
+    println("urlProxy:"+urlProxy)
     val configAxios = Dynamic.literal(
-      "url" -> urlProxy,
+      "url" -> "urlProxy/post",
       "method" -> "POST",
       "header" -> Dynamic.literal(
         "Accept" -> "application/json",
