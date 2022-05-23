@@ -93,10 +93,22 @@ object SWDiscoverySubscribeEventTest extends TestSuite {
         .isSubjectOf(URI("http://bb"))
         .select(List("h1"))
 
-      swr.commit().raw.map( _=> assert(false))
-        .recover( a => {
+      swr.commit().raw
+        .map( _=> assert(false))
+        .recover( _ => {
           println(swr.currentRequestEvent)
           assert(swr.currentRequestEvent == "ERROR_HTTP_REQUEST") } )
+    }
+
+    test("MalformedQueryException -  ERROR_HTTP_REQUEST") {
+      val conf : SWDiscoveryConfiguration = SWDiscoveryConfiguration.init().rdfContent("<a> <b> <c> .")
+      SWDiscovery(conf).something("a").isObjectOf("some:toto").select(List("a"))
+        .commit().raw
+        .map( _=> assert(false))
+        .recover( _ => {
+          assert(true)
+          //assert(a.getMessage.contains("MalformedQueryException"))
+        })
     }
   }
 }
