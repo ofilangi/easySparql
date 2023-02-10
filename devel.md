@@ -36,13 +36,18 @@ npm install browserify
 ### memo
 
 ```bash
+
 sbt compile
 sbt discoveryJS/test
 sbt discoveryJVM/test
 sbt discoveryJS/fastOptJS 
 sbt discoveryJS/fullOptJS
-sbt discoveryJS/fastOptJS::webpack
-sbt discoveryJS/fullOptJS::webpack
+
+export NODE_OPTIONS=--openssl-legacy-provider
+sbt discoveryJS/fastOptJS/webpack
+sbt discoveryJS/fullOptJS/webpack
+
+
 sbt discoveryJVM/testOnly inrae.semantic_web.QueryPlannerTest
 ```
 

@@ -2,23 +2,8 @@ import sbt.Keys.scalacOptions
 import sbt.file
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-/* scala libs */
-lazy val utestVersion = "0.7.11"
-lazy val upickleVersion  = "1.6.0"
-lazy val caskVersion = "0.8.2"
-lazy val scoptVersion = "4.0.1"
-lazy val requestsVersion = "0.7.0"
-lazy val airframeLogVersion = "21.12.1"
-lazy val sttpClient3Version = "3.5.2"
-lazy val scalaStubVersion = "1.1.0"
-lazy val scalatagVersion = "0.11.1"
-lazy val rdf4jVersion = "4.0.1"
-lazy val slf4j_version = "1.7.36"
-lazy val scalaUriVersion = "3.6.0"
-lazy val scalajsDom = "1.2.0"
-
 /* p2m2 libs */
-lazy val comunica_actor_init_sparql_rdfjs_version = "1.22.3"
+lazy val comunica_actor_init_sparql_rdfjs_version = "2.2.0"
 lazy val data_model_rdfjs_version = "1.0.1"
 lazy val n3js_facade_version = "1.13.0"
 lazy val rdfxml_streaming_parser_version = "1.5.0"
@@ -26,22 +11,22 @@ lazy val axios_version = "0.26.1"
 //lazy val scalaJsMacrotaskExecutor = "1.0.0"
 
 /* npm libs */
-lazy val npm_axios_version = "0.27.2"
-lazy val npm_qs_version       = "6.10.3"
+lazy val npm_axios_version = "1.3.2"
+lazy val npm_qs_version       = "6.11.0"
 lazy val npm_showdown_version = "2.1.0"
 lazy val npm_comunica_version_datasource = "1.22.2"
 lazy val npm_buffer_version = "6.0.3"
 lazy val npm_stream_version = "0.0.2"
-lazy val npm_util_version   = "0.12.4"
+lazy val npm_util_version   = "0.12.5"
 
-lazy val types_jest = "27.4.0"
+lazy val types_jest = "29.4.0"
 lazy val type_sax = "1.2.4"
-lazy val jest = "27.4.7"
-lazy val tsjest = "27.1.3"
+lazy val jest = "29.4.2"
+lazy val tsjest = "29.0.5"
 
 releaseIgnoreUntrackedFiles := true
 
-val static_version_build = "0.4.1"
+val static_version_build = "0.4.2"
 val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build)
 val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/fr/inrae/metabohub" +
   "/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
@@ -62,7 +47,7 @@ ThisBuild / name := "discovery"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / name := "discovery"
 ThisBuild / version :=  version_build
-ThisBuild / scalaVersion := "2.13.8" // val scala212 = "2.12.14", val scala3 = "3.0.0"
+ThisBuild / scalaVersion := "2.13.10" // val scala212 = "2.12.14", val scala3 = "3.0.0"
 ThisBuild / organization := "com.github.p2m2"
 ThisBuild / organizationName := "p2m2"
 ThisBuild / organizationHomepage := Some(url("https://www6.inrae.fr/p2m2"))
@@ -120,11 +105,11 @@ lazy val discovery=
     .in(file("."))
   .settings(
     libraryDependencies ++= Seq(
-      "com.softwaremill.sttp.client3" %% "core" % sttpClient3Version % Test,
-      "com.lihaoyi" %%% "utest" % utestVersion % Test,
-      "com.lihaoyi" %%% "upickle" % upickleVersion,
-      "org.wvlet.airframe" %%% "airframe-log" % airframeLogVersion,
-      "io.lemonlabs" %%% "scala-uri" % scalaUriVersion
+      "com.softwaremill.sttp.client3" %% "core" % "3.8.11" % Test,
+      "com.lihaoyi" %%% "utest" % "0.8.1" % Test,
+      "com.lihaoyi" %%% "upickle" % "3.0.0-M2",
+      "org.wvlet.airframe" %%% "airframe-log" % "23.2.3",
+      "io.lemonlabs" %%% "scala-uri" % "4.0.3"
     ),
     testFrameworks += new TestFramework("utest.runner.Framework"),
     scalacOptions ++= Seq("-deprecation", "-feature"),
@@ -152,9 +137,9 @@ lazy val discovery=
       "showdown" -> npm_showdown_version,
       "@comunica/utils-datasource" -> npm_comunica_version_datasource,
       "@types/sax" -> type_sax,
-   /*   "buffer" -> npm_buffer_version,
+      "buffer" -> npm_buffer_version,
       "stream" -> npm_stream_version,
-      "util" -> npm_util_version*/
+      "util" -> npm_util_version
     ),
 
     Compile / fastOptJS / scalaJSLinkerConfig ~= {
@@ -167,20 +152,20 @@ lazy val discovery=
         .withModuleKind(ModuleKind.CommonJSModule)
     },
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % scalajsDom
+      "org.scala-js" %%% "scalajs-dom" % "2.1.0"
     )
   )
   .jvmSettings(
     //run / fork := true,
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "requests" % requestsVersion,
-      "org.scala-js" %% "scalajs-stubs" % scalaStubVersion % "provided",
-      "org.slf4j" % "slf4j-api" % slf4j_version,
-      "org.slf4j" % "slf4j-simple" % slf4j_version,
-      "org.eclipse.rdf4j" % "rdf4j-sail" % rdf4jVersion,
-      ("org.eclipse.rdf4j" % "rdf4j-storage" % rdf4jVersion)
+      "com.lihaoyi" %% "requests" % "0.8.0",
+      "org.scala-js" %% "scalajs-stubs" % "1.1.0" % "provided",
+      "org.slf4j" % "slf4j-api" % "2.0.5",
+      "org.slf4j" % "slf4j-simple" % "2.0.5",
+      "org.eclipse.rdf4j" % "rdf4j-sail" % "4.2.2",
+      ("org.eclipse.rdf4j" % "rdf4j-storage" % "4.2.2")
         .exclude("commons-codec","commons-codec"),
-      ("org.eclipse.rdf4j" % "rdf4j-tools-federation" % rdf4jVersion)
+      ("org.eclipse.rdf4j" % "rdf4j-tools-federation" % "4.2.2")
         .exclude("commons-codec","commons-codec")
     ),
     assembly / assemblyJarName := s"discovery-$version_build.jar",
