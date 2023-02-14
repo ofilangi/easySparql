@@ -18,7 +18,7 @@
 #
 version: 2.1
 orbs:
-  node: circleci/node@5.0.2
+  node: circleci/node@5.1.0
 workflows:
   compile-workflow:
     jobs:
@@ -144,7 +144,7 @@ executors:
   openjdk:
     working_directory: ~/repo
     docker:
-      - image: cimg/openjdk:17.0.2
+      - image: cimg/openjdk:19.0.2
         auth:
           username: ${DOCKER_USER}
           password: ${DOCKER_PASS}
@@ -152,7 +152,7 @@ executors:
   virtuoso_environment_executor:
     working_directory: ~/repo
     docker:
-      - image: cimg/openjdk:17.0.2
+      - image: cimg/openjdk:19.0.2
         auth:
           username: ${DOCKER_USER}
           password: ${DOCKER_PASS}
@@ -238,7 +238,7 @@ jobs:
   proxy_discovery_test:
     executor: openjdk
     environment:
-      MILL_VERSION: '0.10.4'
+      MILL_VERSION: '0.10.11'
     steps:
       - checkout
       - run:
@@ -291,7 +291,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - node/install:
-          node-version: '18.1'
+          node-version: '19.6'
       - run:
           name: Test ScalaJs/JavaScript
           command: sbt discoveryJS/test
@@ -334,7 +334,7 @@ jobs:
     steps:
       - checkout
       - node/install:
-          node-version: '18.1'
+          node-version: '19.6'
       - run:
           name: Release Assembly
           command: |
@@ -362,7 +362,7 @@ jobs:
     steps:
       - checkout
       - node/install:
-          node-version: '18.1'
+          node-version: '19.6'
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
@@ -384,7 +384,7 @@ jobs:
     steps:
       - checkout
       - node/install:
-          node-version: '18.1'
+          node-version: '19.6'
       - run:
           name: Release Assembly
           command: |
@@ -414,7 +414,7 @@ jobs:
     steps:
       - checkout
       - node/install:
-          node-version: '17.9'
+          node-version: '19.6'
       - attach_workspace:
           at: build
       - run:
