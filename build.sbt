@@ -3,11 +3,11 @@ import sbt.file
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 /* p2m2 libs */
-lazy val comunica_actor_init_sparql_rdfjs_version = "2.2.0"
-lazy val data_model_rdfjs_version = "1.0.1"
-lazy val n3js_facade_version = "1.13.0"
-lazy val rdfxml_streaming_parser_version = "1.5.0"
-lazy val axios_version = "0.26.1"
+lazy val comunica_query_sparql_version = "2.6.6b"
+lazy val data_model_rdfjs_version = "1.0.2"
+lazy val n3js_facade_version = "1.16.3"
+lazy val rdfxml_streaming_parser_version = "1.5.1"
+lazy val axios_version = "1.3.2"
 //lazy val scalaJsMacrotaskExecutor = "1.0.0"
 
 /* npm libs */
@@ -124,7 +124,7 @@ lazy val discovery=
     scalacOptions ++= Seq("-P:scalajs:nowarnGlobalExecutionContext"),
     libraryDependencies ++= Seq(
       ("org.scala-js" %%% "scalajs-java-securerandom" % "1.0.0").cross(CrossVersion.for3Use2_13),
-      "com.github.p2m2" %%% "comunica-actor-init-sparql-rdfjs" % comunica_actor_init_sparql_rdfjs_version ,
+      "com.github.p2m2" %%% "comunica-query-sparql" % comunica_query_sparql_version ,
       "com.github.p2m2" %%% "data-model-rdfjs" % data_model_rdfjs_version ,
       "com.github.p2m2" %%% "n3js" % n3js_facade_version ,
       "com.github.p2m2" %%% "rdfxml-streaming-parser" % rdfxml_streaming_parser_version,

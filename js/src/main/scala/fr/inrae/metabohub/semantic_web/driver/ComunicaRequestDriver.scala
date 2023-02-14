@@ -72,13 +72,12 @@ object ComunicaRequestDriver {
   }
 
   def requestOnSWDBWithSources(query: String, sources : List[SourceComunica]): Future[QueryResult] =
-    Try(Comunica.newEngine().query(query,
+    Try(new QueryEngine().query(query,
       QueryEngineOptions(
         sources = sources,
-        lenient=false,
-        queryFormat = QueryFormat.sparql))
-      .toFuture.flatMap( (results : IQueryResult) => {
-      Comunica.newEngine().resultToString(results,"application/sparql-results+json")
+        lenient=false))
+      .toFuture.flatMap( (results) => {
+      new QueryEngine().resultToString(results,"application/sparql-results+json")
         .toFuture.map( v => {
         val p = Promise[String]()
         var sparql_results = ""
