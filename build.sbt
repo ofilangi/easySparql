@@ -162,10 +162,10 @@ lazy val discovery=
       "org.scala-js" %% "scalajs-stubs" % "1.1.0" % "provided",
       "org.slf4j" % "slf4j-api" % "2.0.5",
       "org.slf4j" % "slf4j-simple" % "2.0.5",
-      "org.eclipse.rdf4j" % "rdf4j-sail" % "4.2.2",
-      ("org.eclipse.rdf4j" % "rdf4j-storage" % "4.2.2")
+      "org.eclipse.rdf4j" % "rdf4j-sail" % "4.2.3",
+      ("org.eclipse.rdf4j" % "rdf4j-storage" % "4.2.3")
         .exclude("commons-codec","commons-codec"),
-      ("org.eclipse.rdf4j" % "rdf4j-tools-federation" % "4.2.2")
+      ("org.eclipse.rdf4j" % "rdf4j-tools-federation" % "4.2.3")
         .exclude("commons-codec","commons-codec")
     ),
     assembly / assemblyJarName := s"discovery-$version_build.jar",
