@@ -410,7 +410,7 @@ jobs:
 
   publish-github-release:
     docker:
-      - image: circleci/golang:1.16
+      - image: circleci/golang:1.20.0
     steps:
       - checkout
       - node/install:
