@@ -1,7 +1,17 @@
 export class SWDiscoveryConfiguration {
-    setConfigString(confjson:string) : SWDiscoveryConfiguration
+    static setConfigString(confjson:string) : SWDiscoveryConfiguration
     static init() : SWDiscoveryConfiguration
+    
+    setPageSize(n: number) : SWDiscoveryConfiguration
+
+    setSizeBatchProcessing(n: number) : SWDiscoveryConfiguration
+
+    setLogLevel(level: string) : SWDiscoveryConfiguration
+    
+    setCache(flag: boolean)  : SWDiscoveryConfiguration
+
     proxy(urlProxy : string , method? : string) : SWDiscoveryConfiguration
+    
     urlFile(
         filename:string,
         mimetype?:string,
@@ -17,11 +27,18 @@ export class SWDiscoveryConfiguration {
         auth?:string,
         login?:string,
         password?:string,
-        token?:string)
+        token?:string) : SWDiscoveryConfiguration
 
     localFile(filename : string ,mimetype? : string) : SWDiscoveryConfiguration
 
     rdfContent(content : string ,mimetype? : string) : SWDiscoveryConfiguration
+
+    sourcesSize : number 
+    pageSize    : number 
+    sizeBatchProcessing : number 
+    logLevel : string 
+    cache : boolean
+
 }
 
 export class FilterIncrement {
@@ -43,16 +60,20 @@ export class SWTransaction {
     distinct() : SWTransaction
     limit(l:number) : SWTransaction
     offset(l:number) : SWTransaction
-    orderByAsc(...ref) : SWTransaction
-    orderByDesc(...ref) : SWTransaction
+    orderByAsc(...ref:string[]) : SWTransaction
+    orderByDesc(...ref:string[]) : SWTransaction
     getSerializedString() : string
     setSerializedString(serialized_transaction:string) : SWTransaction
     console() : SWTransaction
 }
 
+export function SWDiscovery(config?:SWDiscoveryConfiguration) : SWDiscovery
+
 export class SWDiscovery {
 
-    constructor(config: SWDiscoveryConfiguration)
+    setConfig(config:SWDiscoveryConfiguration) : SWDiscovery
+    getConfig() : SWDiscoveryConfiguration
+
     filter : FilterIncrement
     root() : SWDiscovery
 
@@ -74,36 +95,42 @@ export class SWDiscovery {
 
     bind(ref: string) : SWDiscovery
     helper() : SWDiscovery
+    console(): SWDiscovery
     focus() : string
     focus(ref: string) : SWDiscovery
+    remove(focus: string) : SWDiscovery
+    sparql() : string
 
-    selectDistinctByPage( ...lRef ) : Promise<number,(SWTransaction[])>
+    select( ...lRef:string[] ) : SWTransaction
+    selectByPage( ...lRef:string[] ) : Promise<[number,(SWTransaction[])]>
+    selectDistinctByPage( ...lRef:string[] ) : Promise<[number,(SWTransaction[])]>
+
+    setSerializedString(serializedDiscovery:string) : SWDiscovery
+    getSerializedString() : string
+
+    setDecoration(key : string, value : string) : SWDiscovery
+    getDecoration(key : string) : string  
+    browse<Type>( fun : (n: any, p : Number) => Type ) : Type[]
+
 
 }
 
 /**
- * Type definition
+ * RDF type definition
  */
-export class SparqlDefinition {}
-export class IRI extends SparqlDefinition { constructor(iri : String) }
-export class URI extends SparqlDefinition { constructor(uri : String) }
-export class Anonymous extends SparqlDefinition { constructor(iri : String) }
-export class PropertyPath extends SparqlDefinition { constructor(value : String) }
-export class PropertyPath extends SparqlDefinition { constructor(value : String) }
-export class Literal extends SparqlDefinition {
-    constructor(value : String, datatype?: URI|string)
-    constructor(value : number)
-    constructor(value : boolean)
-}
-export class QueryVariable extends SparqlDefinition { constructor(name : String) }
 
+export interface IRI {} 
+export function IRI(iri : String) : IRI
+export interface URI {} 
+export function URI(iri : String) : URI
+export interface Anonymous {} 
+export function Anonymous(iri : String) : Anonymous
+export interface PropertyPath {} 
+export function PropertyPath(value : String) : PropertyPath
+export interface Literal {} 
+export function Literal(value : String, datatype?: URI|string) : Literal
+export function Literal(value : number) : Literal
+export function Literal(value : boolean) : Literal
+export interface QueryVariable {} 
+export function QueryVariable(name : string) : QueryVariable
 
-export function Anonymous(a: any): any
-
-export function BindIncrement(a: any, b: any): any
-
-export function IRI(a: any): any
-
-export function LinkFrom(a: any, b: any, c: any): any
-
-export function LinkTo(a: any, b: any, c: any): any

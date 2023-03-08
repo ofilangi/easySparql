@@ -1,4 +1,4 @@
-import { SWDiscoveryConfiguration , SWDiscovery } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt";
+import { SWDiscoveryConfiguration , SWDiscovery } from "@p2m2/discovery";
 
 describe("SWDiscovery", () => {
     
@@ -51,7 +51,7 @@ describe("SWDiscovery", () => {
   test("selectByPage", async () => {
     const args =
       await SWDiscovery(localConf)
-      .something("h1").selectByPage(["h1"]);
+      .something("h1").selectByPage("h1");
 
     let numberOfPages : Number = Object.values(args)[0] as Number ;
     let lazyPage : Array<any> = Object.values(args)[1] as Array<any> ;
@@ -69,10 +69,10 @@ describe("SWDiscovery", () => {
   })
 
   test("browse", () => {
-    const results = SWDiscovery(localConf)
+    const results : string[] = SWDiscovery(localConf)
                       .something("h1")
                        .isObjectOf("http://test11")
-                         .browse( ( n: any, p : Number) => {
+                         .browse( ( n: any, p : Number) : string => {
                           return n.$type + " : " + p;
                          });
     expect(results).toStrictEqual([
