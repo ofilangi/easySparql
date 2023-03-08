@@ -21,7 +21,7 @@ cp ./js/target/scala-2.13/scalajs-bundler/main/discovery-opt-bundle.js ./dist/di
 
 # typescript test
 sbt npmPackageJson
-#npm i
+npm i
 npm link
 cd ts
 npm link @p2m2/discovery
