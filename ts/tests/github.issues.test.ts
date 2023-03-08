@@ -1,4 +1,4 @@
-import { SWDiscoveryConfiguration , SWDiscovery, URI } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt";
+import { SWDiscoveryConfiguration , SWDiscovery, URI } from "@p2m2/discovery";
 
 describe("-- GITHUB ISSUES -- ", () => {
           
@@ -41,11 +41,9 @@ describe("-- GITHUB ISSUES -- ", () => {
             .something("hello")
             .isSubjectOf(URI("a"),"type")
               .filter.contains("Business")
-             .console();
-         /*    .select("type")
-             .commit()
-             .raw();
+             .console()
+             .getSerializedString();
 
-      console.log("results:"+JSON.stringify(results))*/
+      console.log("results:"+JSON.stringify(results))
     })
 });

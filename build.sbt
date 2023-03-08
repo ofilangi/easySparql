@@ -6,12 +6,12 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 lazy val comunica_query_sparql_version = "2.6.6b"
 lazy val data_model_rdfjs_version = "1.0.2"
 lazy val n3js_facade_version = "1.16.3"
-lazy val rdfxml_streaming_parser_version = "1.5.1"
+lazy val rdfxml_streaming_parser_version = "2.2.1"
 lazy val axios_version = "1.3.2"
 //lazy val scalaJsMacrotaskExecutor = "1.0.0"
 
 /* npm libs */
-lazy val npm_axios_version = "1.3.2"
+lazy val npm_axios_version = "1.3.4"
 lazy val npm_qs_version       = "6.11.0"
 lazy val npm_showdown_version = "2.1.0"
 lazy val npm_comunica_version_datasource = "1.22.2"
@@ -26,7 +26,7 @@ lazy val tsjest = "29.0.5"
 
 releaseIgnoreUntrackedFiles := true
 
-val static_version_build = "0.4.2"
+val static_version_build = "0.4.3"
 val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build)
 val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/fr/inrae/metabohub" +
   "/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
@@ -105,7 +105,7 @@ lazy val discovery=
     .in(file("."))
   .settings(
     libraryDependencies ++= Seq(
-      "com.softwaremill.sttp.client3" %% "core" % "3.8.11" % Test,
+      "com.softwaremill.sttp.client3" %% "core" % "3.8.12" % Test,
       "com.lihaoyi" %%% "utest" % "0.8.1" % Test,
       "com.lihaoyi" %%% "upickle" % "3.0.0-M2",
       "org.wvlet.airframe" %%% "airframe-log" % "23.2.3",
@@ -208,6 +208,7 @@ s"""{
    "description": "${(ThisBuild / description).value}",
    "version": "${(ThisBuild / version).value}",
    "main": "./js/target/scala-2.13/scalajs-bundler/main/discovery-opt.js",
+   "types": "./ts/types/discovery.d.ts",
    "files": [
      "js/target/scala-2.13/scalajs-bundler/main/discovery-opt.js"
    ],
