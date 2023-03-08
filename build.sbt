@@ -3,7 +3,7 @@ import sbt.file
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
 /* p2m2 libs */
-lazy val comunica_query_sparql_version = "2.6.8"
+lazy val comunica_query_sparql_version = "2.6.6b"
 lazy val data_model_rdfjs_version = "1.0.2"
 lazy val n3js_facade_version = "1.16.3"
 lazy val rdfxml_streaming_parser_version = "2.2.1"
