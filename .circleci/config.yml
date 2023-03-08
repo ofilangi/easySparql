@@ -301,8 +301,13 @@ jobs:
             ## bug with Node 17 -> https://github.com/webpack/webpack/issues/14532
             export NODE_OPTIONS=--openssl-legacy-provider
             sbt discoveryJS/fastOptJS/webpack
+            sbt discoveryJS/fullOptJS/webpack
             sbt npmPackageJson
             npm i
+            npm link
+            cd ts
+            npm link @p2m2/discovery
+            cd ..
             npm test
 
   publish_snapshot:

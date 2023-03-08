@@ -1,4 +1,4 @@
-import { SWDiscoveryConfiguration , SWDiscovery } from "../../js/target/scala-2.13/scalajs-bundler/main/discovery-fastopt"
+import { SWDiscoveryConfiguration , SWDiscovery } from "@p2m2/discovery"
 
 describe("SWDiscovery", () => {
     

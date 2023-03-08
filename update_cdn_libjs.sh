@@ -3,9 +3,9 @@
 export NODE_OPTIONS=--openssl-legacy-provider
 
 # clean dist directory
-rm dist/discovery*.js
+rm -f dist/discovery*.js
 # generate build version
-rm ./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala
+rm -f ./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala
 
 # browser lib debug information
 sbt discoveryJS/fastOptJS/webpack
@@ -22,6 +22,10 @@ cp ./js/target/scala-2.13/scalajs-bundler/main/discovery-opt-bundle.js ./dist/di
 # typescript test
 sbt npmPackageJson
 npm i
+npm link
+cd ts
+npm link @p2m2/discovery
+cd ..
 npm test -- --silent && echo "typescript test ok" || exit 1
 
 sed -i "s#discovery-fastopt-bundle#discovery-web-dev#g" $(find ./dist -type f -name "*dev*")
