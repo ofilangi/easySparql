@@ -302,7 +302,10 @@ jobs:
             export NODE_OPTIONS=--openssl-legacy-provider
             sbt discoveryJS/fastOptJS/webpack
             sbt npmPackageJson
-            npm i
+            npm link
+            cd ts
+            npm link @p2m2/discovery
+            cd ..
             npm test
 
   publish_snapshot:

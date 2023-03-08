@@ -3,9 +3,9 @@
 export NODE_OPTIONS=--openssl-legacy-provider
 
 # clean dist directory
-rm dist/discovery*.js
+rm -f dist/discovery*.js
 # generate build version
-rm ./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala
+rm -f ./shared/src/main/scala/inrae/semantic_web/SWDiscoveryVersionAtBuildTime.scala
 
 # browser lib debug information
 sbt discoveryJS/fastOptJS/webpack
