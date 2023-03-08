@@ -26,7 +26,7 @@ lazy val tsjest = "29.0.5"
 
 releaseIgnoreUntrackedFiles := true
 
-val static_version_build = "0.4.2"
+val static_version_build = "0.4.3"
 val version_build = scala.util.Properties.envOrElse("DISCOVERY_VERSION", static_version_build)
 val SWDiscoveryVersionAtBuildTimeFile = "./shared/src/main/scala/fr/inrae/metabohub" +
   "/semantic_web/SWDiscoveryVersionAtBuildTime.scala"
