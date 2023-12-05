@@ -54,10 +54,10 @@ FORUM[@delmas_forum_2021] (Metabolism Knowledge Network Portal) and PeakForest[@
 
 # Statement of need
 
-Nowaday, the use of semantic web technologies into bioinformatics has become ubiquitous across all domains of life sciences[@wu_semantic_2014]\cite{wu_semantic_2014}. 
-Many bioinformatics resources is now organized according to the FAIR (Findable, Accessible, Interoperable, and Reusable) principles\citep{wilkinson_fair_2016}, enabling efficient management and reuse of data in both research and industrial settings.\cite{wu_semantic_2014}. This implementation was made possible by the standardized languages and protocols defined by the World Wide Web Consortium (W3C, https://www.w3.org/) such as the Resource Description Framework (RDF, https://www.w3.org/RDF/) which provides a versatile framework for representing data and knowledge in a machine-readable format and the SPARQL query language (https://www.w3.org/TR/sparql11-query/) to exploit these data known as knowledge graphs.
+Nowaday, the use of semantic web technologies into bioinformatics has become ubiquitous across all domains of life sciences[@wu_semantic_2014]. 
+Many bioinformatics resources is now organized according to the FAIR (Findable, Accessible, Interoperable, and Reusable) principles[@wilkinson_fair_2016], enabling efficient management and reuse of data in both research and industrial settings[@wu_semantic_2014]. This implementation was made possible by the standardized languages and protocols defined by the World Wide Web Consortium (W3C, https://www.w3.org/) such as the Resource Description Framework (RDF, https://www.w3.org/RDF/) which provides a versatile framework for representing data and knowledge in a machine-readable format and the SPARQL query language (https://www.w3.org/TR/sparql11-query/) to exploit these data known as knowledge graphs.
 
-Bioinformatics communities are encouraged to develop ontologies that adhere to the principles of the Basic Formal Ontology (BFO, https://basic-formal-ontology.org/) and the Open Biological and Biomedical Ontology (OBO, https://obofoundry.org/) Foundry [XREF]. These ontologies aim to structure the modelling of knowledge in a common conceptual framework and allow the reuse of existing ontologies, favouring collaboration between different research communities [XREF].
+Bioinformatics communities are encouraged to develop ontologies that adhere to the principles of the Basic Formal Ontology[@10.3233/AO-220262] and the Open Biological and Biomedical Ontology Foundry[@10.1093/database/baab069]. These ontologies aim to structure the modelling of knowledge in a common conceptual framework and allow the reuse of existing ontologies, favouring collaboration between different research communities [XREF].
 The datasets, now structured, use controlled vocabularies and taxonomies to use unambiguous standard terms.
 
 Effective tools exist to access ontologies (BioPortal, OLS and AgroPortal) and datasets (NCBI, EBI). In addition, these resources can be imported into RDF data store, also known as triplet store, to be exploited using the SPARQL query language. In conclusion, semantic web technologies have greatly facilitated the integration and exploitation of bioinformatics data, allowing the efficient management of large and complex datasets.
@@ -100,8 +100,6 @@ Presently, this has resulted in the establishment of a dedicated infrastructure 
             } );
  </script>
  ```
-
-
 
 
 # Acknowledgements
