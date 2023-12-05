@@ -8,6 +8,7 @@ tags:
   - bioinformatics
   - scala
   - scala.js
+
 authors:
   - name: Olivier Filangi
     orcid: 0000-0002-2094-3271

@@ -1,0 +1,17 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+
+  ],
+  "identifier": "https://doi.org/10.57745/VEM9LZ",
+  "codeRepository": "https://github.com/p2m2/discovery",
+  "datePublished": "2023-12-05",
+  "dateModified": "2023-12-05",
+  "dateCreated": "2023-12-05",
+  "description": "discovery is a software library which aims to ease the development of decision support tools exploiting omics RDF databases",
+  "keywords": "sematic web, RDF, linked data, metabolomics, bioinformatics, scala, scala.js",
+  "license": "MIT",
+  "title": "Discovery",
+  "version": "v0.4.3"
+}
