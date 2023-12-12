@@ -51,6 +51,11 @@ FORUM[@delmas_forum_2021] (Metabolism Knowledge Network Portal) and PeakForest[@
 
 # Statement of need
 
+[MetaboHUB](https://www.metabohub.fr/home.html) is a French national infrastructure dedicated to research in metabolomics and fluxomics, with the aim of providing an integrated platform for the study of metabolic pathways and networks. This initiative brings together a wide range of academic and industrial partners, including experts in analytical chemistry and bioinformatics, to develop cutting-edge technologies and methodologies for metabolomics research. One of the key objectives of MetaboHUB is to ensure data and software interoperability within the consortium. In this context, our working group "Creating FAIR resources for knowledge mining" aims to organize data and metadata in RDF format, as well as to structure consortium software products into web components, allowing for better reuse and integration of resources within the scientific community.
+Presently, this has led to the establishment of a specialized infrastructure aimed at harnessing knowledge bases. Within these resources, we provide the metabolic community access to a knowledge graph that delineates connections between chemical compounds and the scientific literature[@delmas_forum_2021]. Additionally, we have introduced an expanded knowledge graph using a Bayesian framework, encompassing overlooked metabolites lacking annotated literature[@delmas_forum_2023].
+
+# Bioinformatics Linked Open Data
+
 Nowaday, the use of semantic web technologies into bioinformatics has become ubiquitous across all domains of life sciences[@wu_semantic_2014]. 
 Many bioinformatics resources is now organized according to the FAIR (Findable, Accessible, Interoperable, and Reusable) principles[@wilkinson_fair_2016], enabling efficient management and reuse of data in both research and industrial settings. This implementation was made possible by the standardized languages and protocols defined by the World [Wide Web Consortium (W3C)](https://www.w3.org/) such as the [Resource Description Framework (RDF)](https://www.w3.org/RDF/) which provides a versatile framework for representing data and knowledge in a machine-readable format and the [SPARQL query language](https://www.w3.org/TR/sparql11-query/) to exploit these data known as knowledge graphs.
 
@@ -59,12 +64,12 @@ The datasets, now structured, use controlled vocabularies and taxonomies to use 
 
 Effective tools (BioPortal[@noy_bioportal_2009], EMBL-EBI Ontology Lookup Service[@cote_ontology_2006] and AgroPortal[@jonquet_agroportal_2018]) exist to access ontologies and datasets. In addition, these resources can be imported into RDF data store, also known as triplet store, to be exploited using the SPARQL query language. In conclusion, semantic web technologies have greatly facilitated the integration and exploitation of bioinformatics data, allowing the efficient management of large and complex datasets.
 
-[MetaboHUB](https://www.metabohub.fr/home.html) is a French national infrastructure dedicated to research in metabolomics and fluxomics, with the aim of providing an integrated platform for the study of metabolic pathways and networks. This initiative brings together a wide range of academic and industrial partners, including experts in analytical chemistry and bioinformatics, to develop cutting-edge technologies and methodologies for metabolomics research. One of the key objectives of MetaboHUB is to ensure data and software interoperability within the consortium. In this context, our working group "Creating FAIR resources for knowledge mining" aims to organize data and metadata in RDF format, as well as to structure consortium software products into web components, allowing for better reuse and integration of resources within the scientific community.
-Presently, this has led to the establishment of a specialized infrastructure aimed at harnessing knowledge bases. Within these resources, we provide the metabolic community access to a knowledge graph that delineates connections between chemical compounds and the scientific literature[@delmas_forum_2021]. Additionally, we have introduced an expanded knowledge graph using a Bayesian framework, encompassing overlooked metabolites lacking annotated literature[@delmas_forum_2023].
 
 # Overview of the General Design
 
-The query generator relies on the manipulation of immutable data structures, a fundamental tenet of functional programming. Once created, these structures persist unaltered throughout the application's execution, providing advantages such as improved code clarity and the avoidance of unintended side effects. Developers can effortlessly construct intricate SPARQL queries by combining merging immutable query fragments. This immutability is crucial for reducing bugs linked to unforeseen alterations in object state, thereby simplifying long-term code maintenance.
+Discovery enables the development and maintenance of sophisticated SPARQL queries within a web application. The library provides a component for configuring access to an RDF data source and a core building component (Query Builder) for incrementally constructing queries, which are translated into SPARQL queries at the time of result retrieval. Additionally, Discovery incorporates a component for processing the results of the query generated by the Query Builder. These components are serializable, facilitating the seamless transport of the query construction state within a web application. This serialization allows user interfaces to capture and integrate new elements specific to their functionality, ensuring flexibility and adaptability. 
+
+The library relies on the manipulation of immutable data structures, a fundamental tenet of functional programming. Once created, these structures persist unaltered throughout the application's execution, providing advantages such as improved code clarity and the avoidance of unintended side effects. Developers can effortlessly construct intricate SPARQL queries by combining merging immutable query fragments. This immutability is crucial for reducing bugs linked to unforeseen alterations in object state, thereby simplifying long-term code maintenance.
 
 The Discovery API utilizes the [Scala.js](http://www.scala-js.org/) compiler to ensure compatibility with established JavaScript libraries, a critical aspect in the realm of web development. This functionality facilitates the smooth assimilation of widely-used JavaScript libraries, allowing for tasks like DOM manipulation and other UI-related functions within web components.
 
@@ -74,9 +79,10 @@ Discovery incorporates a Query Builder (QB) to streamline the construction and g
 
 # Key Features
 
-![Interaction of the API Discovery with Web Components](illustration_1.png)
+![Interplay between the Discovery API and Web Components](illustration_1.png)
 
 ## Elementary Building Blocks
+
 <!-- Update query par elements de construction -->
 A distinctive quality of the QB module is the categorization of construction elements, such as resources and qualifiers. Immutability is deliberately imposed, fortifying the security of the development process and simplifying debugging. This intentional structure promotes stability in query creation, a critical factor for precise and error-free development.
 
