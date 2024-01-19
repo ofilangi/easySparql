@@ -76,23 +76,32 @@ The Discovery API utilizes the [Scala.js](http://www.scala-js.org/) compiler to 
 
 Furthermore, [Scala.js](http://www.scala-js.org/) produces optimized JavaScript code, a critical consideration in web applications where responsiveness and a seamless user interface are imperative. The synergy between functional programming in Scala and transpilation through [Scala.js](http://www.scala-js.org/) facilitates the manipulation of a high-level API, enabling developers to focus exclusively on the concepts dedicated to the construction of a query in the end.
 
+We extensively leverage the open-source framework Comunica[@taelman_iswc_resources_comunica_2018], a knowledge graph querying framework for JavaScript that provides flexibility in using SPARQL and GraphQL over decentralized RDF on the Web. This utilization aims to efficiently handle RDF data access and SPARQL query processing. Discovery's maintenance focus is directed toward the development and upkeep of [Scala.js facades](https://www.scala-js.org/doc/interoperability/facade-types.html), abstracting away complexities associated with RDF manipulation.
+
 
 # Key Features
 
 ![Interplay between the Discovery API and Web Components](illustration_1.png)
 
+## Simplified Configuration and Versatile Access to RDF Resources
+
+
+
 ## Elementary Building Blocks
 
-<!-- Update query par elements de construction -->
 A distinctive quality of the QB module is the categorization of construction elements, such as resources and qualifiers. Immutability is deliberately imposed, fortifying the security of the development process and simplifying debugging. This intentional structure promotes stability in query creation, a critical factor for precise and error-free development.
+Discovery allows the creation of an object that holds the construction state of a query. Subsequently, it enables the incremental addition of new elements based on this object, using a focus to contextualize the integration of a new element. At each construction step, a new instance of the QB module is instantiated, preserving all the stages of query construction.
 
 ## Data Flow Management and Pagination
 
 Addressing scalability concerns, the QB module incorporates intelligent pagination, particularly beneficial when crafting result lists with a significant number of elements. This optimization ensures the efficiency of queries and responses, enhancing the overall performance.
 
+*Les Datatypes properties (les attributs de type datatype des resources ) sont traités autrements afin d'obtenir des performances* 
+
+
 ## Request Transport via String Serialization in a Web Architecture
 
-Tailored for web development, Discovery's Query Builder introduces features such as string transport, simplifying component communication. Additionally, developers can enhance user queries by embedding metadata, providing contextual information within graphical representations for a more enriched user experience.
+Tailored for web development, Discovery's Query Builder introduces features such as string transport, simplifying component communication. Additionally, developers can enhance user queries by embedding decoration metadata, providing contextual information within graphical representations for a more enriched user experience.
 
 ## Event Management for Dialog Box Notifications and User Interactions
 
@@ -101,6 +110,10 @@ Tailored for web development, Discovery's Query Builder introduces features such
 The QB module places a premium on asynchronous result reception, ensuring the responsiveness of web applications. Developers can subscribe to events, staying abreast of specific interactions or changes and fostering a dynamic and interactive web development environment.
 
 In essence, Discovery, as the Query Builder, serves as a pivotal guide in the intricate realm of SPARQL query generation. From streamlined configuration to categorization, scalability, and web-specific functionalities, this module empowers developers to navigate the complexities of web-based RDF data manipulation with precision and efficiency.
+
+# Illustrative Outcomes
+
+The FORUM Metabolism Knowledge Network Portal and PeakForest (The Metabolomics spectral database web portal)
 
 
 # Acknowledgements
