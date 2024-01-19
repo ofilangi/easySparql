@@ -78,14 +78,13 @@ Furthermore, [Scala.js](http://www.scala-js.org/) produces optimized JavaScript 
 
 We extensively leverage the open-source framework Comunica[@taelman_iswc_resources_comunica_2018], a knowledge graph querying framework for JavaScript that provides flexibility in using SPARQL and GraphQL over decentralized RDF on the Web. This utilization aims to efficiently handle RDF data access and SPARQL query processing. Discovery's maintenance focus is directed toward the development and upkeep of [Scala.js facades](https://www.scala-js.org/doc/interoperability/facade-types.html), abstracting away complexities associated with RDF manipulation.
 
-
 # Key Features
 
 ![Interplay between the Discovery API and Web Components](illustration_1.png)
 
 ## Simplified Configuration and Versatile Access to RDF Resources
 
-
+The configuration module provides a straightforward solution for configuring access to RDF data graphs. This can be achieved by using either a SPARQL endpoint, a file in RDF format available in a repository and accessible via a URL, or by imperatively describing a data graph. The API supports commonly used semantic web formats such as nt, rdf-xml, and turtle.
 
 ## Elementary Building Blocks
 
@@ -96,18 +95,19 @@ Discovery allows the creation of an object that holds the construction state of 
 
 Addressing scalability concerns, the QB module incorporates intelligent pagination, particularly beneficial when crafting result lists with a significant number of elements. This optimization ensures the efficiency of queries and responses, enhancing the overall performance.
 
-*Les Datatypes properties (les attributs de type datatype des resources ) sont traités autrements afin d'obtenir des performances* 
-
-
 ## Request Transport via String Serialization in a Web Architecture
 
 Tailored for web development, Discovery's Query Builder introduces features such as string transport, simplifying component communication. Additionally, developers can enhance user queries by embedding decoration metadata, providing contextual information within graphical representations for a more enriched user experience.
 
 ## Event Management for Dialog Box Notifications and User Interactions
 
+Dedicated web components can subscribe to events, staying informed about specific interactions or changes, thereby fostering a dynamic and interactive web development environment. Subscription occurs through a query construction element, enabling notification of events such as query compilation, sending and processing, as well as the management of result object construction. This approach provides a responsive and flexible mechanism, promoting the development of interactive and reactive web applications.
+
 ## Asynchronous Results and Error Handling
 
-The QB module places a premium on asynchronous result reception, ensuring the responsiveness of web applications. Developers can subscribe to events, staying abreast of specific interactions or changes and fostering a dynamic and interactive web development environment.
+The QB module handles the asynchronous reception of results and errors by leveraging the promise functionality in JavaScript. It implements an on-demand result processing feature, allowing the presentation of results to the web component only when requested. This contributes to conserving resources used for data provision.
+
+# Conclusion
 
 In essence, Discovery, as the Query Builder, serves as a pivotal guide in the intricate realm of SPARQL query generation. From streamlined configuration to categorization, scalability, and web-specific functionalities, this module empowers developers to navigate the complexities of web-based RDF data manipulation with precision and efficiency.
 
