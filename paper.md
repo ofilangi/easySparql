@@ -42,7 +42,7 @@ Linked data is increasingly available on the web and has been widely adopted by 
 However, it is not common to find APIs that enable the direct use of semantic information in web interfaces. 
 This often leads web application designers to incorporate this information into relational databases, 
 as they can benefit from the query builder and object-relational mapping features that are widely used in this community.
-
+JE comprends rien à cette phrase du dessous
 We have developed Discovery, a free software library designed to easily build intuitive and interactive user interfaces 
 to exploit RDF data in graphical form. The API provides a dedicated query language to create and maintain complex queries 
 to be used in a client or server side web development environment. We used Discovery to implement functionality in web decision 
