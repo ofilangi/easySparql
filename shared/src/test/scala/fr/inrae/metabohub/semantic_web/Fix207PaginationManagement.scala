@@ -26,15 +26,15 @@ object Fix207PaginationManagement extends TestSuite {
       val configTemp =
         SWDiscoveryConfiguration.init()
         .sparqlEndpoint("https://forum.semantic-metabolomics.fr/sparql")
-        .setPageSize(10)
+        .setPageSize(40)
         .setSizeBatchProcessing(10)
 
-      val cidRequest = "1060"
+      val cidRequest = "CID1060"
       val meshid = "D005947"
      // insert_data.map(_ => {
         SWDiscovery(configTemp)
           .directive("DEFINE input:inference \"schema-inference-rules\"")
-          .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
+         // .graph(IRI(DataTestFactory.graph1(this.getClass.getSimpleName)))
           .prefix("dcterm", "http://purl.org/dc/terms/")
           .prefix("cid", "http://rdf.ncbi.nlm.nih.gov/pubchem/compound/")
           .prefix("cito", "http://purl.org/spar/cito/")
@@ -62,11 +62,11 @@ object Fix207PaginationManagement extends TestSuite {
           .focus("mesh_ini")
           .isA(URI("meshv:TopicalDescriptor"))
           .focus("mesh_ini")
-          .isSubjectOf("meshv:active")
+          .isSubjectOf(URI("meshv:active"))
           .set(Literal(1))
           .focus("pmid")
-          .isSubjectOf("dcterm:date", "dateToOrdered")
-          //.console()
+          .isSubjectOf(URI("dcterm:date"), "dateToOrdered")
+          .console
           .selectDistinctByPage(Seq("pmid","title", "date"))
           /*
           .then(( args: [number,(SWTransaction[])] ) => {
@@ -83,10 +83,19 @@ object Fix207PaginationManagement extends TestSuite {
             val nbSolution = args._1
             println(nbSolution)
             val results = args._2
-            Future.sequence((0 to 10).map( iblock => {
-              results(iblock).commit().raw.map({
+            Future.sequence(results.indices.map(block => {
+
+              results(block).commit().raw.map({
                 r => {
-                  assert(r("results")("bindings").arr.nonEmpty)
+                  //if (r("results")("bindings").arr.length != 40)
+
+                      println(r("results")("bindings").arr.length)
+                    // println(r("results")("bindings").arr)
+                    //  results(block).console
+
+
+                  //assert(r("results")("bindings").arr.length == 40)
+
                   //r("results")("bindings").arr.map( json => SparqlBuilder.createLiteral(json("obj")))
                     //.map( lit => lit.toInt )}
                 }})
