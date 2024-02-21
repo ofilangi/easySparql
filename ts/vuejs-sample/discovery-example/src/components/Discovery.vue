@@ -2,10 +2,10 @@
 import { defineAsyncComponent } from 'vue';
 import Loading from './Loading.vue'
 
-defineProps<{
-  msg: string
+const props = defineProps<{
+  subject : String, 
+  endpoint: string
 }>()
-
 
 
 const AsyncComponent = defineAsyncComponent({
@@ -22,7 +22,7 @@ const AsyncComponent = defineAsyncComponent({
 <template>
     <suspense>
       <template #default>
-        <AsyncComponent />
+        <AsyncComponent :subjectUri=subject :sparqlEndpoint=endpoint  />
       </template>
       <template #fallback>
         <Loading />

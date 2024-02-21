@@ -6,12 +6,9 @@ discovery : String,
 propertyUri: string
 }>()
 
-console.log(props.discovery)
-console.log(props.propertyUri)
-
 const discoveryBase = SWDiscovery().setSerializedString(props.discovery)
 let json = await discoveryBase.isSubjectOf(URI(props.propertyUri),"value")
-                        .console()
+                   //     .console()
                         .select("value")
                         .commit()
                         .raw();
@@ -24,6 +21,13 @@ let value =  json.results.bindings[0].value.value
 
 <template>
     <div class="p-5">
-     {{ propertyUri.split("/").pop() }} : {{ value }}
+     
+        {{ propertyUri.split("/").pop().split("#").pop() }} 
+     
+     &rarr; 
+     
+     <router-link to="{ name: 'subject', params: { subject: 123 , endpoint :'' }}">
+        {{ value.split("/").pop().split("#").pop() }}
+    </router-link>
     </div>
 </template>
